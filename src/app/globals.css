@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    /* Midnight Blue #1E293B -> HSL 215 32% 17% */
+    /* Emerald Green #10B981 -> HSL 160 84% 39% */
+    
+    --background: 215 32% 17%; /* Midnight Blue Main Background */
+    --foreground: 210 40% 98%;
+
+    --card: 217.2 32.6% 20%; /* Slightly lighter than background */
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 217.2 32.6% 20%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 160 84% 39%; /* Emerald Green */
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 215 25% 27%; /* Lighter Midnight Blue */
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 215 25% 27%;
+    --muted-foreground: 215 20.2% 75%;
+ 
+    --accent: 215 25% 27%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 215 25% 27%;
+    --input: 215 25% 27%;
+    --ring: 160 84% 39%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    /* Identical to root since we default to Dark Mode for Midnight Blue theme */
+    --background: 215 32% 17%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 20%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217.2 32.6% 20%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 215 25% 27%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 25% 27%;
+    --muted-foreground: 215 20.2% 75%;
+    --accent: 215 25% 27%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 25% 27%;
+    --input: 215 25% 27%;
+    --ring: 160 84% 39%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
