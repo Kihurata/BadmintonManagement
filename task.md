@@ -1,24 +1,67 @@
-Kế hoạch phát triển Hệ Thống Quản Lý Sân Cầu Lông (BMS)
-Giai đoạn 0: Khởi tạo dự án & Cơ sở dữ liệu
- Khởi tạo Next.js App (TypeScript, Tailwind CSS)
- Cài đặt các thư viện UI (Shadcn UI, Lucide React, Date libraries)
- Thiết lập kết nối Supabase (Client & Server components)
- Tạo file migration/schema.sql từ script SQL đã cung cấp
- Thiết lập Design System (Theme Midnight Blue & Emerald Green)
-Giai đoạn 1: Đặt sân & Trả sân cơ bản (Ngày 1-2)
- Xây dựng giao diện Danh sách sân (Court List)
- Xây dựng giao diện Lịch sân (Calendar/Timeline View)
- Form Đặt sân mới (Booking Form) - Validation cơ bản, chống trùng lịch
- Tính năng Check-in (Chuyển trạng thái Pending -> Checked_in)
- Tính năng Check-out cơ bản (Chuyển trạng thái -> Completed, chưa tính tiền phức tạp)
-Giai đoạn 2: Quản lý kho & Bán lẻ (Ngày 3-4)
- Quản lý Sản phẩm (Danh sách, Thêm/Sửa/Xóa đơn giản)
- Quản lý Nhập/Xuất kho (Inventory Logs)
- Tích hợp bán hàng vào Check-out (Thêm nước/cầu vào hóa đơn)
- Form Bán lẻ riêng (POS cho khách vãng lai mua nước)
-Giai đoạn 3: Logic phức tạp & Báo cáo (Ngày 5-7)
- Logic tính giá nâng cao (Sáng/Tối, Khách quen/Vãng lai, Split pricing)
- Xử lý Overtime tự động khi Check-out muộn
- Quản lý Lịch cố định (Fixed Slots - Recurring Bookings)
- Dashboard Thống kê & Báo cáo doanh thu (PC View)
- Tối ưu PWA cho Mobile (Manifest, Viewport settings)
+Task
+12 minutes ago
+
+Review
+Task List: Badminton Management System (BMS)
+ Stage 0: Project Initialization & Database Setup
+
+ Initialize Next.js App (TypeScript, Tailwind CSS)
+ Install UI Libraries (Shadcn UI, Lucide React, Date libraries)
+ Setup Supabase Connection (Client & Server components)
+ Create migration file 
+supabase/schema.sql
+ Setup Design System (Midnight Blue & Emerald Green)
+ Stage 1: Basic Booking & Court Management (Days 1-2)
+
+ Build Court List Interface
+ Create Court Card component
+ Fetch and display courts from Supabase
+ Build Calendar/Timeline View
+ Implement daily timeline view for courts
+ Fetch bookings and overlay on timeline
+ Refactor Timeline to Multi-Column View
+ Update Timeline component to support multiple courts
+ Update SchedulePage to remove single court selection
+ Implement Booking Form
+ Create form with Shadcn UI (DatePicker, Select, Input)
+ Add basic validation and conflict checking
+ Submit booking to Supabase
+ Implement Check-in Feature
+ Update booking status (Pending -> Checked_in)
+ Implement Basic Check-out Feature
+ Update booking status (Checked_in -> Completed)
+ Basic payment calculation (duration * rate)
+ Stage 2: Inventory & Point of Sale (POS) (Days 3-4)
+
+ Product Management
+ Create Product List view
+ Implement Add/Edit/Delete Product functions
+ Inventory Management
+ Implement Inventory Logs (Import/Export tracking)
+ Integrated POS in Check-out
+ Add products (drinks/shuttlecocks) to booking invoice
+ Calculate total (court fee + items)
+ Standalone Retail POS
+ Create interface for walk-in customers (buying water etc.)
+ Stage 2.5: Customer Management
+
+ Customer List & Management
+ Create Customer List screen
+ Implement Add/Edit Customer (Loyal/Guest)
+ Booking Form Update
+ Replace inputs with Customer Selector
+ Handle default "Guest" logic
+ Stage 3: Advanced Logic & Reporting (Days 5-7)
+
+ Advanced Pricing Logic
+ Implement Time-based pricing (Morning/Evening rates)
+ Implement Customer Type pricing (Loyal vs Guest)
+ Handle Split Pricing (booking spans multiple rate periods)
+ Automated Overtime Handling
+ Auto-calculate extra time fees on late check-out
+ Recurring Bookings (Fixed Slots)
+ Interface for managing fixed weekly schedules
+ Dashboard & Reporting
+ Create Desktop Dashboard (Revenue charts, booking stats)
+ PWA Optimization
+ Configure manifest.json and viewport settings for Mobile
