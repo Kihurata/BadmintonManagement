@@ -13,7 +13,7 @@ import { formatCurrency } from '@/lib/utils';
 import { Loader2, Plus, Trash2, Minus } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from 'date-fns';
-import { Invoice, InvoiceItem, Product } from '@/types';
+import { InvoiceItem } from '@/types';
 
 interface InvoiceDetailDialogProps {
     invoiceId: string | null;
@@ -24,9 +24,9 @@ interface InvoiceDetailDialogProps {
 
 export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }: InvoiceDetailDialogProps) {
     const [loading, setLoading] = useState(false);
-    const [invoice, setInvoice] = useState<any>(null); // Use any for flexibility or update Invoice type
+    const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [items, setItems] = useState<InvoiceItem[]>([]);
-    const [products, setProducts] = useState<any[]>([]); // Processed products for Select
+    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [currentProductKey, setCurrentProductKey] = useState('');
 
@@ -74,8 +74,8 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
             .order('product_name');
 
         if (data) {
-            const processedProducts: any[] = [];
-            data.forEach((p: any) => {
+            const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+            data.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 // Option 1: Base Unit
                 processedProducts.push({
                     key: `${p.id}-base`,

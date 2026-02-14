@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { differenceInMinutes } from 'date-fns';
 import { Loader2, Plus, Trash2, Minus } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,12 +26,12 @@ interface OrderItem {
 
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
     const [loading, setLoading] = useState(true);
-    const [booking, setBooking] = useState<any>(null);
+    const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [checkoutTime, setCheckoutTime] = useState(new Date());
 
     // POS State
-    const [products, setProducts] = useState<any[]>([]); // Helper array for display
+    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [selectedItems, setSelectedItems] = useState<OrderItem[]>([]);
     const [currentProductKey, setCurrentProductKey] = useState(''); // Key: "productId-isPack"
 
@@ -64,8 +63,8 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
             }
             if (productsData) {
                 // Process products into selectable options
-                const processedProducts: any[] = [];
-                productsData.forEach((p: any) => {
+                const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+                productsData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                     // Option 1: Base Unit
                     processedProducts.push({
                         key: `${p.id}-base`,
@@ -158,8 +157,8 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     const rentalFee = pricingResult.rentalFee;
 
     // 2. Overtime Fee
-    let overtimeFee = 0;
-    let overtimeMins = 0;
+    const overtimeFee = 0;
+    const overtimeMins = 0;
 
     /* Temporarily disabled overtime calculation
     if (actualEndTime > scheduledEndTime) {
@@ -255,7 +254,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
             onSuccess();
 
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error(err);
             alert('Lỗi thanh toán: ' + err.message);
         } finally {

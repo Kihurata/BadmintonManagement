@@ -1,7 +1,7 @@
 
 import { format, addDays, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
 interface DateSelectorProps {
     selectedDate: Date;

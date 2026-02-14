@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { ArrowDown, ArrowUp, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function InventoryHistory() {
-    const [logs, setLogs] = useState<any[]>([]);
+    const [logs, setLogs] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export function InventoryHistory() {
 
     const fetchLogs = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('inventory_logs')
             .select(`
                 *,

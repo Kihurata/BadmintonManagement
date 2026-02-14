@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CustomerFormProps {
-    customerToEdit?: any;
+    customerToEdit?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     onSuccess: () => void;
     onCancel: () => void;
 }

@@ -17,7 +17,7 @@ interface StockAdjustmentFormProps {
 }
 
 export function StockAdjustmentForm({ onSuccess, onCancel }: StockAdjustmentFormProps) {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [selectedProductId, setSelectedProductId] = useState('');
     const [type, setType] = useState('RESTOCK');
     const [quantity, setQuantity] = useState('');

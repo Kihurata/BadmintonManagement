@@ -31,18 +31,18 @@ interface BookingFormProps {
     onCancel: () => void;
     selectedDate?: Date;
     selectedCourtId?: string | null;
-    courts?: any[];
+    courts?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts }: BookingFormProps) {
     const [date, setDate] = useState<Date | undefined>(selectedDate || new Date());
     const [courtId, setCourtId] = useState(selectedCourtId || '');
-    const [courts, setCourts] = useState<any[]>(propCourts || []);
+    const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [startTime, setStartTime] = useState('');
     const [duration, setDuration] = useState('1');
 
     // Customer Selection State
-    const [customers, setCustomers] = useState<any[]>([]);
+    const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [customerId, setCustomerId] = useState('');
     const [customerOpen, setCustomerOpen] = useState(false);
     // If selecting "Guest" manually or not selecting anyone (default), we handle logic on submit

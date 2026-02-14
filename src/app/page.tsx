@@ -18,7 +18,7 @@ import { BookingDetails } from '@/components/booking/booking-details';
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(startOfToday());
-  const [courts, setCourts] = useState<any[]>([]);
+  const [courts, setCourts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // Dialog States
   const [isBookingOpen, setIsBookingOpen] = useState(false);

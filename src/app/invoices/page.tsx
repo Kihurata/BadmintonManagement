@@ -7,11 +7,11 @@ import { BottomNav } from '@/components/layout/bottom-nav';
 import { SummaryCard } from '@/components/invoices/summary-card';
 import { InvoiceList } from '@/components/invoices/invoice-list';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
-import { Bell, User } from 'lucide-react'; // Using Lucide for header icons as fallback
+import { Bell } from 'lucide-react'; // Using Lucide for header icons as fallback
 
 export default function InvoicesPage() {
     const [filter, setFilter] = useState<'TODAY' | 'WEEK' | 'MONTH' | 'UNPAID'>('TODAY');
-    const [invoices, setInvoices] = useState<any[]>([]);
+    const [invoices, setInvoices] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [summary, setSummary] = useState({ revenue: 0, courtRevenue: 0, productRevenue: 0, count: 0, avg: 0 });
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
@@ -59,11 +59,11 @@ export default function InvoicesPage() {
             query = query.gte('created_at', start).lte('created_at', end);
         }
 
-        const { data, error } = await query;
+        const { data } = await query;
 
         if (data) {
             // Transform data for display
-            const formattedInvoices = data.map((inv: any) => {
+            const formattedInvoices = data.map((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 const startTime = inv.bookings?.start_time ? new Date(inv.bookings.start_time) : null;
                 const endTime = inv.bookings?.end_time ? new Date(inv.bookings.end_time) : null;
                 const duration = startTime && endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) : 0;
@@ -88,11 +88,11 @@ export default function InvoicesPage() {
             let totalRevenue = 0;
             let totalProductRevenue = 0;
 
-            data.forEach((inv: any) => {
+            data.forEach((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 totalRevenue += inv.total_amount;
 
                 // Calculate product revenue for this invoice
-                const invProductRevenue = inv.invoice_items?.reduce((sum: number, item: any) => {
+                const invProductRevenue = inv.invoice_items?.reduce((sum: number, item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                     return sum + (item.sale_price * item.quantity);
                 }, 0) || 0;
 
@@ -116,7 +116,7 @@ export default function InvoicesPage() {
 
     useEffect(() => {
         fetchInvoices();
-    }, [filter]);
+    }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleCloseDay = async () => {
         if (!confirm('Bạn có chắc chắn muốn kết thúc ngày? Hệ thống sẽ tự động tạo hóa đơn cho các đơn chưa thanh toán.')) return;

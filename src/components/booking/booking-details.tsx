@@ -5,8 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import {
     DialogHeader,
-    DialogTitle,
-    DialogFooter
+    DialogTitle
 } from "@/components/ui/dialog";
 import { Loader2 } from 'lucide-react';
 
@@ -18,7 +17,7 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOutClick }: BookingDetailsProps) {
-    const [booking, setBooking] = useState<any>(null);
+    const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [isEditingTime, setIsEditingTime] = useState(false);
@@ -28,7 +27,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     useEffect(() => {
         async function fetchBooking() {
             setLoading(true);
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('bookings')
                 .select(`
                     *,

@@ -1,6 +1,5 @@
 
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { startOfDay, endOfDay } from 'date-fns';
 
@@ -29,7 +28,6 @@ interface Booking {
 
 export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps) {
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [loading, setLoading] = useState(false);
 
     // Calculate current time position
     const [currentTimeTop, setCurrentTimeTop] = useState<number | null>(null);
@@ -59,7 +57,6 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
     useEffect(() => {
         async function fetchBookings() {
             if (courts.length === 0) return;
-            setLoading(true);
 
             const start = startOfDay(selectedDate).toISOString();
             const end = endOfDay(selectedDate).toISOString();
@@ -67,7 +64,7 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
             // Get all court IDs
             const courtIds = courts.map(c => c.id);
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('bookings')
                 .select(`
                   id,
@@ -83,7 +80,7 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
 
             if (data) {
                 // Transform data to match Booking interface
-                const formattedBookings = data.map((item: any) => ({
+                const formattedBookings = data.map((item: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
                     id: item.id,
                     start_time: item.start_time,
                     end_time: item.end_time,
@@ -93,7 +90,6 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
                 }));
                 setBookings(formattedBookings);
             }
-            setLoading(false);
         }
         fetchBookings();
     }, [selectedDate, courts]);

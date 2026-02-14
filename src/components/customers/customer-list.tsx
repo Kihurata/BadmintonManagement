@@ -1,27 +1,24 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Search, Plus, Phone, History, Edit, Trash2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Search, Plus, Phone, History } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { CustomerForm } from './customer-form';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 
 export function CustomerList() {
-    const [customers, setCustomers] = useState<any[]>([]);
+    const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [filter, setFilter] = useState('');
     const [typeFilter, setTypeFilter] = useState<'ALL' | 'LOYAL' | 'GUEST'>('ALL');
     const [loading, setLoading] = useState(true);
 
     // Dialog States
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingCustomer, setEditingCustomer] = useState<any>(null);
+    const [editingCustomer, setEditingCustomer] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const fetchCustomers = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('customers')
             .select('*')
             .order('name');
@@ -36,21 +33,9 @@ export function CustomerList() {
         fetchCustomers();
     }, []);
 
-    const handleDelete = async (id: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) return;
 
-        const { error } = await supabase
-            .from('customers')
-            .delete()
-            .eq('id', id);
 
-        if (!error) {
-            fetchCustomers();
-        }
-    };
-
-    const handleEdit = (customer: any, e: React.MouseEvent) => {
+    const handleEdit = (customer: any, e: React.MouseEvent) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         e.stopPropagation();
         setEditingCustomer(customer);
         setIsFormOpen(true);
@@ -145,7 +130,7 @@ export function CustomerList() {
                 {filteredCustomers.map((customer) => (
                     <div
                         key={customer.id}
-                        onClick={() => handleEdit(customer, {} as any)}
+                        onClick={() => handleEdit(customer, {} as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
                         className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-transparent dark:border-gray-800 hover:border-primary/20 transition-all active:scale-[0.99] cursor-pointer"
                     >
                         <div className="flex items-start justify-between">

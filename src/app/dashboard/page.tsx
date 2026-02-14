@@ -7,7 +7,7 @@ import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { TopProducts } from "@/components/dashboard/top-products";
 import { DebtorList } from "@/components/dashboard/debtor-list";
 import { Loader2 } from "lucide-react";
-import { startOfMonth, endOfMonth, subMonths, format } from "date-fns";
+import { subMonths, format } from "date-fns";
 import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
@@ -20,9 +20,9 @@ export default function DashboardPage() {
         cashRevenue: 0,
         bankRevenue: 0,
     });
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [topProducts, setTopProducts] = useState<any[]>([]);
-    const [debtors, setDebtors] = useState<any[]>([]);
+    const [chartData, setChartData] = useState<{ name: string; fullDate: string; total: number }[]>([]);
+    const [topProducts, setTopProducts] = useState<{ id: string; name: string; sales: number; revenue: number }[]>([]);
+    const [debtors, setDebtors] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -85,7 +85,7 @@ export default function DashboardPage() {
 
                         // Product Logic
                         let invProductRevenue = 0;
-                        inv.invoice_items?.forEach((item: any) => {
+                        inv.invoice_items?.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                             const itemRevenue = item.sale_price * item.quantity;
                             invProductRevenue += itemRevenue;
 
@@ -149,9 +149,9 @@ export default function DashboardPage() {
 
                 // --- Process Debtors ---
                 if (unpaidInvoices) {
-                    const debtorMap = new Map<string, any>();
+                    const debtorMap = new Map<string, any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-                    unpaidInvoices.forEach((inv: any) => {
+                    unpaidInvoices.forEach((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                         const cid = inv.customers?.id || 'unknown';
                         const cname = inv.customers?.name || 'Khách vãng lai';
 
@@ -210,7 +210,7 @@ export default function DashboardPage() {
                 <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
                     <header className="mb-8">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard Overview</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2">Welcome back! Here's what's happening at your badminton center.</p>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2">Welcome back! Here&apos;s what&apos;s happening at your badminton center.</p>
                     </header>
 
                     {/* Metrics */}

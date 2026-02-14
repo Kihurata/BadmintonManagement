@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface StatCardProps {

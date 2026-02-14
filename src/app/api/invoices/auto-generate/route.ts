@@ -2,7 +2,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateRentalFee } from '@/lib/pricing';
-import { differenceInMinutes } from 'date-fns';
 
 // Initialize Supabase Client with Service Role Key for Admin actions (skipping RLS if needed, or just standard client)
 // For now, using standard env vars. If RLS blocks, we might need SERVICE_ROLE_KEY.

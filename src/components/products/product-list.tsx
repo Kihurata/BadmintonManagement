@@ -25,7 +25,7 @@ export function ProductList() {
             .order('product_name');
 
         if (data) {
-            setProducts(data as any);
+            setProducts(data);
         }
         setLoading(false);
     };

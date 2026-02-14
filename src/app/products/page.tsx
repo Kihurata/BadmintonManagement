@@ -7,7 +7,6 @@ import { ProductList } from '@/components/products/product-list';
 import { InventoryHistory } from '@/components/inventory/inventory-history';
 import { StockAdjustmentForm } from '@/components/inventory/stock-adjustment-form';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils'; // Assuming you have this util, or clean classes
 
 export default function ProductsPage() {

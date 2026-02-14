@@ -1,0 +1,35 @@
+
+> web@0.1.0 lint
+> next lint
+
+
+./src/app/dashboard/page.tsx
+25:44  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+88:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+152:55  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:50  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/layout.tsx
+21:9  Warning: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+./src/app/page.tsx
+21:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/booking/booking-form.tsx
+34:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+40:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+45:48  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/inventory/inventory-history.tsx
+8:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+17:23  Error: 'error' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/invoices/invoice-detail-dialog.tsx
+16:10  Error: 'Invoice' is defined but never used.  @typescript-eslint/no-unused-vars
+16:32  Error: 'Product' is defined but never used.  @typescript-eslint/no-unused-vars
+27:44  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+29:46  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+77:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+78:30  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
