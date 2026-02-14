@@ -8,13 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
     DialogHeader,
     DialogTitle,
-    DialogFooter
 } from "@/components/ui/dialog";
 import { Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Product } from "@/types";
 
 interface ProductFormProps {
-    productToEdit?: any;
+    productToEdit?: Product;
     onSuccess: () => void;
     onCancel: () => void;
 }
@@ -39,7 +39,7 @@ export function ProductForm({ productToEdit, onSuccess, onCancel }: ProductFormP
         if (productToEdit) {
             setName(productToEdit.product_name);
             setBaseUnit(productToEdit.base_unit || productToEdit.unit || ''); // Handle legacy 'unit' if needed or assume migration renamed it
-            setUnitPrice(productToEdit.unit_price?.toString() || productToEdit.current_sale_price?.toString());
+            setUnitPrice(productToEdit.unit_price?.toString() || productToEdit.current_sale_price?.toString() || '');
             setStock(productToEdit.stock_quantity.toString());
 
             setIsPackable(productToEdit.is_packable || false);

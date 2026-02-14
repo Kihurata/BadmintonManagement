@@ -1,5 +1,6 @@
 
-import { set, isBefore, isAfter, differenceInMinutes, addHours } from 'date-fns';
+import { set, isBefore, isAfter, differenceInMinutes } from 'date-fns';
+import { Court } from '@/types';
 
 export interface PricingResult {
     rentalFee: number;
@@ -12,7 +13,7 @@ export interface PricingResult {
 export function calculateRentalFee(
     startTime: Date,
     endTime: Date,
-    court: any,
+    court: Court | Partial<Court>,
     customerType: 'LOYAL' | 'GUEST' = 'GUEST'
 ): PricingResult {
     const EVENING_START_HOUR = 18; // 6 PM

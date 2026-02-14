@@ -6,25 +6,26 @@ import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ProductForm } from './product-form';
+import { Product } from '@/types';
 
 export function ProductList() {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [filter, setFilter] = useState('');
     const [loading, setLoading] = useState(true);
 
     // Dialog States
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<any>(null);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
     const fetchProducts = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('products')
             .select('*')
             .order('product_name');
 
         if (data) {
-            setProducts(data);
+            setProducts(data as any);
         }
         setLoading(false);
     };
@@ -46,7 +47,7 @@ export function ProductList() {
         }
     };
 
-    const handleEdit = (product: any) => {
+    const handleEdit = (product: Product) => {
         setEditingProduct(product);
         setIsFormOpen(true);
     };
@@ -87,7 +88,7 @@ export function ProductList() {
                             <div className="text-sm text-gray-500 dark:text-gray-400 flex flex-col gap-1 mt-1">
                                 <div className="flex items-center gap-2">
                                     <span className="font-medium text-emerald-600">
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.unit_price || product.current_sale_price)}
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.unit_price || product.current_sale_price || 0)}
                                     </span>
                                     <span className="text-xs">/ {product.base_unit || product.unit}</span>
                                     <span className="w-1 h-1 rounded-full bg-gray-300"></span>
@@ -97,7 +98,7 @@ export function ProductList() {
                                     <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
                                         <span className="material-symbols-outlined text-[14px]">package_2</span>
                                         <span>
-                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.pack_price || ((product.unit_price || product.current_sale_price) * product.units_per_pack))}
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.pack_price || ((product.unit_price || product.current_sale_price || 0) * (product.units_per_pack || 1)))}
                                         </span>
                                         <span>/ {product.pack_unit} ({product.units_per_pack} {product.base_unit || product.unit})</span>
                                     </div>
@@ -126,7 +127,7 @@ export function ProductList() {
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                 <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
                     <ProductForm
-                        productToEdit={editingProduct}
+                        productToEdit={editingProduct || undefined}
                         onSuccess={() => {
                             setIsFormOpen(false);
                             fetchProducts();

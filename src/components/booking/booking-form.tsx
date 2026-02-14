@@ -29,14 +29,17 @@ import {
 interface BookingFormProps {
     onSuccess: () => void;
     onCancel: () => void;
+    selectedDate?: Date;
+    selectedCourtId?: string | null;
+    courts?: any[];
 }
 
-export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
-    const [date, setDate] = useState<Date | undefined>(new Date());
+export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts }: BookingFormProps) {
+    const [date, setDate] = useState<Date | undefined>(selectedDate || new Date());
+    const [courtId, setCourtId] = useState(selectedCourtId || '');
+    const [courts, setCourts] = useState<any[]>(propCourts || []);
     const [startTime, setStartTime] = useState('');
     const [duration, setDuration] = useState('1');
-    const [courtId, setCourtId] = useState('');
-    const [courts, setCourts] = useState<any[]>([]);
 
     // Customer Selection State
     const [customers, setCustomers] = useState<any[]>([]);

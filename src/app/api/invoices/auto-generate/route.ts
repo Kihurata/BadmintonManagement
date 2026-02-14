@@ -122,7 +122,7 @@ export async function POST(request: Request) {
             errors: errors.length > 0 ? errors : undefined
         });
 
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
