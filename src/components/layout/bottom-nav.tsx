@@ -1,12 +1,17 @@
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
+    const pathname = usePathname();
+
     const navItems = [
-        { icon: 'calendar_today', label: 'Lịch đặt', href: '/', active: true },
-        { icon: 'inventory_2', label: 'Kho hàng', href: '/products', active: false },
-        { icon: 'groups', label: 'Khách hàng', href: '/customers', active: false },
+        { icon: 'calendar_today', label: 'Lịch đặt', href: '/', active: pathname === '/' },
+        { icon: 'receipt_long', label: 'Hóa đơn', href: '/invoices', active: pathname === '/invoices' },
+        { icon: 'analytics', label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' },
+        { icon: 'inventory_2', label: 'Kho hàng', href: '/products', active: pathname === '/products' },
+        { icon: 'groups', label: 'Khách hàng', href: '/customers', active: pathname === '/customers' },
     ];
 
     return (

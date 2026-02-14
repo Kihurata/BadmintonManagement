@@ -196,33 +196,9 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
 
                     {/* Current Time Indicator (Overlay across all columns) */}
                     {currentTimeTop !== null && (
-                        <div className="absolute left-[60px] right-0 z-30 pointer-events-none" style={{ top: `${currentTimeTop + 40}px` /* +40 because header is separate now? No, header is in separate grid row inside scrolling container? Wait, sticky header is separate. */ }}>
-                            {/* Wait, sticky header makes coordinate calculation tricky if it pushes content down. 
-                                 Actually the grid starts AFTER the sticky header div? 
-                                 Let's adjust. If I put sticky header inside the scroll container, it works.
-                                 The 'top' style in getBookingStyle assumes 0 is 06:00.
-                                 If I have a header row of h-10 (40px) above, I should add 40px to top? or keep strict?
-                                 
-                                 Correction: In the previous design, there was no header inside the 'relative' container used for positioning.
-                                 Now I added a sticky header div inside the scrollable area.
-                                 
-                                 Let's verify DOM structure.
-                                 <main>
-                                   <div relative min-h> -> Context for absolute?
-                                      <div sticky header> ... </div>
-                                      <div grid> ... </div>
-                                   </div>
-                                 </main>
-                                 
-                                 If <div grid> is the context for columns, then absolute positioning inside columns is relative to that column, which is good.
-                                 Current Time Indicator should be relative to the <div grid> or the columns.
-                                 
-                                 I'll put the Current Time indicator inside the grid container or just handle it per column?
-                                 A single line across is better.
-                                 I will place it absolute to the `div.grid`.
-                             */}
-                            <div className="absolute left-0 right-0 flex items-center" style={{ top: `${currentTimeTop}px` }}>
-                                <div className="absolute -left-[64px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        <div className="absolute left-[60px] right-0 z-30 pointer-events-none" style={{ top: `${currentTimeTop + 40}px` }}>
+                            <div className="absolute left-0 right-0 flex items-center">
+                                <div className="absolute -left-[64px] bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-40">
                                     {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                                 <div className="w-full h-[1px] bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.5)]"></div>

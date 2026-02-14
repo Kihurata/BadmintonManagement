@@ -63,10 +63,15 @@ CREATE TABLE bookings (
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_name TEXT NOT NULL,
-    unit TEXT, -- chai, ống, cái...
-    current_sale_price DECIMAL NOT NULL,
-    stock_quantity INT DEFAULT 0,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    base_unit TEXT DEFAULT 'Cái',       -- Đơn vị nhỏ nhất (Trái, Chai, Cái)
+    pack_unit TEXT DEFAULT 'Ống',       -- Đơn vị đóng gói (Ống, Thùng, Lốc)
+    units_per_pack INT DEFAULT 1,       -- Số lượng quy đổi (Mặc định là 1)
+    
+    unit_price DECIMAL NOT NULL,        -- Giá bán lẻ 1 đơn vị cơ sở
+    pack_price DECIMAL,                 -- Giá bán theo gói (Nếu NULL thì tự động dùng unit_price * units_per_pack)
+    
+    stock_quantity INT DEFAULT 0,       -- Luôn lưu theo đơn vị cơ sở (số trái, số chai)
+    is_packable BOOLEAN DEFAULT FALSE   -- Đánh dấu sản phẩm này có bán theo gói hay không
 );
 
 -- 7. BẢNG NHẬT KÝ KHO (Nhập/Xuất/Hỏng/Nội bộ)

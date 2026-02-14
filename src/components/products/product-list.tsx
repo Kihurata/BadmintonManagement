@@ -84,12 +84,24 @@ export function ProductList() {
                     <div key={product.id} className="bg-white dark:bg-[#0d1b17] p-3 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm flex items-center justify-between">
                         <div>
                             <h3 className="font-bold text-midnight dark:text-white">{product.product_name}</h3>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                                <span>{product.stock_quantity} {product.unit}</span>
-                                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                                <span className="font-medium text-emerald-600">
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.current_sale_price)}
-                                </span>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex flex-col gap-1 mt-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-medium text-emerald-600">
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.unit_price || product.current_sale_price)}
+                                    </span>
+                                    <span className="text-xs">/ {product.base_unit || product.unit}</span>
+                                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span className="text-xs">Kho: <b>{product.stock_quantity}</b></span>
+                                </div>
+                                {product.is_packable && (
+                                    <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                                        <span className="material-symbols-outlined text-[14px]">package_2</span>
+                                        <span>
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.pack_price || ((product.unit_price || product.current_sale_price) * product.units_per_pack))}
+                                        </span>
+                                        <span>/ {product.pack_unit} ({product.units_per_pack} {product.base_unit || product.unit})</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-1">

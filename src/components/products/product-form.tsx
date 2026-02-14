@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     DialogHeader,
     DialogTitle,
@@ -19,19 +20,32 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ productToEdit, onSuccess, onCancel }: ProductFormProps) {
+    // Base Unit
     const [name, setName] = useState('');
-    const [unit, setUnit] = useState('');
-    const [price, setPrice] = useState('');
-    const [stock, setStock] = useState('');
+    const [baseUnit, setBaseUnit] = useState('');
+    const [unitPrice, setUnitPrice] = useState('');
+    const [stock, setStock] = useState(''); // Always in base unit
+
+    // Pack Unit
+    const [isPackable, setIsPackable] = useState(false);
+    const [packUnit, setPackUnit] = useState('');
+    const [unitsPerPack, setUnitsPerPack] = useState('1');
+    const [packPrice, setPackPrice] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (productToEdit) {
             setName(productToEdit.product_name);
-            setUnit(productToEdit.unit || '');
-            setPrice(productToEdit.current_sale_price.toString());
+            setBaseUnit(productToEdit.base_unit || productToEdit.unit || ''); // Handle legacy 'unit' if needed or assume migration renamed it
+            setUnitPrice(productToEdit.unit_price?.toString() || productToEdit.current_sale_price?.toString());
             setStock(productToEdit.stock_quantity.toString());
+
+            setIsPackable(productToEdit.is_packable || false);
+            setPackUnit(productToEdit.pack_unit || '');
+            setUnitsPerPack(productToEdit.units_per_pack?.toString() || '1');
+            setPackPrice(productToEdit.pack_price?.toString() || '');
         }
     }, [productToEdit]);
 
@@ -40,11 +54,30 @@ export function ProductForm({ productToEdit, onSuccess, onCancel }: ProductFormP
         setLoading(true);
         setError(null);
 
+        // Basic Validation
+        if (!name || !baseUnit || !unitPrice) {
+            setError('Vui lòng điền tên, đơn vị cơ bản và giá bán lẻ');
+            setLoading(false);
+            return;
+        }
+
+        if (isPackable) {
+            if (!packUnit || !unitsPerPack) {
+                setError('Vui lòng điền thông tin đóng gói (Đơn vị gói, Quy cách)');
+                setLoading(false);
+                return;
+            }
+        }
+
         const productData = {
             product_name: name,
-            unit: unit,
-            current_sale_price: parseFloat(price),
+            base_unit: baseUnit,
+            unit_price: parseFloat(unitPrice),
             stock_quantity: parseInt(stock) || 0,
+            is_packable: isPackable,
+            pack_unit: isPackable ? packUnit : null,
+            units_per_pack: isPackable ? parseInt(unitsPerPack) : 1,
+            pack_price: (isPackable && packPrice) ? parseFloat(packPrice) : null // Can be null if auto-calc wanted, but simpler to force or default? database can handle null.
         };
 
         let error;
@@ -86,59 +119,119 @@ export function ProductForm({ productToEdit, onSuccess, onCancel }: ProductFormP
                     </div>
                 )}
 
-                <div className="space-y-2">
-                    <Label htmlFor="name">Tên sản phẩm</Label>
-                    <Input
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Ví dụ: Nước suối, Cầu lông"
-                        required
-                    />
+                <div className="space-y-4">
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-gray-100 border-b pb-2">Thông tin cơ bản</h3>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Tên sản phẩm</Label>
+                        <Input
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Ví dụ: Nước suối, Cầu lông"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="baseUnit">Đơn vị cơ bản</Label>
+                            <Select value={baseUnit} onValueChange={setBaseUnit}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Chai">Chai</SelectItem>
+                                    <SelectItem value="Lon">Lon</SelectItem>
+                                    <SelectItem value="Trái">Trái (Cầu)</SelectItem>
+                                    <SelectItem value="Cái">Cái</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="unitPrice">Giá lẻ (VNĐ)</Label>
+                            <Input
+                                id="unitPrice"
+                                type="number"
+                                value={unitPrice}
+                                onChange={(e) => setUnitPrice(e.target.value)}
+                                placeholder="0"
+                                min="0"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="stock">Tồn kho (Theo đơn vị cơ bản)</Label>
+                        <Input
+                            id="stock"
+                            type="number"
+                            value={stock}
+                            onChange={(e) => setStock(e.target.value)}
+                            placeholder="0"
+                            min="0"
+                            required
+                        />
+                        <p className="text-[11px] text-gray-500">Ví dụ: Nhập 120 trái (Không nhập số ống)</p>
+                    </div>
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="unit">Đơn vị tính (DVT)</Label>
-                    <Select value={unit} onValueChange={setUnit}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Chọn đơn vị" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Chai">Chai</SelectItem>
-                            <SelectItem value="Lon">Lon</SelectItem>
-                            <SelectItem value="Chiếc">Chiếc</SelectItem>
-                            <SelectItem value="Hộp">Hộp</SelectItem>
-                            <SelectItem value="Ống">Ống</SelectItem>
-                            <SelectItem value="Gói">Gói</SelectItem>
-                        </SelectContent>
-                    </Select>
+                <div className="space-y-4 pt-2">
+                    <div className="flex items-center space-x-2 border-b pb-2">
+                        <Checkbox
+                            id="isPackable"
+                            checked={isPackable}
+                            onCheckedChange={(checked) => setIsPackable(checked as boolean)}
+                        />
+                        <Label htmlFor="isPackable" className="font-bold text-sm cursor-pointer">Bán theo gói (Ống, Hộp, Lốc...)</Label>
+                    </div>
+
+                    {isPackable && (
+                        <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-white/5 p-3 rounded-lg border border-gray-100 dark:border-white/10">
+                            <div className="space-y-2">
+                                <Label htmlFor="packUnit">Đơn vị gói</Label>
+                                <Select value={packUnit} onValueChange={setPackUnit}>
+                                    <SelectTrigger h-9>
+                                        <SelectValue placeholder="Chọn..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Ống">Ống</SelectItem>
+                                        <SelectItem value="Hộp">Hộp</SelectItem>
+                                        <SelectItem value="Lốc">Lốc</SelectItem>
+                                        <SelectItem value="Thùng">Thùng</SelectItem>
+                                        <SelectItem value="Gói">Gói</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="unitsPerPack">Quy cách (SL/Gói)</Label>
+                                <Input
+                                    id="unitsPerPack"
+                                    type="number"
+                                    value={unitsPerPack}
+                                    onChange={(e) => setUnitsPerPack(e.target.value)}
+                                    placeholder="12"
+                                    min="1"
+                                    className="h-9"
+                                />
+                            </div>
+                            <div className="space-y-2 col-span-2">
+                                <Label htmlFor="packPrice">Giá bán theo gói (VNĐ)</Label>
+                                <Input
+                                    id="packPrice"
+                                    type="number"
+                                    value={packPrice}
+                                    onChange={(e) => setPackPrice(e.target.value)}
+                                    placeholder="Để trống = Giá lẻ * SL"
+                                    min="0"
+                                    className="h-9"
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="price">Giá bán (VNĐ)</Label>
-                    <Input
-                        id="price"
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="0"
-                        min="0"
-                        required
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="stock">Tồn kho ban đầu</Label>
-                    <Input
-                        id="stock"
-                        type="number"
-                        value={stock}
-                        onChange={(e) => setStock(e.target.value)}
-                        placeholder="0"
-                        min="0"
-                        required
-                    />
-                </div>
             </form>
 
             <div className="p-4 border-t border-gray-100 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 flex gap-3">

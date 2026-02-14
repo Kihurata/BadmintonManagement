@@ -9,7 +9,7 @@ interface DateSelectorProps {
 }
 
 export function DateSelector({ selectedDate, onSelectDate }: DateSelectorProps) {
-    const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i));
+    const dates = Array.from({ length: 17 }, (_, i) => addDays(new Date(), i - 11));
     const scrollRef = useRef<HTMLDivElement>(null);
 
     return (

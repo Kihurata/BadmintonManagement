@@ -80,7 +80,8 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
         start.setHours(hours, minutes, 0, 0);
 
         const end = new Date(start);
-        end.setHours(start.getHours() + parseFloat(duration), start.getMinutes()); // duration can be decimal if needed, currently string '1', '1.5'
+        // Fix: setHours truncates decimals, so 1.5 becomes 1. We need to add milliseconds.
+        end.setTime(start.getTime() + parseFloat(duration) * 60 * 60 * 1000);
 
         // Check conflicts (Simple check)
         const { data: conflicts } = await supabase

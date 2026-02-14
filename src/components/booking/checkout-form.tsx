@@ -1,18 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { format, differenceInMinutes, parseISO } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { Loader2, Plus, Trash2, Minus } from 'lucide-react';
-import { cn, formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
-import { calculateRentalFee, PricingResult } from '@/lib/pricing';
-
-// Helper to format time
-const formatTime = (isoString?: string) => {
-    if (!isoString) return '--:--';
-    return new Date(isoString).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-}
+import { calculateRentalFee } from '@/lib/pricing';
 
 interface CheckoutFormProps {
     bookingId: string;
@@ -21,23 +15,26 @@ interface CheckoutFormProps {
 }
 
 interface OrderItem {
-    id: string; // product id
+    id: string; // This will be composite "id-UNIT" or just random unique for cart
+    productId: string;
     name: string;
-    unit: string;
+    unit: string; // The unit being sold (e.g. "Ống" or "Trái")
     price: number;
     quantity: number;
+    deductQuantity: number; // Conversion to Base Unit for inventory (e.g. 1 Pack = 12 Base)
+    isPack: boolean;
 }
 
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState<any>(null);
-    const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'TRANSFER'>('CASH');
+    const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [checkoutTime, setCheckoutTime] = useState(new Date());
 
     // POS State
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]); // Helper array for display
     const [selectedItems, setSelectedItems] = useState<OrderItem[]>([]);
-    const [currentProductId, setCurrentProductId] = useState('');
+    const [currentProductKey, setCurrentProductKey] = useState(''); // Key: "productId-isPack"
 
     useEffect(() => {
         async function fetchData() {
@@ -66,7 +63,35 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                 setCheckoutTime(new Date());
             }
             if (productsData) {
-                setProducts(productsData);
+                // Process products into selectable options
+                const processedProducts: any[] = [];
+                productsData.forEach((p: any) => {
+                    // Option 1: Base Unit
+                    processedProducts.push({
+                        key: `${p.id}-base`,
+                        productId: p.id,
+                        name: p.product_name,
+                        unit: p.base_unit,
+                        price: p.unit_price,
+                        isPack: false,
+                        deduct: 1
+                    });
+
+                    // Option 2: Pack Unit (if available)
+                    if (p.is_packable && p.pack_unit) {
+                        const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
+                        processedProducts.push({
+                            key: `${p.id}-pack`,
+                            productId: p.id,
+                            name: `${p.product_name} (${p.pack_unit})`,
+                            unit: p.pack_unit,
+                            price: packPrice,
+                            isPack: true,
+                            deduct: p.units_per_pack
+                        });
+                    }
+                });
+                setProducts(processedProducts);
             }
             setLoading(false);
         }
@@ -74,25 +99,28 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     }, [bookingId]);
 
     const handleAddItem = () => {
-        if (!currentProductId) return;
-        const product = products.find(p => p.id === currentProductId);
-        if (!product) return;
+        if (!currentProductKey) return;
+        const productOption = products.find(p => p.key === currentProductKey);
+        if (!productOption) return;
 
-        const existing = selectedItems.find(i => i.id === product.id);
+        const existing = selectedItems.find(i => i.id === productOption.key);
         if (existing) {
             setSelectedItems(selectedItems.map(i =>
-                i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+                i.id === productOption.key ? { ...i, quantity: i.quantity + 1 } : i
             ));
         } else {
             setSelectedItems([...selectedItems, {
-                id: product.id,
-                name: product.product_name,
-                unit: product.unit,
-                price: product.current_sale_price,
-                quantity: 1
+                id: productOption.key,
+                productId: productOption.productId,
+                name: productOption.name,
+                unit: productOption.unit,
+                price: productOption.price,
+                quantity: 1,
+                deductQuantity: productOption.deduct,
+                isPack: productOption.isPack
             }]);
         }
-        setCurrentProductId('');
+        setCurrentProductKey('');
     };
 
     const updateQuantity = (id: string, delta: number) => {
@@ -129,10 +157,11 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     );
     const rentalFee = pricingResult.rentalFee;
 
-    // 2. Overtime Fee (Dynamic Pricing for Overtime period)
+    // 2. Overtime Fee
     let overtimeFee = 0;
     let overtimeMins = 0;
 
+    /* Temporarily disabled overtime calculation
     if (actualEndTime > scheduledEndTime) {
         overtimeMins = differenceInMinutes(actualEndTime, scheduledEndTime);
         if (overtimeMins > 0) {
@@ -145,6 +174,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
             overtimeFee = overtimePricing.rentalFee;
         }
     }
+    */
 
     // 3. Deposit
     const deposit = booking.deposit_amount || 0;
@@ -190,23 +220,36 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
             // 3. Create Invoice Items & Update Inventory
             for (const item of selectedItems) {
-                await supabase.from('invoice_items').insert([{
+                // Invoice Item Record
+                const { error: itemError } = await supabase.from('invoice_items').insert([{
                     invoice_id: invoice.id,
-                    product_id: item.id,
+                    product_id: item.productId,
                     quantity: item.quantity,
                     sale_price: item.price
                 }]);
 
+                if (itemError) {
+                    console.error('Error inserting invoice item:', itemError);
+                    alert('Lỗi lưu chi tiết hóa đơn: ' + itemError.message);
+                    // Decide whether to continue or break. For now, we continue but warn.
+                }
+
+                // Inventory Log
+                const totalDeduct = item.quantity * item.deductQuantity;
+
                 await supabase.from('inventory_logs').insert([{
-                    product_id: item.id,
+                    product_id: item.productId,
                     type: 'SALE',
-                    quantity: -item.quantity,
+                    quantity: -totalDeduct, // Deduct in BASE UNITS
                     reason: `Bán kèm Booking #${booking.id.slice(0, 4)}`
                 }]);
 
-                const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.id).single();
+                // Update Product Stock
+                const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.productId).single();
                 if (prod) {
-                    await supabase.from('products').update({ stock_quantity: prod.stock_quantity - item.quantity }).eq('id', item.id);
+                    await supabase.from('products')
+                        .update({ stock_quantity: prod.stock_quantity - totalDeduct })
+                        .eq('id', item.productId);
                 }
             }
 
@@ -221,13 +264,13 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     };
 
     return (
-        <div className="flex flex-col h-full bg-background-light dark:bg-background-dark font-sans w-full max-w-md mx-auto">
+        <div className="flex flex-col h-full bg-background-light dark:bg-background-dark font-sans w-full max-w-md mx-auto relative">
             {/* Header */}
             <div className="flex items-center px-4 pt-8 pb-4 bg-white dark:bg-background-dark border-b border-gray-100 dark:border-gray-800 sticky top-0 z-20">
-                <button onClick={onCancel} className="text-secondary dark:text-gray-200 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <button onClick={onCancel} className="text-black dark:text-gray-200 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <span className="material-symbols-outlined text-2xl font-bold">arrow_back</span>
                 </button>
-                <h2 className="text-secondary dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
+                <h2 className="text-black dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
                     Thanh toán
                 </h2>
             </div>
@@ -250,18 +293,18 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
                 {/* POS - Add Products */}
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800">
-                    <h4 className="text-secondary dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-3">Dịch vụ đi kèm</h4>
+                    <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-3">Dịch vụ đi kèm</h4>
 
                     <div className="flex gap-2 mb-4">
                         <div className="flex-1">
-                            <Select value={currentProductId} onValueChange={setCurrentProductId}>
+                            <Select value={currentProductKey} onValueChange={setCurrentProductKey}>
                                 <SelectTrigger className="h-10">
                                     <SelectValue placeholder="Chọn món..." />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {products.map(p => (
-                                        <SelectItem key={p.id} value={p.id}>
-                                            {p.product_name} ({formatCurrency(p.current_sale_price)})
+                                        <SelectItem key={p.key} value={p.key}>
+                                            {p.name} ({formatCurrency(p.price)}/{p.unit})
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -294,11 +337,11 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
                 {/* Invoice Summary */}
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
-                    <h4 className="text-secondary dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-2">Chi tiết thanh toán</h4>
+                    <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-2">Chi tiết thanh toán</h4>
 
                     <div className="flex justify-between items-start text-sm">
                         <div className="flex flex-col">
-                            <span className="text-secondary dark:text-gray-200">Tiền sân</span>
+                            <span className="text-black dark:text-gray-200">Tiền sân</span>
                             {(pricingResult.morningHours > 0 || pricingResult.eveningHours > 0) && (
                                 <span className="text-[10px] text-gray-400">
                                     {pricingResult.morningHours > 0 && `${pricingResult.morningHours.toFixed(1)}h sáng `}
@@ -310,10 +353,17 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                     </div>
 
                     {overtimeMins > 0 && (
-                        <div className="flex justify-between items-center text-sm text-red-500">
-                            <span className="font-medium flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ ({overtimeMins}p)
-                            </span>
+                        <div className="flex justify-between items-start text-sm text-red-500">
+                            <div className="flex flex-col">
+                                <span className="font-medium flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ ({overtimeMins}p)
+                                </span>
+                                {(overtimeFee > 0) && (
+                                    <span className="text-[10px] text-red-400 pl-4">
+                                        Phí tính theo giờ thực tế
+                                    </span>
+                                )}
+                            </div>
                             <span className="font-bold">{formatCurrency(overtimeFee)}</span>
                         </div>
                     )}
@@ -341,7 +391,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
                 {/* Payment Method */}
                 <div className="pt-2">
-                    <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Phương thức thanh toán</p>
+                    <p className="text-black text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Phương thức thanh toán</p>
                     <div className="flex bg-gray-200/50 dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700">
                         <label className="flex-1 cursor-pointer">
                             <input
@@ -361,9 +411,9 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                             <input
                                 type="radio"
                                 name="payment_method"
-                                value="TRANSFER"
-                                checked={paymentMethod === 'TRANSFER'}
-                                onChange={() => setPaymentMethod('TRANSFER')}
+                                value="BANK_TRANSFER"
+                                checked={paymentMethod === 'BANK_TRANSFER'}
+                                onChange={() => setPaymentMethod('BANK_TRANSFER')}
                                 className="peer sr-only"
                             />
                             <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-primary peer-checked:shadow-sm">
@@ -376,19 +426,17 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
             </div>
 
             {/* Sticky Bottom Button */}
-            <div className="absolute bottom-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 pb-10 z-30">
-                <button
+            <div className="absolute bottom-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 pb-4 z-30">
+                <Button
                     onClick={handleConfirmPayment}
                     disabled={loading}
-                    className="w-full bg-primary hover:bg-[#0ca048] active:bg-[#0a8a3e] text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] disabled:opacity-70"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-emerald-600/20"
                 >
-                    {loading ? <Loader2 className="animate-spin" /> : (
-                        <>
-                            <span>Thanh toán</span>
-                            <span className="material-symbols-outlined font-bold">check_circle</span>
-                        </>
+                    {loading ? <Loader2 className="animate-spin mr-2" /> : (
+                        <span className="material-symbols-outlined mr-2">check_circle</span>
                     )}
-                </button>
+                    Thanh toán
+                </Button>
             </div>
         </div>
     );

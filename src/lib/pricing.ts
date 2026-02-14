@@ -15,7 +15,7 @@ export function calculateRentalFee(
     court: any,
     customerType: 'LOYAL' | 'GUEST' = 'GUEST'
 ): PricingResult {
-    const EVENING_START_HOUR = 17; // 5 PM
+    const EVENING_START_HOUR = 18; // 6 PM
 
     // Define pivot time (17:00 on the same day as startTime)
     // NOTE: Assumes booking within a single day for now.

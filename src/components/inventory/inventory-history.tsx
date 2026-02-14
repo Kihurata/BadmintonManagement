@@ -18,7 +18,7 @@ export function InventoryHistory() {
             .from('inventory_logs')
             .select(`
                 *,
-                products ( product_name, unit )
+                products ( product_name, base_unit )
             `)
             .order('created_at', { ascending: false })
             .limit(50); // Limit to last 50 logs for now
@@ -66,7 +66,7 @@ export function InventoryHistory() {
                                 {log.products?.product_name}
                             </h4>
                             <span className={`text-sm font-bold ${log.quantity > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                {log.quantity > 0 ? '+' : ''}{log.quantity} {log.products?.unit}
+                                {log.quantity > 0 ? '+' : ''}{log.quantity} {log.products?.base_unit}
                             </span>
                         </div>
                         <div className="flex justify-between items-end mt-1">
