@@ -163,35 +163,37 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                     .update({ quantity: existingItem.quantity + 1 })
                     .eq('id', existingItem.id);
                 itemError = error;
+
+                // Manual sync for UPDATE is still needed as trigger is INSERT only
+                // Inv Log
+                await supabase.from('inventory_logs').insert([{
+                    product_id: productOption.productId,
+                    type: 'SALE',
+                    quantity: -productOption.deduct,
+                    reason: `Cập nhật HĐ #${invoice.id.slice(0, 6)}`
+                }]);
+
+                // Update Stock
+                const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', productOption.productId).single();
+                if (prod) {
+                    await supabase.from('products')
+                        .update({ stock_quantity: prod.stock_quantity - productOption.deduct })
+                        .eq('id', productOption.productId);
+                }
             } else {
-                // Insert new
+                // Insert new - Sync handled by DB Trigger
                 const { error } = await supabase.from('invoice_items')
                     .insert([{
                         invoice_id: invoice.id,
                         product_id: productOption.productId,
                         quantity: 1,
-                        sale_price: productOption.price
+                        sale_price: productOption.price,
+                        is_pack_sold: productOption.isPack
                     }]);
                 itemError = error;
             }
 
             if (itemError) throw itemError;
-
-            // Inv Log
-            await supabase.from('inventory_logs').insert([{
-                product_id: productOption.productId,
-                type: 'SALE',
-                quantity: -productOption.deduct,
-                reason: `Thêm vào HĐ #${invoice.id.slice(0, 6)}`
-            }]);
-
-            // Update Stock
-            const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', productOption.productId).single();
-            if (prod) {
-                await supabase.from('products')
-                    .update({ stock_quantity: prod.stock_quantity - productOption.deduct })
-                    .eq('id', productOption.productId);
-            }
 
             // Update Total
             const newTotal = invoice.total_amount + productOption.price;

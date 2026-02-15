@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
@@ -7,7 +6,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, Minus } from 'lucide-react';
 
 interface BookingDetailsProps {
     bookingId: string;
@@ -17,6 +16,7 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOutClick }: BookingDetailsProps) {
+    // Original State
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -24,26 +24,95 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const [editStartTime, setEditStartTime] = useState('');
     const [editEndTime, setEditEndTime] = useState('');
 
+    // POS / Invoice State
+    const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    // Fetch Booking & Invoice & Products
     useEffect(() => {
-        async function fetchBooking() {
+        async function fetchData() {
             setLoading(true);
-            const { data } = await supabase
+
+            // 1. Fetch Booking
+            const { data: bookingData } = await supabase
                 .from('bookings')
-                .select(`
-                    *,
-                    customers ( name, phone, type ),
-                    courts ( court_name )
-                `)
+                .select(`*, customers ( name, phone, type ), courts ( court_name )`)
                 .eq('id', bookingId)
                 .single();
 
-            if (data) {
-                setBooking(data);
+            if (bookingData) {
+                setBooking(bookingData);
+
+                // 2. Fetch Invoice (if exists)
+                const { data: inv } = await supabase
+                    .from('invoices')
+                    .select('*')
+                    .eq('booking_id', bookingId)
+                    .maybeSingle(); // Use maybeSingle to avoid error if not found
+
+                if (inv) {
+                    setInvoice(inv);
+                    // 3. Fetch Invoice Items
+                    const { data: items } = await supabase
+                        .from('invoice_items')
+                        .select('*, products (product_name, base_unit, pack_unit)')
+                        .eq('invoice_id', inv.id);
+                    setInvoiceItems(items || []);
+                }
             }
+
+            // 4. Fetch Products (for POS)
+            const { data: prodData } = await supabase
+                .from('products')
+                .select('*')
+                .gt('stock_quantity', 0)
+                .order('product_name');
+
+            if (prodData) {
+                const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+                prodData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+                    // Base Unit
+                    processedProducts.push({
+                        key: `${p.id}-base`,
+                        productId: p.id,
+                        name: p.product_name,
+                        unit: p.base_unit,
+                        price: p.unit_price,
+                        isPack: false,
+                        deduct: 1
+                    });
+                    // Pack Unit
+                    if (p.is_packable && p.pack_unit) {
+                        const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
+                        processedProducts.push({
+                            key: `${p.id}-pack`,
+                            productId: p.id,
+                            name: `${p.product_name} (${p.pack_unit})`,
+                            unit: p.pack_unit,
+                            price: packPrice,
+                            isPack: true,
+                            deduct: p.units_per_pack
+                        });
+                    }
+                });
+                setProducts(processedProducts);
+            }
+
             setLoading(false);
         }
-        fetchBooking();
+        fetchData();
     }, [bookingId]);
+
+    const refreshInvoice = async () => {
+        if (!bookingId) return;
+        const { data: inv } = await supabase.from('invoices').select('*').eq('booking_id', bookingId).maybeSingle();
+        if (inv) {
+            setInvoice(inv);
+            const { data: items } = await supabase.from('invoice_items').select('*, products (product_name)').eq('invoice_id', inv.id);
+            setInvoiceItems(items || []);
+        }
+    };
 
     const handleUpdateBookingTime = async () => {
         if (!editStartTime || !editEndTime) return;
@@ -77,15 +146,36 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
     const handleCheckIn = async () => {
         setActionLoading(true);
-        const { error } = await supabase
+
+        // 1. Update Booking Status
+        const { error: bookingError } = await supabase
             .from('bookings')
             .update({ status: 'CHECKED_IN' })
             .eq('id', bookingId);
 
-        setActionLoading(false);
-        if (!error) {
-            onCheckInSuccess();
+        if (bookingError) {
+            alert('Lỗi Check-in: ' + bookingError.message);
+            setActionLoading(false);
+            return;
         }
+
+        // 2. Create Invoice (if not exists)
+        if (!invoice) {
+            const { error: invError } = await supabase
+                .from('invoices')
+                .insert([{
+                    booking_id: bookingId,
+                    customer_id: booking.customer_id,
+                    total_amount: 0,
+                    is_paid: false
+                }]);
+
+            if (invError) console.error('Error creating invoice:', invError);
+            else await refreshInvoice();
+        }
+
+        setActionLoading(false);
+        onCheckInSuccess();
     };
 
     const handleCancelBooking = async () => {
@@ -99,10 +189,126 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
         setActionLoading(false);
         if (!error) {
-            onCheckInSuccess(); // Refresh list
+            onCheckInSuccess();
             onClose();
         }
     };
+
+    // --- POS Handlers ---
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleAddItem = async (product: any) => {
+        if (!invoice) return;
+
+        // Optimistic
+        const tempId = 'temp-' + Date.now();
+        const optimisticItem = { id: tempId, product_id: product.productId, quantity: 1, sale_price: product.price, products: { product_name: product.name } };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setInvoiceItems((prev: any[]) => [...prev, optimisticItem]);
+
+        try {
+            // Check existing
+            const existing = invoiceItems.find(i => i.product_id === product.productId && Math.abs(i.sale_price - product.price) < 1);
+
+            if (existing) {
+                // Update
+                await handleUpdateQuantity(existing, 1, product);
+                // Remove optimistic duplicate since we delegated to update
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== tempId));
+            } else {
+                // Insert
+                const { error } = await supabase.from('invoice_items').insert([{
+                    invoice_id: invoice.id,
+                    product_id: product.productId,
+                    quantity: 1,
+                    sale_price: product.price,
+                    is_pack_sold: product.isPack
+                }]);
+                if (error) throw error;
+                await refreshInvoice();
+            }
+        } catch (err) {
+            console.error(err);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== tempId));
+        }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleUpdateQuantity = async (item: any, delta: number, product: any) => {
+        const newQty = item.quantity + delta;
+        if (newQty <= 0) {
+            if (confirm('Xóa món này khỏi hóa đơn?')) {
+                await handleRemoveItem(item, product);
+            }
+            return;
+        }
+
+        // Optimistic
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setInvoiceItems((prev: any[]) => prev.map(i => i.id === item.id ? { ...i, quantity: newQty } : i));
+
+        try {
+            const { error } = await supabase.from('invoice_items')
+                .update({ quantity: newQty })
+                .eq('id', item.id);
+
+            if (error) throw error;
+
+            // Manual Sync for UPDATE (Trigger only handles INSERT?) 
+            // WAIT - The trigger `fn_auto_sync_inventory_v2` handles BOTH INSERT and UPDATE.
+            // So we DO NOT need manual sync here anymore, unlike InvoiceDetailDialog where I was keeping it for safety/legacy.
+            // Let's trust the Trigger `fn_auto_sync_inventory_v2`.
+
+            // However, we DO need to refresh to get updated totals if `fn_update_invoice_total` runs.
+            await refreshInvoice();
+
+        } catch (err) {
+            console.error(err);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setInvoiceItems((prev: any[]) => prev.map(i => i.id === item.id ? { ...i, quantity: item.quantity } : i));
+        }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleRemoveItem = async (item: any, product: any) => {
+        // Optimistic
+        const oldItems = [...invoiceItems];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== item.id));
+
+        try {
+            // Delete
+            const { error } = await supabase.from('invoice_items').delete().eq('id', item.id);
+            if (error) throw error;
+
+            // Restore Inventory for DELETE
+            const isPack = product?.isPack || item.is_pack_sold;
+            const deduct = isPack ? (product?.deduct || 1) : 1;
+            const restoreQty = item.quantity * deduct;
+
+            await supabase.from('inventory_logs').insert([{
+                product_id: item.product_id,
+                type: 'RETURN',
+                quantity: restoreQty,
+                reason: `Xóa khỏi HĐ #${invoice.id.slice(0, 6)}`
+            }]);
+
+            const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.product_id).single();
+            if (prod) {
+                await supabase.from('products')
+                    .update({ stock_quantity: prod.stock_quantity + restoreQty })
+                    .eq('id', item.product_id);
+            }
+
+            await refreshInvoice();
+
+        } catch (err) {
+            console.error(err);
+            setInvoiceItems(oldItems);
+        }
+    };
+
 
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
@@ -213,6 +419,77 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                                         'ĐÃ HỦY'}
                     </div>
                 </div>
+
+                {/* POS / Service Ordering */}
+                {booking.status === 'CHECKED_IN' && (
+                    <div className="space-y-4 pt-2">
+                        <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-2">
+                            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Dịch vụ / Menu</h4>
+                            {invoice && (
+                                <span className="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
+                                    Hóa đơn: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(invoice.total_amount)}
+                                </span>
+                            )}
+                        </div>
+
+                        {!invoice ? (
+                            <div className="text-center py-4 text-gray-500">
+                                Đang tạo hóa đơn...
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {products.map(product => {
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    const existingItem = invoiceItems.find((i: any) =>
+                                        i.product_id === product.productId &&
+                                        Math.abs(i.sale_price - product.price) < 1
+                                    );
+                                    const quantity = existingItem ? existingItem.quantity : 0;
+
+                                    return (
+                                        <div key={product.key} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-3 rounded-xl flex justify-between items-center shadow-sm">
+                                            <div>
+                                                <div className="font-bold text-midnight dark:text-gray-100">{product.name}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)} / {product.unit}
+                                                </div>
+                                            </div>
+
+                                            {quantity === 0 ? (
+                                                <Button
+                                                    size="sm"
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-emerald-200 dark:shadow-none"
+                                                    onClick={() => handleAddItem(product)}
+                                                    disabled={actionLoading}
+                                                >
+                                                    <Plus className="size-4 mr-1" /> Thêm
+                                                </Button>
+                                            ) : (
+                                                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                                                    <button
+                                                        onClick={() => handleUpdateQuantity(existingItem, -1, product)}
+                                                        className="size-8 flex items-center justify-center bg-white dark:bg-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                                                        disabled={actionLoading}
+                                                    >
+                                                        <Minus className="size-4" />
+                                                    </button>
+                                                    <span className="w-8 text-center font-bold text-lg text-midnight dark:text-white">{quantity}</span>
+                                                    <button
+                                                        onClick={() => handleUpdateQuantity(existingItem, 1, product)}
+                                                        className="size-8 flex items-center justify-center bg-emerald-600 rounded-md shadow-sm text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                                                        disabled={actionLoading}
+                                                    >
+                                                        <Plus className="size-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Notes */}
                 {booking.note && (

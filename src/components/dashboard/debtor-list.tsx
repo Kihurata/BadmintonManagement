@@ -86,19 +86,22 @@ export function DebtorList({ debtors }: DebtorListProps) {
                     </DialogHeader>
 
                     <div className="mt-4 space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-                        {selectedDebtor?.invoices.map((inv) => (
-                            <div key={inv.id} className="p-3 border rounded-lg border-gray-100 dark:border-gray-800 flex justify-between items-center group hover:border-emerald-200 transition-colors">
-                                <div>
-                                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        {format(new Date(inv.created_at), 'dd/MM/yyyy HH:mm')}
-                                    </p>
-                                    {inv.summary && <p className="text-xs text-gray-500">{inv.summary}</p>}
+                        {selectedDebtor?.invoices
+                            .slice()
+                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                            .map((inv) => (
+                                <div key={inv.id} className="p-3 border rounded-lg border-gray-100 dark:border-gray-800 flex justify-between items-center group hover:border-emerald-200 transition-colors">
+                                    <div>
+                                        <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                                            {format(new Date(inv.created_at), 'dd/MM/yyyy HH:mm')}
+                                        </p>
+                                        {inv.summary && <p className="text-xs text-gray-500">{inv.summary}</p>}
+                                    </div>
+                                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                                        {formatCurrency(inv.total_amount)}
+                                    </div>
                                 </div>
-                                <div className="text-sm font-bold text-gray-900 dark:text-white">
-                                    {formatCurrency(inv.total_amount)}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </DialogContent>
             </Dialog>

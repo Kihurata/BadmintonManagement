@@ -1,9 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Loader2, Plus, Trash2, Minus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
 import { calculateRentalFee } from '@/lib/pricing';
 
@@ -13,128 +12,50 @@ interface CheckoutFormProps {
     onCancel: () => void;
 }
 
-interface OrderItem {
-    id: string; // This will be composite "id-UNIT" or just random unique for cart
-    productId: string;
-    name: string;
-    unit: string; // The unit being sold (e.g. "Ống" or "Trái")
-    price: number;
-    quantity: number;
-    deductQuantity: number; // Conversion to Base Unit for inventory (e.g. 1 Pack = 12 Base)
-    isPack: boolean;
-}
-
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [checkoutTime, setCheckoutTime] = useState(new Date());
-
-    // POS State
-    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
-    const [selectedItems, setSelectedItems] = useState<OrderItem[]>([]);
-    const [currentProductKey, setCurrentProductKey] = useState(''); // Key: "productId-isPack"
 
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
 
-            // Fetch Booking with full Court details for pricing
+            // 1. Fetch Booking
             const { data: bookingData } = await supabase
                 .from('bookings')
-                .select(`
-                    *,
-                    customers ( display_name:name, type, id ),
-                    courts ( * ) 
-                `)
+                .select(`*, customers ( display_name:name, type, id ), courts ( * )`)
                 .eq('id', bookingId)
                 .single();
-
-            // Fetch Products
-            const { data: productsData } = await supabase
-                .from('products')
-                .select('*')
-                .gt('stock_quantity', 0) // Only show available items
-                .order('product_name');
 
             if (bookingData) {
                 setBooking(bookingData);
                 setCheckoutTime(new Date());
-            }
-            if (productsData) {
-                // Process products into selectable options
-                const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
-                productsData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-                    // Option 1: Base Unit
-                    processedProducts.push({
-                        key: `${p.id}-base`,
-                        productId: p.id,
-                        name: p.product_name,
-                        unit: p.base_unit,
-                        price: p.unit_price,
-                        isPack: false,
-                        deduct: 1
-                    });
 
-                    // Option 2: Pack Unit (if available)
-                    if (p.is_packable && p.pack_unit) {
-                        const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
-                        processedProducts.push({
-                            key: `${p.id}-pack`,
-                            productId: p.id,
-                            name: `${p.product_name} (${p.pack_unit})`,
-                            unit: p.pack_unit,
-                            price: packPrice,
-                            isPack: true,
-                            deduct: p.units_per_pack
-                        });
-                    }
-                });
-                setProducts(processedProducts);
+                // 2. Fetch Invoice
+                const { data: inv } = await supabase
+                    .from('invoices')
+                    .select('*')
+                    .eq('booking_id', bookingId)
+                    .maybeSingle();
+
+                if (inv) {
+                    setInvoice(inv);
+                    // 3. Fetch Items
+                    const { data: items } = await supabase
+                        .from('invoice_items')
+                        .select('*, products (product_name, base_unit, pack_unit)')
+                        .eq('invoice_id', inv.id);
+                    setInvoiceItems(items || []);
+                }
             }
             setLoading(false);
         }
         fetchData();
     }, [bookingId]);
-
-    const handleAddItem = () => {
-        if (!currentProductKey) return;
-        const productOption = products.find(p => p.key === currentProductKey);
-        if (!productOption) return;
-
-        const existing = selectedItems.find(i => i.id === productOption.key);
-        if (existing) {
-            setSelectedItems(selectedItems.map(i =>
-                i.id === productOption.key ? { ...i, quantity: i.quantity + 1 } : i
-            ));
-        } else {
-            setSelectedItems([...selectedItems, {
-                id: productOption.key,
-                productId: productOption.productId,
-                name: productOption.name,
-                unit: productOption.unit,
-                price: productOption.price,
-                quantity: 1,
-                deductQuantity: productOption.deduct,
-                isPack: productOption.isPack
-            }]);
-        }
-        setCurrentProductKey('');
-    };
-
-    const updateQuantity = (id: string, delta: number) => {
-        setSelectedItems(selectedItems.map(i => {
-            if (i.id === id) {
-                const newQty = i.quantity + delta;
-                return newQty > 0 ? { ...i, quantity: newQty } : i;
-            }
-            return i;
-        }));
-    };
-
-    const removeItem = (id: string) => {
-        setSelectedItems(selectedItems.filter(i => i.id !== id));
-    };
 
     if (loading) {
         return <div className="flex h-96 items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
@@ -147,7 +68,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     const scheduledEndTime = new Date(booking.end_time);
     const actualEndTime = checkoutTime;
 
-    // 1. Rental Fee (Dynamic Pricing)
+    // 1. Rental Fee
     const pricingResult = calculateRentalFee(
         startTime,
         scheduledEndTime,
@@ -156,34 +77,18 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     );
     const rentalFee = pricingResult.rentalFee;
 
-    // 2. Overtime Fee
+    // 2. Overtime Fee (Placeholder)
     const overtimeFee = 0;
     const overtimeMins = 0;
-
-    /* Temporarily disabled overtime calculation
-    if (actualEndTime > scheduledEndTime) {
-        overtimeMins = differenceInMinutes(actualEndTime, scheduledEndTime);
-        if (overtimeMins > 0) {
-            const overtimePricing = calculateRentalFee(
-                scheduledEndTime,
-                actualEndTime,
-                booking.courts,
-                booking.customers?.type || 'GUEST'
-            );
-            overtimeFee = overtimePricing.rentalFee;
-        }
-    }
-    */
 
     // 3. Deposit
     const deposit = booking.deposit_amount || 0;
 
-    // 4. Products Fee
-    const productsFee = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // 4. Products Fee (From fetched items)
+    const productsFee = invoiceItems.reduce((sum, item) => sum + (item.sale_price * item.quantity), 0);
 
     // Total
     const total = rentalFee + overtimeFee + productsFee - deposit;
-
 
     const handleConfirmPayment = async () => {
         setLoading(true);
@@ -202,61 +107,36 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
             if (bookingError) throw bookingError;
 
-            // 2. Create Invoice
-            const { data: invoice, error: invoiceError } = await supabase
-                .from('invoices')
-                .insert([{
-                    booking_id: booking.id,
-                    customer_id: booking.customer_id,
-                    total_amount: total,
-                    payment_method: paymentMethod,
-                    is_paid: true
-                }])
-                .select()
-                .single();
-
-            if (invoiceError) throw invoiceError;
-
-            // 3. Create Invoice Items & Update Inventory
-            for (const item of selectedItems) {
-                // Invoice Item Record
-                const { error: itemError } = await supabase.from('invoice_items').insert([{
-                    invoice_id: invoice.id,
-                    product_id: item.productId,
-                    quantity: item.quantity,
-                    sale_price: item.price
-                }]);
-
-                if (itemError) {
-                    console.error('Error inserting invoice item:', itemError);
-                    alert('Lỗi lưu chi tiết hóa đơn: ' + itemError.message);
-                    // Decide whether to continue or break. For now, we continue but warn.
-                }
-
-                // Inventory Log
-                const totalDeduct = item.quantity * item.deductQuantity;
-
-                await supabase.from('inventory_logs').insert([{
-                    product_id: item.productId,
-                    type: 'SALE',
-                    quantity: -totalDeduct, // Deduct in BASE UNITS
-                    reason: `Bán kèm Booking #${booking.id.slice(0, 4)}`
-                }]);
-
-                // Update Product Stock
-                const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.productId).single();
-                if (prod) {
-                    await supabase.from('products')
-                        .update({ stock_quantity: prod.stock_quantity - totalDeduct })
-                        .eq('id', item.productId);
-                }
+            // 2. Update Invoice (or Create if missing - legacy support)
+            if (invoice) {
+                const { error: invoiceError } = await supabase
+                    .from('invoices')
+                    .update({
+                        total_amount: total,
+                        payment_method: paymentMethod,
+                        is_paid: true
+                    })
+                    .eq('id', invoice.id);
+                if (invoiceError) throw invoiceError;
+            } else {
+                // Create new invoice for legacy booking
+                const { error: invoiceError } = await supabase
+                    .from('invoices')
+                    .insert([{
+                        booking_id: booking.id,
+                        customer_id: booking.customer_id,
+                        total_amount: total,
+                        payment_method: paymentMethod,
+                        is_paid: true
+                    }]);
+                if (invoiceError) throw invoiceError;
             }
 
             onSuccess();
 
-        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+        } catch (err: unknown) {
             console.error(err);
-            alert('Lỗi thanh toán: ' + err.message);
+            alert('Lỗi thanh toán: ' + (err instanceof Error ? err.message : String(err)));
         } finally {
             setLoading(false);
         }
@@ -287,50 +167,6 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                         <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Khách</div>
                         <div className="text-base font-bold text-emerald-800 dark:text-emerald-300">{booking.customers?.display_name}</div>
                         <div className="text-[10px] uppercase font-bold text-emerald-600">{booking.customers?.type === 'LOYAL' ? '(Thân thiết)' : '(Vãng lai)'}</div>
-                    </div>
-                </div>
-
-                {/* POS - Add Products */}
-                <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800">
-                    <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-3">Dịch vụ đi kèm</h4>
-
-                    <div className="flex gap-2 mb-4">
-                        <div className="flex-1">
-                            <Select value={currentProductKey} onValueChange={setCurrentProductKey}>
-                                <SelectTrigger className="h-10">
-                                    <SelectValue placeholder="Chọn món..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {products.map(p => (
-                                        <SelectItem key={p.key} value={p.key}>
-                                            {p.name} ({formatCurrency(p.price)}/{p.unit})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <Button onClick={handleAddItem} size="icon" className="bg-emerald-600 hover:bg-emerald-700 h-10 w-10">
-                            <Plus className="size-5" />
-                        </Button>
-                    </div>
-
-                    {/* Selected Items List */}
-                    <div className="space-y-2">
-                        {selectedItems.map(item => (
-                            <div key={item.id} className="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-2 rounded-lg">
-                                <div className="flex-1">
-                                    <div className="font-bold text-sm">{item.name}</div>
-                                    <div className="text-xs text-gray-500">{formatCurrency(item.price)} / {item.unit}</div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-gray-200 rounded text-gray-500"><Minus className="size-3" /></button>
-                                    <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-gray-200 rounded text-gray-500"><Plus className="size-3" /></button>
-                                    <button onClick={() => removeItem(item.id)} className="ml-2 p-1 text-red-500 hover:bg-red-50 rounded"><Trash2 className="size-4" /></button>
-                                </div>
-                            </div>
-                        ))}
-                        {selectedItems.length === 0 && <div className="text-center text-xs text-gray-400 py-2">Chưa chọn món nào</div>}
                     </div>
                 </div>
 
@@ -367,15 +203,29 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                         </div>
                     )}
 
-                    {productsFee > 0 && (
-                        <div className="flex justify-between items-center text-sm text-blue-600">
-                            <span className="font-medium">Tiền dịch vụ</span>
-                            <span className="font-bold">{formatCurrency(productsFee)}</span>
+                    {/* Products List (Read Only) */}
+                    {invoiceItems.length > 0 && (
+                        <div className="py-2 border-t border-dashed border-gray-100 dark:border-gray-800">
+                            <div className="flex justify-between items-center text-sm text-blue-600 mb-1">
+                                <span className="font-medium">Dịch vụ ({invoiceItems.length})</span>
+                                <span className="font-bold">{formatCurrency(productsFee)}</span>
+                            </div>
+                            <div className="space-y-1 pl-2">
+                                {invoiceItems.map((item, idx) => {
+                                    const unit = item.is_pack_sold ? item.products?.pack_unit : item.products?.base_unit;
+                                    return (
+                                        <div key={idx} className="flex justify-between text-xs text-gray-500">
+                                            <span>{item.products?.product_name || item.product_name} ({unit}) x{item.quantity}</span>
+                                            <span>{formatCurrency(item.sale_price * item.quantity)}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
 
                     {deposit > 0 && (
-                        <div className="flex justify-between items-center text-sm text-gray-500">
+                        <div className="flex justify-between items-center text-sm text-gray-500 border-t border-dashed border-gray-100 dark:border-gray-800 pt-2">
                             <span>Đã cọc</span>
                             <span>-{formatCurrency(deposit)}</span>
                         </div>

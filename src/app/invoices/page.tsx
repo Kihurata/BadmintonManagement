@@ -6,11 +6,11 @@ import { supabase } from '@/lib/supabase';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { SummaryCard } from '@/components/invoices/summary-card';
 import { InvoiceList } from '@/components/invoices/invoice-list';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { startOfMonth, endOfMonth } from 'date-fns';
 import { Bell } from 'lucide-react'; // Using Lucide for header icons as fallback
 
 export default function InvoicesPage() {
-    const [filter, setFilter] = useState<'TODAY' | 'WEEK' | 'MONTH' | 'UNPAID'>('TODAY');
+    const [filter, setFilter] = useState<'MONTH' | 'UNPAID'>('MONTH');
     const [invoices, setInvoices] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [summary, setSummary] = useState({ revenue: 0, courtRevenue: 0, productRevenue: 0, count: 0, avg: 0 });
     const [loading, setLoading] = useState(true);
@@ -23,13 +23,7 @@ export default function InvoicesPage() {
         let isUnpaid = false;
 
         // Determine Time Range or Filter
-        if (filter === 'TODAY') {
-            start = startOfDay(now).toISOString();
-            end = endOfDay(now).toISOString();
-        } else if (filter === 'WEEK') {
-            start = startOfWeek(now, { weekStartsOn: 1 }).toISOString(); // Monday start
-            end = endOfWeek(now, { weekStartsOn: 1 }).toISOString();
-        } else if (filter === 'MONTH') {
+        if (filter === 'MONTH') {
             start = startOfMonth(now).toISOString();
             end = endOfMonth(now).toISOString();
         } else if (filter === 'UNPAID') {
@@ -79,7 +73,8 @@ export default function InvoicesPage() {
                     summary: inv.bookings?.courts?.court_name
                         ? `${inv.bookings.courts.court_name} • ${duration.toFixed(1)} giờ`
                         : 'Mua hàng',
-                    total: inv.total_amount
+                    total: inv.total_amount,
+                    rawDate: displayDate.toISOString()
                 };
             });
             setInvoices(formattedInvoices);
@@ -145,7 +140,7 @@ export default function InvoicesPage() {
     };
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 min-h-screen flex flex-col w-full">
+        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 h-screen overflow-hidden flex flex-col w-full">
             {/* Header */}
             <header className="px-6 py-4 flex items-center justify-between bg-background-light dark:bg-background-dark sticky top-0 z-10">
                 <div className="flex items-center gap-3">
@@ -191,24 +186,6 @@ export default function InvoicesPage() {
 
                 {/* Filter Chips */}
                 <div className="flex gap-3 overflow-x-auto no-scrollbar mb-6 pb-1">
-                    <button
-                        onClick={() => setFilter('TODAY')}
-                        className={`px-5 py-2.5 rounded-full font-medium shadow-sm whitespace-nowrap text-sm transition-transform active:scale-95 ${filter === 'TODAY'
-                            ? "bg-primary text-white shadow-lg shadow-primary/30"
-                            : "bg-white dark:bg-[#18332c] text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700 hover:bg-gray-50"
-                            }`}
-                    >
-                        Hôm nay
-                    </button>
-                    <button
-                        onClick={() => setFilter('WEEK')}
-                        className={`px-5 py-2.5 rounded-full font-medium shadow-sm whitespace-nowrap text-sm transition-transform active:scale-95 ${filter === 'WEEK'
-                            ? "bg-primary text-white shadow-lg shadow-primary/30"
-                            : "bg-white dark:bg-[#18332c] text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700 hover:bg-gray-50"
-                            }`}
-                    >
-                        Tuần này
-                    </button>
                     <button
                         onClick={() => setFilter('MONTH')}
                         className={`px-5 py-2.5 rounded-full font-medium shadow-sm whitespace-nowrap text-sm transition-transform active:scale-95 ${filter === 'MONTH'
