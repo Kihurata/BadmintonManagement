@@ -203,38 +203,40 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="bg-background-light dark:bg-background-dark min-h-screen text-gray-900 dark:text-gray-100 pb-20 md:pb-0">
+        <div className="bg-background-light dark:bg-background-dark h-screen overflow-hidden flex flex-col text-gray-900 dark:text-gray-100">
             <Sidebar />
 
-            <div className="md:pl-64 transition-all">
-                <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
-                    <header className="mb-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard Overview</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2">Welcome back! Here&apos;s what&apos;s happening at your badminton center.</p>
-                    </header>
+            <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative">
+                <main className="flex-1 overflow-y-auto w-full p-6 md:p-10 pb-24 md:pb-10 no-scrollbar">
+                    <div className="max-w-7xl mx-auto space-y-8">
+                        <header className="mb-8">
+                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard Overview</h1>
+                            <p className="text-gray-500 dark:text-gray-400 mt-2">Welcome back! Here&apos;s what&apos;s happening at your badminton center.</p>
+                        </header>
 
-                    {/* Metrics */}
-                    <MetricGrid {...metrics} />
+                        {/* Metrics */}
+                        <MetricGrid {...metrics} />
 
-                    {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Chart + Debtors - Takes up 2 columns */}
-                        <div className="lg:col-span-2 space-y-8">
-                            <RevenueChart data={chartData} />
-                            <DebtorList debtors={debtors} />
-                        </div>
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Chart + Debtors - Takes up 2 columns */}
+                            <div className="lg:col-span-2 space-y-8">
+                                <RevenueChart data={chartData} />
+                                <DebtorList debtors={debtors} />
+                            </div>
 
-                        {/* Top Products - Takes up 1 column */}
-                        <div className="lg:col-span-1">
-                            <TopProducts products={topProducts} />
+                            {/* Top Products - Takes up 1 column */}
+                            <div className="lg:col-span-1">
+                                <TopProducts products={topProducts} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </main>
 
-            {/* Mobile Nav (if viewed on mobile) */}
-            <div className="md:hidden">
-                <BottomNav />
+                {/* Mobile Nav (if viewed on mobile) */}
+                <div className="md:hidden flex-none z-50">
+                    <BottomNav />
+                </div>
             </div>
         </div>
     );

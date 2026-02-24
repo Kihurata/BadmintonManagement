@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
@@ -271,6 +271,27 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                             </div>
                         </label>
                     </div>
+
+                    {/* QR Code Display */}
+                    {paymentMethod === 'BANK_TRANSFER' && (
+                        <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+                            <div className="text-center mb-3">
+                            </div>
+                            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 relative w-[332px] h-[332px] mx-auto max-w-full">
+                                <Image
+                                    src={`https://img.vietqr.io/image/tpbank-07119136101-compact2.jpg?amount=${total}&addInfo=${encodeURIComponent(`Thanh toan san ${booking?.courts?.court_name || ''}`)}&accountName=TRAN MINH QUAN`}
+                                    alt="QR Code Thanh Toán"
+                                    fill
+                                    className="object-contain rounded-lg"
+                                    unoptimized
+                                    sizes="332px"
+                                />
+                            </div>
+                            <p className="mt-3 text-[11px] text-primary bg-primary/10 px-3 py-1.5 rounded-full font-medium">
+                                Số tiền: {formatCurrency(total)}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
 

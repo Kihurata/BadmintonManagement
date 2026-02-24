@@ -160,33 +160,45 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
                             {/* Bookings for this court */}
                             {bookings
                                 .filter(b => b.court_id === court.id)
-                                .map((booking) => (
-                                    <div
-                                        key={booking.id}
-                                        className="absolute left-1 right-2 rounded-lg bg-primary/15 border-l-[3px] border-primary p-2 overflow-hidden hover:bg-primary/20 transition-colors cursor-pointer group z-10"
-                                        style={getBookingStyle(booking.start_time, booking.end_time)}
-                                        onClick={() => onBookingClick?.(booking.id)}
-                                    >
-                                        <div className="flex flex-col h-full">
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-xs font-semibold text-primary mb-1">
-                                                    {formatTime(booking.start_time)} - {formatTime(booking.end_time)}
-                                                </span>
-                                                <span className="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">more_horiz</span>
-                                            </div>
-                                            <h3 className="text-sm font-bold text-midnight dark:text-white leading-tight truncate">
-                                                {booking.customer?.name || 'Unknown'}
-                                            </h3>
-                                            <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
-                                                {booking.customer?.phone}
-                                            </p>
-                                            <div className="mt-auto flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-[14px] text-primary">check_circle</span>
-                                                <span className="text-[10px] font-medium text-primary uppercase">{booking.status}</span>
+                                .map((booking) => {
+                                    const isOrange = booking.status === 'CONFIRMED' || booking.status === 'CHECKED_IN';
+                                    const containerClass = isOrange
+                                        ? "bg-orange-500/15 border-orange-500 hover:bg-orange-500/20"
+                                        : "bg-midnight/10 border-midnight dark:bg-white/10 dark:border-white/30 hover:bg-midnight/15 dark:hover:bg-white/20";
+                                    const highlightTextClass = isOrange
+                                        ? "text-orange-700 dark:text-orange-400"
+                                        : "text-midnight dark:text-white/80";
+
+                                    return (
+                                        <div
+                                            key={booking.id}
+                                            className={`absolute left-1 right-2 rounded-lg border-l-[3px] p-2 overflow-hidden transition-colors cursor-pointer group z-10 ${containerClass}`}
+                                            style={getBookingStyle(booking.start_time, booking.end_time)}
+                                            onClick={() => onBookingClick?.(booking.id)}
+                                        >
+                                            <div className="flex flex-col h-full">
+                                                <div className="flex justify-between items-start">
+                                                    <span className={`text-xs font-semibold mb-1 ${highlightTextClass}`}>
+                                                        {formatTime(booking.start_time)} - {formatTime(booking.end_time)}
+                                                    </span>
+                                                    <span className={`material-symbols-outlined text-[16px] opacity-0 group-hover:opacity-100 transition-opacity ${highlightTextClass}`}>more_horiz</span>
+                                                </div>
+                                                <h3 className="text-sm font-bold text-midnight dark:text-white leading-tight truncate">
+                                                    {booking.customer?.name || 'Unknown'}
+                                                </h3>
+                                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                                                    {booking.customer?.phone}
+                                                </p>
+                                                <div className="mt-auto flex items-center gap-1">
+                                                    <span className={`material-symbols-outlined text-[14px] ${highlightTextClass}`}>
+                                                        {booking.status === 'CHECKED_IN' ? 'directions_run' : 'check_circle'}
+                                                    </span>
+                                                    <span className={`text-[10px] font-medium uppercase ${highlightTextClass}`}>{booking.status}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                         </div>
                     ))}
 

@@ -14,7 +14,7 @@ export default function ProductsPage() {
     const [isStockFormOpen, setIsStockFormOpen] = useState(false);
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 min-h-screen flex flex-col w-full">
+        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 h-screen overflow-hidden flex flex-col w-full">
             {/* Header */}
             <header className="flex-none bg-background-light dark:bg-background-dark pt-safe-top z-10 shadow-sm dark:shadow-none sticky top-0">
                 <div className="flex items-center justify-between px-4 py-3">
@@ -60,7 +60,7 @@ export default function ProductsPage() {
             </header>
 
             {/* Content */}
-            <main className="flex-1 overflow-y-auto w-full">
+            <main className="flex-1 overflow-y-auto w-full pb-24">
                 {activeTab === 'products' ? <ProductList /> : <InventoryHistory />}
             </main>
 
