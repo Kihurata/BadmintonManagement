@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
+import { calculateRentalFee } from '@/lib/pricing';
 import { Button } from '@/components/ui/button';
 import {
     DialogHeader,
@@ -37,7 +38,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
             // 1. Fetch Booking
             const { data: bookingData } = await supabase
                 .from('bookings')
-                .select(`*, customers ( name, phone, type ), courts ( court_name )`)
+                .select(`*, customers ( name, phone, type ), courts ( * )`)
                 .eq('id', bookingId)
                 .single();
 
@@ -147,35 +148,41 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const handleCheckIn = async () => {
         setActionLoading(true);
 
-        // 1. Update Booking Status
-        const { error: bookingError } = await supabase
-            .from('bookings')
-            .update({ status: 'CHECKED_IN' })
-            .eq('id', bookingId);
+        let currentRentalFee = 0;
+        try {
+            const pricing = calculateRentalFee(
+                new Date(booking.start_time),
+                new Date(booking.end_time),
+                booking.courts,
+                booking.customers?.type || 'GUEST'
+            );
+            currentRentalFee = pricing.rentalFee;
+        } catch (err) {
+            console.error("Lỗi tính tiền sân dự kiến:", err);
+        }
 
-        if (bookingError) {
-            alert('Lỗi Check-in: ' + bookingError.message);
+        const { data: rpcResult, error: rpcError } = await supabase.rpc('check_in_booking', {
+            p_booking_id: bookingId,
+            p_customer_id: booking.customer_id,
+            p_rental_fee: currentRentalFee
+        });
+
+        if (rpcError) {
+            alert('Lỗi Check-in: ' + rpcError.message);
             setActionLoading(false);
             return;
         }
 
-        // 2. Create Invoice (if not exists)
-        if (!invoice) {
-            const { error: invError } = await supabase
-                .from('invoices')
-                .insert([{
-                    booking_id: bookingId,
-                    customer_id: booking.customer_id,
-                    total_amount: 0,
-                    is_paid: false
-                }]);
-
-            if (invError) console.error('Error creating invoice:', invError);
-            else await refreshInvoice();
+        const result = rpcResult as { success: boolean; error?: string };
+        if (!result.success) {
+            alert('Lỗi Check-in (DB): ' + result.error);
+        } else {
+            // Check in ok, refresh data
+            await refreshInvoice();
+            onCheckInSuccess();
         }
 
         setActionLoading(false);
-        onCheckInSuccess();
     };
 
     const handleCancelBooking = async () => {
@@ -225,6 +232,11 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                     is_pack_sold: product.isPack
                 }]);
                 if (error) throw error;
+
+                // Update Total
+                const newTotal = invoice.total_amount + product.price;
+                await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
+
                 await refreshInvoice();
             }
         } catch (err) {
@@ -255,6 +267,10 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
             if (error) throw error;
 
+            // Update Total
+            const newTotal = invoice.total_amount + (delta * item.sale_price);
+            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
+
             // Manual Sync for UPDATE (Trigger only handles INSERT?) 
             // WAIT - The trigger `fn_auto_sync_inventory_v2` handles BOTH INSERT and UPDATE.
             // So we DO NOT need manual sync here anymore, unlike InvoiceDetailDialog where I was keeping it for safety/legacy.
@@ -281,6 +297,10 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
             // Delete
             const { error } = await supabase.from('invoice_items').delete().eq('id', item.id);
             if (error) throw error;
+
+            // Update Total
+            const newTotal = invoice.total_amount - (item.sale_price * item.quantity);
+            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
 
             // Restore Inventory for DELETE
             const isPack = product?.isPack || item.is_pack_sold;

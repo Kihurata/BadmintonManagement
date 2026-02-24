@@ -87,31 +87,24 @@ export async function POST(request: Request) {
 
             const total = rentalFee + overtimeFee + productsFee - deposit;
 
-            // --- Create Invoice ---
-            const { error: insertError } = await supabase
-                .from('invoices')
-                .insert([{
-                    booking_id: booking.id,
-                    customer_id: booking.customer_id,
-                    total_amount: total,
-                    payment_method: null, // Unknown/Unpaid
-                    is_paid: false
-                }]);
+            // --- Transaction: Tạo Invoice & Update Booking qua RPC ---
+            const { data: rpcResult, error: rpcError } = await supabase.rpc('close_booking_and_invoice', {
+                p_booking_id: booking.id,
+                p_customer_id: booking.customer_id,
+                p_total_amount: total,
+                p_rental_fee: rentalFee,
+                p_actual_end_time: actualEndTime.toISOString()
+            });
 
-            if (insertError) {
-                errors.push({ id: booking.id, error: insertError.message });
+            if (rpcError) {
+                errors.push({ id: booking.id, error: rpcError.message });
             } else {
-                // Update Booking Status
-                await supabase
-                    .from('bookings')
-                    .update({
-                        status: 'COMPLETED',
-                        actual_end_time: actualEndTime.toISOString(),
-                        total_court_fee: rentalFee
-                    })
-                    .eq('id', booking.id);
-
-                generatedCount++;
+                const result = rpcResult as { success: boolean; error?: string };
+                if (result && !result.success) {
+                    errors.push({ id: booking.id, error: result.error || 'Lỗi không xác định từ Database' });
+                } else {
+                    generatedCount++;
+                }
             }
         }
 
