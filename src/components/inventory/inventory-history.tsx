@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { ArrowDown, ArrowUp, AlertCircle, RefreshCw } from 'lucide-react';
@@ -8,11 +8,7 @@ export function InventoryHistory() {
     const [logs, setLogs] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchLogs();
-    }, []);
-
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async () => {
         setLoading(true);
         const { data } = await supabase
             .from('inventory_logs')
@@ -27,7 +23,15 @@ export function InventoryHistory() {
             setLogs(data);
         }
         setLoading(false);
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchLogs();
+
+        const handleUpdate = () => fetchLogs();
+        window.addEventListener('inventory_updated', handleUpdate);
+        return () => window.removeEventListener('inventory_updated', handleUpdate);
+    }, [fetchLogs]);
 
     const getIcon = (type: string) => {
         switch (type) {

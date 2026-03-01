@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
@@ -17,7 +17,7 @@ export function ProductList() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         setLoading(true);
         const { data } = await supabase
             .from('products')
@@ -28,11 +28,15 @@ export function ProductList() {
             setProducts(data);
         }
         setLoading(false);
-    };
+    }, []);
 
     useEffect(() => {
         fetchProducts();
-    }, []);
+
+        const handleUpdate = () => fetchProducts();
+        window.addEventListener('inventory_updated', handleUpdate);
+        return () => window.removeEventListener('inventory_updated', handleUpdate);
+    }, [fetchProducts]);
 
     const handleDelete = async (id: string) => {
         if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
