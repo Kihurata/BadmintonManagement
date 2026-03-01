@@ -34,6 +34,9 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
+        <title>Badminton Management System</title>
+        <meta name="description" content="Hệ thống quản lý sân cầu lông" />
+        <meta property="og:title" content="BMS" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
       </head>
       <body className={inter.className}>

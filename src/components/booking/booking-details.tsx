@@ -375,6 +375,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                             <div className="flex items-center justify-center gap-2">
                                 <input
                                     type="time"
+                                    aria-label="Start Time"
                                     className="border rounded p-1 text-lg font-bold w-24 text-center bg-white dark:bg-gray-800"
                                     value={editStartTime}
                                     onChange={(e) => setEditStartTime(e.target.value)}
@@ -382,6 +383,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                                 <span className="text-gray-400">-</span>
                                 <input
                                     type="time"
+                                    aria-label="End Time"
                                     className="border rounded p-1 text-lg font-bold w-24 text-center bg-white dark:bg-gray-800"
                                     value={editEndTime}
                                     onChange={(e) => setEditEndTime(e.target.value)}

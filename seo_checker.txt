@@ -1,0 +1,23 @@
+
+============================================================
+  SEO CHECKER - Search Engine Optimization Audit
+============================================================
+Project: D:\BadmintonManagement
+Time: 2026-03-01 17:09:44
+------------------------------------------------------------
+Found 12 page files to analyze
+
+============================================================
+SEO ANALYSIS RESULTS
+============================================================
+
+[OK] No SEO issues found!
+
+{
+  "script": "seo_checker",
+  "project": "D:\\BadmintonManagement",
+  "files_checked": 12,
+  "files_with_issues": 0,
+  "issues_found": 0,
+  "passed": true
+}
