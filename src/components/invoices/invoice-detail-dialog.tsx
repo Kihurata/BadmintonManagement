@@ -10,7 +10,7 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { formatCurrency } from '@/lib/utils';
-import { Loader2, Plus, Trash2, Minus } from 'lucide-react';
+import { Loader2, Plus, Trash2, Minus, Share } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from 'date-fns';
 import { InvoiceItem } from '@/types';
@@ -308,6 +308,46 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
         }
     };
 
+    const handleShare = async () => {
+        if (!invoice) return;
+
+        try {
+            const date = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'dd/MM/yyyy') : '---';
+            const startTime = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'HH:mm') : '--:--';
+            const endTime = invoice.bookings?.end_time ? format(new Date(invoice.bookings.end_time), 'HH:mm') : '--:--';
+            const rentalFee = invoice.bookings?.total_court_fee || 0;
+            const overtimeFee = invoice.bookings?.overtime_fee || 0;
+            const deposit = invoice.bookings?.deposit_amount || 0;
+            const itemsFee = items.reduce((sum, i) => sum + (i.sale_price * i.quantity), 0);
+
+            let text = `🏸 HOÁ ĐƠN SÂN CẦU LÔNG\n`;
+            text += `👤 Khách: ${invoice.customers?.name || 'Khách lẻ'}\n`;
+            text += `🏟 Sân: ${invoice.bookings?.courts?.court_name || '---'}\n`;
+            text += `📅 Ngày: ${date}\n`;
+            text += `⏰ Giờ: ${startTime} - ${endTime}\n`;
+            text += `----------------------\n`;
+            text += `💰 Tiền sân: ${formatCurrency(rentalFee)}\n`;
+            if (overtimeFee > 0) text += `⏳ Quá giờ/Phụ phí: ${formatCurrency(overtimeFee)}\n`;
+            if (itemsFee > 0) text += `🥤 Dịch vụ: ${formatCurrency(itemsFee)}\n`;
+            if (deposit > 0) text += `💵 Đã cọc: -${formatCurrency(deposit)}\n`;
+            text += `----------------------\n`;
+            text += `💳 TỔNG CỘNG: ${formatCurrency(invoice.total_amount)}\n`;
+            text += `Trạng thái: ${invoice.is_paid ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'}`;
+
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'Hoá đơn sân cầu lông',
+                    text: text,
+                });
+            } else {
+                await navigator.clipboard.writeText(text);
+                alert('Đã copy hoá đơn, bạn có thể dán vào Zalo/Messenger!');
+            }
+        } catch (error) {
+            console.log('Chia sẻ bị hủy hoặc lỗi:', error);
+        }
+    };
+
     if (!open) return null;
 
     // Calc totals for summary display logic if needed (though we rely on invoice.total_amount)
@@ -509,24 +549,45 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
 
                 <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                     {!invoice?.is_paid ? (
-                        <Button
-                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-lg rounded-xl shadow-lg shadow-emerald-600/20"
-                            onClick={handlePayment}
-                            disabled={loading}
-                        >
-                            {loading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : (
-                                <span className="material-symbols-outlined mr-2">check_circle</span>
-                            )}
-                            Xác nhận thanh toán
-                        </Button>
+                        <div className="flex gap-2 w-full">
+                            <Button
+                                variant="outline"
+                                className="w-12 h-12 rounded-xl border-gray-200 dark:border-gray-700 flex-shrink-0 text-gray-600 dark:text-gray-300"
+                                onClick={handleShare}
+                                disabled={loading}
+                                title="Chia sẻ hóa đơn"
+                            >
+                                <Share className="size-5" />
+                            </Button>
+                            <Button
+                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 text-lg rounded-xl shadow-lg shadow-emerald-600/20"
+                                onClick={handlePayment}
+                                disabled={loading}
+                            >
+                                {loading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : (
+                                    <span className="material-symbols-outlined mr-2">check_circle</span>
+                                )}
+                                Xác nhận thanh toán
+                            </Button>
+                        </div>
                     ) : (
-                        <Button
-                            variant="outline"
-                            className="w-full h-12 text-lg rounded-xl"
-                            onClick={() => onOpenChange(false)}
-                        >
-                            Đóng
-                        </Button>
+                        <div className="flex gap-2 w-full">
+                            <Button
+                                variant="outline"
+                                className="flex-1 h-12 text-base font-bold rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-400 dark:hover:bg-emerald-900/20 flex items-center justify-center gap-2"
+                                onClick={handleShare}
+                            >
+                                <Share className="size-5" />
+                                Chia sẻ Bill
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex-1 h-12 text-base font-bold rounded-xl"
+                                onClick={() => onOpenChange(false)}
+                            >
+                                Đóng
+                            </Button>
+                        </div>
                     )}
                 </DialogFooter>
             </DialogContent>

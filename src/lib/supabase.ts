@@ -1,6 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Export a singleton instance strictly for client-side usage
+// This correctly reads the NextJS Auth cookies set by Server Actions
+export const supabase = createClient()
