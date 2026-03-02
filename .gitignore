@@ -55,3 +55,5 @@ Desktop.ini
 # Supabase
 supabase/.branches
 supabase/.temp
+
+.agent/

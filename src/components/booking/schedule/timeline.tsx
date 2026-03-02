@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { startOfDay, endOfDay } from 'date-fns';
 
@@ -54,45 +54,52 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
     }, []);
 
     // Fetch Bookings for ALL courts
-    useEffect(() => {
-        async function fetchBookings() {
-            if (courts.length === 0) return;
+    const fetchBookings = useCallback(async () => {
+        if (courts.length === 0) return;
 
-            const start = startOfDay(selectedDate).toISOString();
-            const end = endOfDay(selectedDate).toISOString();
+        const start = startOfDay(selectedDate).toISOString();
+        const end = endOfDay(selectedDate).toISOString();
 
-            // Get all court IDs
-            const courtIds = courts.map(c => c.id);
+        // Get all court IDs
+        const courtIds = courts.map(c => c.id);
 
-            const { data } = await supabase
-                .from('bookings')
-                .select(`
-                  id,
-                  start_time,
-                  end_time,
-                  status,
-                  court_id,
-                  customers ( name, phone )
-                `)
-                .in('court_id', courtIds)
-                .gte('start_time', start)
-                .lte('start_time', end);
+        const { data } = await supabase
+            .from('bookings')
+            .select(`
+              id,
+              start_time,
+              end_time,
+              status,
+              court_id,
+              customers ( name, phone )
+            `)
+            .in('court_id', courtIds)
+            .gte('start_time', start)
+            .lte('start_time', end);
 
-            if (data) {
-                // Transform data to match Booking interface
-                const formattedBookings = data.map((item: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-                    id: item.id,
-                    start_time: item.start_time,
-                    end_time: item.end_time,
-                    status: item.status,
-                    court_id: item.court_id,
-                    customer: item.customers
-                }));
-                setBookings(formattedBookings);
-            }
+        if (data) {
+            // Transform data to match Booking interface
+            const formattedBookings = data.map((item: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+                id: item.id,
+                start_time: item.start_time,
+                end_time: item.end_time,
+                status: item.status,
+                court_id: item.court_id,
+                customer: item.customers
+            }));
+            setBookings(formattedBookings);
         }
+    }, [courts, selectedDate]);
+
+    useEffect(() => {
         fetchBookings();
-    }, [selectedDate, courts]);
+
+        // Listen for soft reloads from the parent page
+        const handleBookingUpdate = () => fetchBookings();
+        window.addEventListener('booking_updated', handleBookingUpdate);
+
+        return () => window.removeEventListener('booking_updated', handleBookingUpdate);
+    }, [fetchBookings]);
 
     const hours = Array.from({ length: 19 }, (_, i) => i + 6); // 06:00 to 24:00
 

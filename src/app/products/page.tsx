@@ -70,16 +70,8 @@ export default function ProductsPage() {
                     <StockAdjustmentForm
                         onSuccess={() => {
                             setIsStockFormOpen(false);
-                            // Ideally trigger refresh of history/products, 
-                            // but since they are separate components, they fetch on mount.
-                            // Simple page reload or context would handle this better.
-                            // For MVP, just reload or rely on re-mount if user switches tabs.
-                            if (activeTab === 'inventory') {
-                                // Force re-render of inventory?
-                                window.location.reload(); // Simple brute force for now to ensure consistency
-                            } else {
-                                window.location.reload();
-                            }
+                            // Dispatch a custom event to tell child components to re-fetch softly
+                            window.dispatchEvent(new Event('inventory_updated'));
                         }}
                         onCancel={() => setIsStockFormOpen(false)}
                     />

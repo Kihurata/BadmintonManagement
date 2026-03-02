@@ -143,9 +143,9 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     };
 
     return (
-        <div className="flex flex-col h-full bg-background-light dark:bg-background-dark font-sans w-full max-w-md mx-auto relative">
+        <div className="flex flex-col h-full max-h-[100dvh] sm:max-h-[90vh] bg-background-light dark:bg-background-dark font-sans w-full max-w-md mx-auto sm:rounded-lg overflow-hidden">
             {/* Header */}
-            <div className="flex items-center px-4 pt-8 pb-4 bg-white dark:bg-background-dark border-b border-gray-100 dark:border-gray-800 sticky top-0 z-20">
+            <div className="flex shrink-0 items-center px-4 pt-8 pb-4 bg-white dark:bg-background-dark border-b border-gray-100 dark:border-gray-800">
                 <button onClick={onCancel} className="text-black dark:text-gray-200 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <span className="material-symbols-outlined text-2xl font-bold">arrow_back</span>
                 </button>
@@ -155,7 +155,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-32">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
 
                 {/* Court Info */}
                 <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800 flex justify-between items-center">
@@ -295,8 +295,8 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                 </div>
             </div>
 
-            {/* Sticky Bottom Button */}
-            <div className="absolute bottom-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 pb-4 z-30">
+            {/* Bottom Button */}
+            <div className="shrink-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 z-30">
                 <Button
                     onClick={handleConfirmPayment}
                     disabled={loading}

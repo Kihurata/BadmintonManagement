@@ -63,7 +63,7 @@ export function CustomerList() {
 
     // Color logic for avatar based on index or random is nice, but fixed for now based on sample
     const getAvatarColors = (type: string) => {
-        if (type === 'LOYAL') return 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400';
+        if (type === 'LOYAL') return 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400';
         return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400';
     };
 
@@ -146,7 +146,7 @@ export function CustomerList() {
                                     <span className={cn(
                                         "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border",
                                         customer.type === 'LOYAL'
-                                            ? "bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 border-purple-100 dark:border-purple-800"
+                                            ? "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300 border-cyan-100 dark:border-cyan-800"
                                             : "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 border-emerald-100 dark:border-emerald-800"
                                     )}>
                                         {customer.type === 'LOYAL' ? 'Thân thiết' : 'Vãng lai'}
