@@ -44,68 +44,7 @@ SELECT id, '00000000-0000-0000-0000-000000000000'::uuid, 'OWNER'
 FROM auth.users
 ON CONFLICT (user_id, tenant_id) DO NOTHING;
 
--- 3.6 Create a default admin user explicitly for the existing default data
-INSERT INTO auth.users (
-    id,
-    instance_id,
-    aud,
-    role,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    created_at,
-    updated_at,
-    confirmation_token,
-    email_change,
-    email_change_token_new,
-    recovery_token
-)
-VALUES (
-    '00000000-0000-0000-0000-000000000001'::uuid,
-    '00000000-0000-0000-0000-000000000000'::uuid,
-    'authenticated',
-    'authenticated',
-    'admin@example.com',
-    extensions.crypt('changeme123', extensions.gen_salt('bf')),
-    current_timestamp,
-    '{"provider":"email","providers":["email"]}',
-    '{}',
-    current_timestamp,
-    current_timestamp,
-    '',
-    '',
-    '',
-    ''
-) ON CONFLICT (id) DO NOTHING;
 
--- Create the identity mapping so Supabase GoTrue doesn't crash on login
-INSERT INTO auth.identities (
-    id,
-    user_id,
-    provider_id,
-    identity_data,
-    provider,
-    last_sign_in_at,
-    created_at,
-    updated_at
-)
-VALUES (
-    gen_random_uuid(),
-    '00000000-0000-0000-0000-000000000001'::uuid,
-    '00000000-0000-0000-0000-000000000001'::uuid,
-    format('{"sub":"%s","email":"%s"}', '00000000-0000-0000-0000-000000000001', 'admin@example.com')::jsonb,
-    'email',
-    current_timestamp,
-    current_timestamp,
-    current_timestamp
-) ON CONFLICT (provider_id, provider) DO NOTHING;
-
--- Assign the explicit admin user to the default tenant
-INSERT INTO public.user_roles (user_id, tenant_id, role)
-VALUES ('00000000-0000-0000-0000-000000000001'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'OWNER')
-ON CONFLICT (user_id, tenant_id) DO NOTHING;
 
 -- Enable RLS on all tables
 ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
