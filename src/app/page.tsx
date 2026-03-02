@@ -9,6 +9,7 @@ import { StickyHeader } from "@/components/home/sticky-header";
 import { CourtStatusSection, CourtStatus } from "@/components/home/court-status";
 import { QuickActionsSection } from "@/components/home/quick-actions";
 import { OverviewMetricsSection } from "@/components/home/overview-metrics";
+import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
 // Existing Dialogs to reuse
@@ -146,37 +147,50 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen selection:bg-emerald-500 selection:text-white">
-      <div className="relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden md:max-w-md md:mx-auto md:shadow-2xl md:border-x border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark">
+    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col overflow-hidden selection:bg-emerald-500 selection:text-white">
+      <Sidebar />
 
+      <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative">
         {/* Sticky App Header */}
-        <StickyHeader notificationCount={1} />
+        <div className="md:hidden">
+          <StickyHeader notificationCount={1} />
+        </div>
+        <div className="hidden md:block">
+          {/* On desktop, we can show a simpler header or adjust StickyHeader */}
+          <div className="p-8 pb-0">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Tổng quan Hoạt động</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">Theo dõi tình trạng sân và quản lý nhanh trong ngày hôm nay.</p>
+          </div>
+        </div>
 
         {/* Main Scrollable Content */}
-        <div className="flex-1 flex flex-col gap-6 p-4 overflow-y-auto no-scrollbar pb-32">
+        <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-32 md:pb-8 no-scrollbar">
+          <div className="max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
+            {loading ? (
+              <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            ) : (
+              <>
+                {/* Court Status */}
+                <CourtStatusSection
+                  courts={courtStatuses}
+                  onBookClick={handleBookingClick}
+                  onViewBookingClick={handleViewBookingClick}
+                />
 
-          {loading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-            </div>
-          ) : (
-            <>
-              {/* Court Status */}
-              <CourtStatusSection
-                courts={courtStatuses}
-                onBookClick={handleBookingClick}
-                onViewBookingClick={handleViewBookingClick}
-              />
+                {/* Split layout for actions and metrics on desktop */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                  {/* Quick Actions */}
+                  <QuickActionsSection onNewBookingClick={() => setIsBookingOpen(true)} />
 
-              {/* Quick Actions */}
-              <QuickActionsSection onNewBookingClick={() => setIsBookingOpen(true)} />
-
-              {/* Overview Metrics */}
-              <OverviewMetricsSection {...metrics} />
-            </>
-          )}
-
-        </div>
+                  {/* Overview Metrics */}
+                  <OverviewMetricsSection {...metrics} />
+                </div>
+              </>
+            )}
+          </div>
+        </main>
 
         {/* Reusing existing Dialogs from the old page */}
         <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
@@ -229,7 +243,9 @@ export default function HomePage() {
         </Dialog>
 
         {/* Global Bottom Nav (Desktop Sidebar nav handles desktop views) */}
-        <BottomNav />
+        <div className="md:hidden flex-none z-50">
+          <BottomNav />
+        </div>
 
         {/* Specific styles for the mobile app feel */}
         <style jsx global>{`

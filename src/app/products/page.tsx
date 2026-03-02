@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { BottomNav } from '@/components/layout/bottom-nav';
+import { Sidebar } from '@/components/layout/sidebar';
 import { ProductList } from '@/components/products/product-list';
 import { InventoryHistory } from '@/components/inventory/inventory-history';
 import { StockAdjustmentForm } from '@/components/inventory/stock-adjustment-form';
@@ -14,79 +15,84 @@ export default function ProductsPage() {
     const [isStockFormOpen, setIsStockFormOpen] = useState(false);
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 h-screen overflow-hidden flex flex-col w-full">
-            {/* Header */}
-            <header className="flex-none bg-background-light dark:bg-background-dark pt-safe-top z-10 shadow-sm dark:shadow-none sticky top-0">
-                <div className="flex items-center justify-between px-4 py-3">
-                    <button className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all text-midnight dark:text-white" onClick={() => window.history.back()}>
-                        <span className="material-symbols-outlined">arrow_back_ios_new</span>
-                    </button>
-                    <div className="flex-1 flex justify-center">
-                        {/* Tabs in Header */}
-                        <div className="flex p-1 bg-gray-100 dark:bg-white/10 rounded-lg">
-                            <button
-                                onClick={() => setActiveTab('products')}
-                                className={cn(
-                                    "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
-                                    activeTab === 'products'
-                                        ? "bg-white dark:bg-primary text-black dark:text-white shadow-sm"
-                                        : "text-gray-500 dark:text-gray-400"
-                                )}
-                            >
-                                Sản phẩm
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('inventory')}
-                                className={cn(
-                                    "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
-                                    activeTab === 'inventory'
-                                        ? "bg-white dark:bg-primary text-black dark:text-white shadow-sm"
-                                        : "text-gray-500 dark:text-gray-400"
-                                )}
-                            >
-                                Lịch sử kho
-                            </button>
+        <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 min-h-screen flex flex-col overflow-hidden w-full">
+            <Sidebar />
+            <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative h-screen">
+                {/* Header */}
+                <header className="flex-none bg-background-light dark:bg-background-dark pt-safe-top z-10 shadow-sm dark:shadow-none sticky top-0">
+                    <div className="flex items-center justify-between px-4 py-3">
+                        <button className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all text-midnight dark:text-white" onClick={() => window.history.back()}>
+                            <span className="material-symbols-outlined">arrow_back_ios_new</span>
+                        </button>
+                        <div className="flex-1 flex justify-center">
+                            {/* Tabs in Header */}
+                            <div className="flex p-1 bg-gray-100 dark:bg-white/10 rounded-lg">
+                                <button
+                                    onClick={() => setActiveTab('products')}
+                                    className={cn(
+                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                        activeTab === 'products'
+                                            ? "bg-white dark:bg-primary text-black dark:text-white shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400"
+                                    )}
+                                >
+                                    Sản phẩm
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('inventory')}
+                                    className={cn(
+                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                        activeTab === 'inventory'
+                                            ? "bg-white dark:bg-primary text-black dark:text-white shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400"
+                                    )}
+                                >
+                                    Lịch sử kho
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Adjustment Button */}
+                        <button
+                            onClick={() => setIsStockFormOpen(true)}
+                            className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-emerald-600 dark:text-emerald-400"
+                        >
+                            <span className="material-symbols-outlined">swap_vert</span>
+                        </button>
                     </div>
+                </header>
 
-                    {/* Adjustment Button */}
-                    <button
-                        onClick={() => setIsStockFormOpen(true)}
-                        className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-emerald-600 dark:text-emerald-400"
-                    >
-                        <span className="material-symbols-outlined">swap_vert</span>
-                    </button>
+                {/* Content */}
+                <main className="flex-1 overflow-y-auto w-full pb-24">
+                    {activeTab === 'products' ? <ProductList /> : <InventoryHistory />}
+                </main>
+
+                {/* Stock Adjustment Dialog */}
+                <Dialog open={isStockFormOpen} onOpenChange={setIsStockFormOpen}>
+                    <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
+                        <StockAdjustmentForm
+                            onSuccess={() => {
+                                setIsStockFormOpen(false);
+                                // Dispatch a custom event to tell child components to re-fetch softly
+                                window.dispatchEvent(new Event('inventory_updated'));
+                            }}
+                            onCancel={() => setIsStockFormOpen(false)}
+                        />
+                    </DialogContent>
+                </Dialog>
+
+                {/* Bottom Navigation */}
+                <div className="md:hidden flex-none z-50">
+                    <BottomNav />
                 </div>
-            </header>
 
-            {/* Content */}
-            <main className="flex-1 overflow-y-auto w-full pb-24">
-                {activeTab === 'products' ? <ProductList /> : <InventoryHistory />}
-            </main>
-
-            {/* Stock Adjustment Dialog */}
-            <Dialog open={isStockFormOpen} onOpenChange={setIsStockFormOpen}>
-                <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-                    <StockAdjustmentForm
-                        onSuccess={() => {
-                            setIsStockFormOpen(false);
-                            // Dispatch a custom event to tell child components to re-fetch softly
-                            window.dispatchEvent(new Event('inventory_updated'));
-                        }}
-                        onCancel={() => setIsStockFormOpen(false)}
-                    />
-                </DialogContent>
-            </Dialog>
-
-            {/* Bottom Navigation */}
-            <BottomNav />
-
-            {/* Styles */}
-            <style jsx global>{`
+                {/* Styles */}
+                <style jsx global>{`
         .pt-safe-top {
             padding-top: env(safe-area-inset-top, 0px);
         }
       `}</style>
+            </div>
         </div>
     );
 }

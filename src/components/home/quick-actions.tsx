@@ -37,7 +37,7 @@ export function QuickActionsSection({ onNewBookingClick }: QuickActionsSectionPr
     return (
         <div>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-3">Thao tác Nhanh</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
                 <QuickActionItem
                     icon="add_circle"
                     label="Đặt sân mới"

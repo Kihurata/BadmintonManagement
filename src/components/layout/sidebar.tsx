@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, CalendarDays, Receipt, Package, Users } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Receipt, Package, Users, House } from 'lucide-react';
 
 export function Sidebar() {
     const pathname = usePathname();
 
     const navItems = [
-        { icon: <LayoutDashboard className="size-5" />, label: 'Tổng quan', href: '/dashboard', active: pathname === '/dashboard' },
-        { icon: <CalendarDays className="size-5" />, label: 'Lịch đặt', href: '/', active: pathname === '/' },
+        { icon: <House className="size-5" />, label: 'Trang chủ', href: '/', active: pathname === '/' },
+        { icon: <LayoutDashboard className="size-5" />, label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' },
+        { icon: <CalendarDays className="size-5" />, label: 'Lịch đặt', href: '/schedule', active: pathname === '/schedule' },
         { icon: <Receipt className="size-5" />, label: 'Hóa đơn', href: '/invoices', active: pathname === '/invoices' },
         { icon: <Package className="size-5" />, label: 'Kho hàng', href: '/products', active: pathname === '/products' },
         { icon: <Users className="size-5" />, label: 'Khách hàng', href: '/customers', active: pathname === '/customers' },
