@@ -3,14 +3,19 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateRentalFee } from '@/lib/pricing';
 
-// Initialize Supabase Client with Service Role Key for Admin actions (skipping RLS if needed, or just standard client)
-// For now, using standard env vars. If RLS blocks, we might need SERVICE_ROLE_KEY.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 export async function POST(request: Request) {
     try {
+        // Initialize Supabase Client inside the function scope to prevent build-time crashes
+        // if NEXT_PUBLIC_SUPABASE_URL is missing during static analysis.
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+        if (!supabaseUrl || !supabaseKey) {
+            return NextResponse.json({ error: "Missing Supabase Environment Variables" }, { status: 500 });
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
         const { date } = await request.json();
         const targetDate = date ? new Date(date) : new Date();
 
