@@ -7,10 +7,10 @@ export function BottomNav() {
     const pathname = usePathname();
 
     const navItems = [
-        { icon: 'calendar_today', label: 'Lịch đặt', href: '/', active: pathname === '/' },
+        { icon: 'home', label: 'Trang chủ', href: '/', active: pathname === '/' },
+        { icon: 'calendar_today', label: 'Lịch đặt', href: '/schedule', active: pathname === '/schedule' },
         { icon: 'receipt_long', label: 'Hóa đơn', href: '/invoices', active: pathname === '/invoices' },
         { icon: 'analytics', label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' },
-        { icon: 'inventory_2', label: 'Kho hàng', href: '/products', active: pathname === '/products' },
         { icon: 'groups', label: 'Khách hàng', href: '/customers', active: pathname === '/customers' },
     ];
 
