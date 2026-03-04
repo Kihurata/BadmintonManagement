@@ -57,3 +57,5 @@ supabase/.branches
 supabase/.temp
 
 .agent/
+.agents/
+docs/

@@ -312,31 +312,47 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
         if (!invoice) return;
 
         try {
-            const date = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'dd/MM/yyyy') : '---';
-            const startTime = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'HH:mm') : '--:--';
-            const endTime = invoice.bookings?.end_time ? format(new Date(invoice.bookings.end_time), 'HH:mm') : '--:--';
-            const rentalFee = invoice.bookings?.total_court_fee || 0;
-            const overtimeFee = invoice.bookings?.overtime_fee || 0;
-            const deposit = invoice.bookings?.deposit_amount || 0;
+            const isQuickSale = !invoice.bookings;
+
+            let text = `🏸 HOÁ ĐƠN ${isQuickSale ? 'BÁN LẺ' : 'SÂN CẦU LÔNG'}\n`;
+            text += `👤 Khách: ${invoice.customers?.name || 'Khách lẻ'}\n`;
+
+            if (!isQuickSale) {
+                const date = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'dd/MM/yyyy') : '---';
+                const startTime = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'HH:mm') : '--:--';
+                const endTime = invoice.bookings?.end_time ? format(new Date(invoice.bookings.end_time), 'HH:mm') : '--:--';
+
+                text += `🏟 Sân: ${invoice.bookings?.courts?.court_name || '---'}\n`;
+                text += `📅 Ngày: ${date}\n`;
+                text += `⏰ Giờ: ${startTime} - ${endTime}\n`;
+            } else {
+                text += `📅 Ngày: ${format(new Date(invoice.created_at || new Date()), 'dd/MM/yyyy HH:mm')}\n`;
+            }
+
+            text += `----------------------\n`;
+
             const itemsFee = items.reduce((sum, i) => sum + (i.sale_price * i.quantity), 0);
 
-            let text = `🏸 HOÁ ĐƠN SÂN CẦU LÔNG\n`;
-            text += `👤 Khách: ${invoice.customers?.name || 'Khách lẻ'}\n`;
-            text += `🏟 Sân: ${invoice.bookings?.courts?.court_name || '---'}\n`;
-            text += `📅 Ngày: ${date}\n`;
-            text += `⏰ Giờ: ${startTime} - ${endTime}\n`;
-            text += `----------------------\n`;
-            text += `💰 Tiền sân: ${formatCurrency(rentalFee)}\n`;
-            if (overtimeFee > 0) text += `⏳ Quá giờ/Phụ phí: ${formatCurrency(overtimeFee)}\n`;
-            if (itemsFee > 0) text += `🥤 Dịch vụ: ${formatCurrency(itemsFee)}\n`;
-            if (deposit > 0) text += `💵 Đã cọc: -${formatCurrency(deposit)}\n`;
+            if (!isQuickSale) {
+                const rentalFee = invoice.bookings?.total_court_fee || 0;
+                const overtimeFee = invoice.bookings?.overtime_fee || 0;
+                const deposit = invoice.bookings?.deposit_amount || 0;
+
+                text += `💰 Tiền sân: ${formatCurrency(rentalFee)}\n`;
+                if (overtimeFee > 0) text += `⏳ Quá giờ/Phụ phí: ${formatCurrency(overtimeFee)}\n`;
+                if (itemsFee > 0) text += `🥤 Dịch vụ: ${formatCurrency(itemsFee)}\n`;
+                if (deposit > 0) text += `💵 Đã cọc: -${formatCurrency(deposit)}\n`;
+            } else {
+                if (itemsFee > 0) text += `🥤 Dịch vụ/Sản phẩm: ${formatCurrency(itemsFee)}\n`;
+            }
+
             text += `----------------------\n`;
             text += `💳 TỔNG CỘNG: ${formatCurrency(invoice.total_amount)}\n`;
             text += `Trạng thái: ${invoice.is_paid ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'}`;
 
             if (navigator.share) {
                 await navigator.share({
-                    title: 'Hoá đơn sân cầu lông',
+                    title: isQuickSale ? 'Hoá đơn bán hàng' : 'Hoá đơn sân cầu lông',
                     text: text,
                 });
             } else {
@@ -378,8 +394,12 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                         {/* Court Info */}
                         <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800 flex justify-between items-center">
                             <div>
-                                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Sân</div>
-                                <div className="text-lg font-bold text-emerald-800 dark:text-emerald-300">{invoice.bookings?.courts?.court_name}</div>
+                                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                                    {invoice.bookings ? 'Sân' : 'Loại'}
+                                </div>
+                                <div className="text-lg font-bold text-emerald-800 dark:text-emerald-300">
+                                    {invoice.bookings?.courts?.court_name || 'Hóa đơn bán nhanh'}
+                                </div>
                             </div>
                             <div className="text-right">
                                 <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Khách</div>
@@ -455,23 +475,28 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                         <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
                             <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-2">Chi tiết thanh toán</h4>
 
-                            <div className="flex justify-between items-start text-sm">
-                                <div className="flex flex-col">
-                                    <span className="text-black dark:text-gray-200">Tiền sân</span>
-                                    <span className="text-[10px] text-gray-400">
-                                        {format(new Date(invoice.bookings?.start_time), 'HH:mm')} - {format(new Date(invoice.bookings?.end_time), 'HH:mm')}
-                                    </span>
-                                </div>
-                                <span className="font-bold">{formatCurrency(rentalFee)}</span>
-                            </div>
+                            {/* Detail conditionally show only if booking exists */}
+                            {invoice.bookings && (
+                                <>
+                                    <div className="flex justify-between items-start text-sm">
+                                        <div className="flex flex-col">
+                                            <span className="text-black dark:text-gray-200">Tiền sân</span>
+                                            <span className="text-[10px] text-gray-400">
+                                                {format(new Date(invoice.bookings.start_time), 'HH:mm')} - {format(new Date(invoice.bookings.end_time), 'HH:mm')}
+                                            </span>
+                                        </div>
+                                        <span className="font-bold">{formatCurrency(rentalFee)}</span>
+                                    </div>
 
-                            {overtimeFee > 0 && (
-                                <div className="flex justify-between items-start text-sm text-red-500">
-                                    <span className="font-medium flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ / Phụ phí
-                                    </span>
-                                    <span className="font-bold">{formatCurrency(overtimeFee)}</span>
-                                </div>
+                                    {overtimeFee > 0 && (
+                                        <div className="flex justify-between items-start text-sm text-red-500">
+                                            <span className="font-medium flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ / Phụ phí
+                                            </span>
+                                            <span className="font-bold">{formatCurrency(overtimeFee)}</span>
+                                        </div>
+                                    )}
+                                </>
                             )}
 
                             {itemsFee > 0 && (
@@ -481,7 +506,7 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                                 </div>
                             )}
 
-                            {deposit > 0 && (
+                            {invoice.bookings && deposit > 0 && (
                                 <div className="flex justify-between items-center text-sm text-gray-500">
                                     <span>Đã cọc</span>
                                     <span>-{formatCurrency(deposit)}</span>

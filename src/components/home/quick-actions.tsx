@@ -31,9 +31,10 @@ function QuickActionItem({ icon, label, colorClass, href, onClick }: QuickAction
 
 interface QuickActionsSectionProps {
     onNewBookingClick?: () => void;
+    onQuickSaleClick?: () => void;
 }
 
-export function QuickActionsSection({ onNewBookingClick }: QuickActionsSectionProps) {
+export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick }: QuickActionsSectionProps) {
     return (
         <div>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-3">Thao tác Nhanh</h3>
@@ -47,10 +48,7 @@ export function QuickActionsSection({ onNewBookingClick }: QuickActionsSectionPr
                 <QuickActionItem
                     icon="point_of_sale"
                     label="Bán nhanh"
-                    onClick={() => {
-                        // We'll wire up "Bán nhanh" (Quick Sale) later or open a modal
-                        console.log("Quick sale clicked");
-                    }}
+                    onClick={onQuickSaleClick}
                     colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-500 group-hover:text-white"
                 />
                 <QuickActionItem

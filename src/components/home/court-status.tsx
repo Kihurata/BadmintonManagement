@@ -8,6 +8,7 @@ export interface CourtStatus {
     currentBookingId?: string;
     bookingEndTime?: string;
     matchType?: string;
+    nextBookingTime?: string;
     imageUrl?: string;
 }
 
@@ -68,7 +69,15 @@ export function CourtCard({ court, onBookClick, onViewBookingClick }: CourtCardP
                 </p>
 
                 <div className="flex justify-between items-end">
-                    <h3 className="text-2xl font-bold">{court.name}</h3>
+                    <div>
+                        <h3 className="text-2xl font-bold">{court.name}</h3>
+                        {isAvailable && court.nextBookingTime && (
+                            <p className="text-xs font-medium text-amber-300 mt-1 flex items-center gap-1 drop-shadow-sm">
+                                <span className="material-symbols-outlined shrink-0" style={{ fontSize: "14px" }}>schedule</span>
+                                Đã đặt: {format(new Date(court.nextBookingTime), 'HH:mm')}
+                            </p>
+                        )}
+                    </div>
 
                     {isAvailable ? (
                         <button
@@ -84,9 +93,6 @@ export function CourtCard({ court, onBookClick, onViewBookingClick }: CourtCardP
                         >
                             <p className="text-xs text-slate-300 font-medium">
                                 Đến {court.bookingEndTime ? format(new Date(court.bookingEndTime), 'HH:mm') : '--:--'}
-                            </p>
-                            <p className="text-sm font-bold text-rose-300">
-                                {court.matchType || "Đang chơi"}
                             </p>
                         </div>
                     )}

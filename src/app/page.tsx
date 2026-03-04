@@ -20,6 +20,7 @@ import {
 import { BookingForm } from "@/components/booking/booking-form";
 import { BookingDetails } from "@/components/booking/booking-details";
 import { CheckoutForm } from "@/components/booking/checkout-form";
+import { QuickSaleForm } from "@/components/booking/quick-sale-form";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ export default function HomePage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isBookingDetailsOpen, setIsBookingDetailsOpen] = useState(false);
+  const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -67,20 +69,28 @@ export default function HomePage() {
           court_id, 
           start_time, 
           end_time, 
-          status,
-          booking_type
+          status
         `)
-        .eq('status', 'ACTIVE'); // Only care about currently active bookings for the "In Use" status
+        .in('status', ['CONFIRMED', 'CHECKED_IN']); // Only care about currently active bookings for the "In Use" status
 
       // Map Courts to Statuses
       const mappedStatuses: CourtStatus[] = (courtsData || []).map(court => {
-        // Find if this court has an active booking RIGHT NOW
         const now = new Date();
+
+        // Find if this court has an active booking RIGHT NOW
         const activeBooking = bookingsData?.find(b =>
           b.court_id === court.id &&
           isAfter(now, new Date(b.start_time)) &&
           isBefore(now, new Date(b.end_time))
         );
+
+        // Find the next upcoming booking (sorted by soonest start_time)
+        const upcomingBookings = bookingsData?.filter(b =>
+          b.court_id === court.id &&
+          isBefore(now, new Date(b.start_time))
+        ).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+        const nextBooking = upcomingBookings?.[0];
 
         return {
           id: court.id,
@@ -88,7 +98,7 @@ export default function HomePage() {
           isAvailable: !activeBooking,
           currentBookingId: activeBooking?.id,
           bookingEndTime: activeBooking?.end_time,
-          matchType: activeBooking?.booking_type === 'GUEST' ? 'Khách vãng lai' : 'Khách cố định',
+          nextBookingTime: nextBooking?.start_time,
         };
       });
       setCourtStatuses(mappedStatuses);
@@ -182,7 +192,10 @@ export default function HomePage() {
                 {/* Split layout for actions and metrics on desktop */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                   {/* Quick Actions */}
-                  <QuickActionsSection onNewBookingClick={() => setIsBookingOpen(true)} />
+                  <QuickActionsSection
+                    onNewBookingClick={() => setIsBookingOpen(true)}
+                    onQuickSaleClick={() => setIsQuickSaleOpen(true)}
+                  />
 
                   {/* Overview Metrics */}
                   <OverviewMetricsSection {...metrics} />
@@ -204,6 +217,18 @@ export default function HomePage() {
                 handleRefresh();
               }}
               onCancel={() => setIsBookingOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isQuickSaleOpen} onOpenChange={setIsQuickSaleOpen}>
+          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
+            <QuickSaleForm
+              onSuccess={() => {
+                setIsQuickSaleOpen(false);
+                handleRefresh();
+              }}
+              onCancel={() => setIsQuickSaleOpen(false)}
             />
           </DialogContent>
         </Dialog>
