@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { logout } from '@/app/(auth)/actions';
 
 interface StickyHeaderProps {
     userName?: string;
@@ -55,14 +56,16 @@ export function StickyHeader({
                         <span className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border border-white dark:border-slate-800" />
                     )}
                 </button>
-                <button
-                    title="Đăng xuất"
-                    className="group flex size-9 cursor-pointer items-center justify-center rounded-full bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors"
-                >
-                    <span className="material-symbols-outlined text-rose-600 dark:text-rose-400" style={{ fontSize: "20px" }}>
-                        logout
-                    </span>
-                </button>
+                <form action={logout}>
+                    <button
+                        title="Đăng xuất"
+                        className="group flex size-9 cursor-pointer items-center justify-center rounded-full bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-rose-600 dark:text-rose-400" style={{ fontSize: "20px" }}>
+                            logout
+                        </span>
+                    </button>
+                </form>
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, CalendarDays, Receipt, Package, Users, House } from 'lucide-react';
+import { logout } from '@/app/(auth)/actions';
 
 export function Sidebar() {
     const pathname = usePathname();
@@ -55,7 +56,7 @@ export function Sidebar() {
                             <p className="text-xs text-gray-500">Quản lý</p>
                         </div>
                     </div>
-                    <button className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10" title="Đăng xuất">
+                    <button onClick={() => logout()} className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10" title="Đăng xuất">
                         <span className="material-symbols-outlined text-xl">logout</span>
                     </button>
                 </div>
