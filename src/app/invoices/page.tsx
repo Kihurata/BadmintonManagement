@@ -8,7 +8,7 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { SummaryCard } from '@/components/invoices/summary-card';
 import { InvoiceList } from '@/components/invoices/invoice-list';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { Bell } from 'lucide-react'; // Using Lucide for header icons as fallback
+import { StickyHeader } from '@/components/home/sticky-header';
 
 export default function InvoicesPage() {
     const [filter, setFilter] = useState<'MONTH' | 'UNPAID'>('MONTH');
@@ -144,48 +144,44 @@ export default function InvoicesPage() {
         <div className="bg-background-light dark:bg-background-dark font-sans text-midnight dark:text-gray-100 min-h-screen flex flex-col overflow-hidden w-full">
             <Sidebar />
             <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative h-screen">
-                {/* Header */}
-                <header className="px-6 py-4 flex items-center justify-between bg-background-light dark:bg-background-dark sticky top-0 z-10">
-                    <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center border-2 border-primary/20 overflow-hidden">
-                                {/* Placeholder Avatar */}
-                                <span className="material-symbols-outlined text-gray-500">person</span>
-                            </div>
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-white dark:border-background-dark"></div>
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Xin chào, Quản lý</p>
-                            <p className="text-sm font-semibold capitalize">
-                                {new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' })}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleCloseDay}
-                            disabled={generating}
-                            className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg shadow-sm transition-colors disabled:opacity-50 flex items-center gap-1"
-                        >
-                            {generating ? 'Đang xử lý...' : (
-                                <>
-                                    <span className="material-symbols-outlined text-[16px]">lock_clock</span>
-                                    Kết thúc ngày
-                                </>
-                            )}
-                        </button>
-                        <div className="relative">
-                            <button className="p-2 rounded-full bg-white dark:bg-[#18332c] shadow-sm text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-primary/20 transition-colors">
-                                <Bell className="size-6" />
+                {/* Mobile Header */}
+                <div className="md:hidden">
+                    <StickyHeader
+                        title="Hóa Đơn"
+                        rightContent={
+                            <button
+                                onClick={handleCloseDay}
+                                disabled={generating}
+                                className="px-2.5 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg shadow-sm transition-colors disabled:opacity-50 flex items-center gap-1 h-9"
+                                title="Kết thúc ngày"
+                            >
+                                {generating ? '...' : (
+                                    <span className="material-symbols-outlined text-[18px]">lock_clock</span>
+                                )}
                             </button>
-                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#18332c]"></span>
-                        </div>
-                    </div>
-                </header>
+                        }
+                    />
+                </div>
 
                 {/* Content */}
-                <main className="flex-1 px-6 pb-24 overflow-y-auto no-scrollbar">
-                    <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Quản Lý Hóa Đơn</h1>
+                <main className="flex-1 px-6 pb-24 top-6 md:pt-10 overflow-y-auto no-scrollbar">
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản Lý Hóa Đơn</h1>
+                        <div className="hidden md:block">
+                            <button
+                                onClick={handleCloseDay}
+                                disabled={generating}
+                                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {generating ? 'Đang xử lý...' : (
+                                    <>
+                                        <span className="material-symbols-outlined">lock_clock</span>
+                                        Kết thúc ngày
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
 
                     {/* Filter Chips */}
                     <div className="flex gap-3 overflow-x-auto no-scrollbar mb-6 pb-1">

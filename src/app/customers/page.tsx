@@ -44,7 +44,7 @@ export default function CustomersPage() {
                 </main>
 
                 {/* Bottom Navigation */}
-                <div className="md:hidden flex-none z-50">
+                <div className="md:hidden z-50 sticky bottom-0 left-0 right-0 w-full mt-auto">
                     <BottomNav />
                 </div>
 

@@ -6,6 +6,7 @@ import { startOfToday } from 'date-fns';
 import { supabase } from '@/lib/supabase';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { Sidebar } from '@/components/layout/sidebar';
+import { StickyHeader } from '@/components/home/sticky-header';
 import { DateSelector } from '@/components/booking/schedule/date-selector';
 import { Timeline } from '@/components/booking/schedule/timeline';
 import {
@@ -50,20 +51,14 @@ export default function SchedulePage() {
       <Sidebar />
       <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative h-screen">
         {/* Header */}
-        <header className="flex-none bg-background-light dark:bg-background-dark pt-safe-top z-10 shadow-sm dark:shadow-none">
-          <div className="flex items-center justify-between px-4 py-3">
-            <button className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all text-midnight dark:text-white">
-              <span className="material-symbols-outlined">arrow_back_ios_new</span>
-            </button>
-            <h1 className="text-lg font-bold leading-tight tracking-tight text-center flex-1">Lịch Đặt Sân</h1>
-            <button className="flex size-10 items-center justify-center rounded-full overflow-hidden border border-transparent hover:border-gray-200 dark:hover:border-white/10">
-              <div className="w-full h-full bg-emerald-600 flex items-center justify-center text-white font-bold">A</div>
-            </button>
-          </div>
+        <div className="md:hidden">
+          <StickyHeader title="Lịch Đặt Sân" />
+        </div>
 
-          {/* Date Picker */}
+        {/* Date Picker */}
+        <div className="bg-background-light dark:bg-background-dark z-10 sticky top-[73px] md:top-0 border-b border-slate-200 dark:border-slate-800">
           <DateSelector selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-        </header>
+        </div>
 
         {/* Timeline Scroll Area */}
         {isLoading ? (
@@ -155,26 +150,10 @@ export default function SchedulePage() {
           </button>
         </div>
 
-        {/* Bottom Navigation */}
+        {/* Mobile Nav (if viewed on mobile) */}
         <div className="md:hidden flex-none z-50">
           <BottomNav />
         </div>
-        {/* Styles */}
-        <style jsx global>{`
-        .pt-safe-top {
-            padding-top: env(safe-area-inset-top, 0px);
-        }
-        .pb-safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-      `}</style>
       </div>
     </div>
   );
