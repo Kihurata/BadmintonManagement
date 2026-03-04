@@ -3,14 +3,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, CalendarDays, Receipt, Package, Users } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Receipt, Package, Users, House } from 'lucide-react';
+import { logout } from '@/app/(auth)/actions';
 
 export function Sidebar() {
     const pathname = usePathname();
 
     const navItems = [
-        { icon: <LayoutDashboard className="size-5" />, label: 'Tổng quan', href: '/dashboard', active: pathname === '/dashboard' },
-        { icon: <CalendarDays className="size-5" />, label: 'Lịch đặt', href: '/', active: pathname === '/' },
+        { icon: <House className="size-5" />, label: 'Trang chủ', href: '/', active: pathname === '/' },
+        { icon: <LayoutDashboard className="size-5" />, label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' },
+        { icon: <CalendarDays className="size-5" />, label: 'Lịch đặt', href: '/schedule', active: pathname === '/schedule' },
         { icon: <Receipt className="size-5" />, label: 'Hóa đơn', href: '/invoices', active: pathname === '/invoices' },
         { icon: <Package className="size-5" />, label: 'Kho hàng', href: '/products', active: pathname === '/products' },
         { icon: <Users className="size-5" />, label: 'Khách hàng', href: '/customers', active: pathname === '/customers' },
@@ -44,14 +46,19 @@ export function Sidebar() {
             </nav>
 
             <div className="p-4 border-t border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-3 px-4 py-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-gray-500 text-sm">person</span>
+                <div className="flex items-center justify-between px-4 py-3 group">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-gray-500 text-sm">person</span>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold">Admin User</p>
+                            <p className="text-xs text-gray-500">Quản lý</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-sm font-bold">Admin User</p>
-                        <p className="text-xs text-gray-500">Quản lý</p>
-                    </div>
+                    <button onClick={() => logout()} className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10" title="Đăng xuất">
+                        <span className="material-symbols-outlined text-xl">logout</span>
+                    </button>
                 </div>
             </div>
         </aside>

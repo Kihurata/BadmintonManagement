@@ -8,6 +8,7 @@ import { TopProducts } from "@/components/dashboard/top-products";
 import { DebtorList } from "@/components/dashboard/debtor-list";
 import { Loader2 } from "lucide-react";
 import { subMonths, format } from "date-fns";
+import { StickyHeader } from "@/components/home/sticky-header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
@@ -207,6 +208,9 @@ export default function DashboardPage() {
             <Sidebar />
 
             <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative">
+                <div className="md:hidden">
+                    <StickyHeader title="Báo cáo" />
+                </div>
                 <main className="flex-1 overflow-y-auto w-full p-6 md:p-10 pb-24 md:pb-10 no-scrollbar">
                     <div className="max-w-7xl mx-auto space-y-8">
                         <header className="mb-8">
@@ -234,7 +238,7 @@ export default function DashboardPage() {
                 </main>
 
                 {/* Mobile Nav (if viewed on mobile) */}
-                <div className="md:hidden flex-none z-50">
+                <div className="md:hidden z-50 sticky bottom-0 left-0 right-0 w-full mt-auto">
                     <BottomNav />
                 </div>
             </div>
