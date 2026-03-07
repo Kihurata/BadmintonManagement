@@ -1,4 +1,3 @@
-
 import { format, addDays, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
@@ -9,8 +8,17 @@ interface DateSelectorProps {
 }
 
 export function DateSelector({ selectedDate, onSelectDate }: DateSelectorProps) {
-    const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i - 3));
+    // Generate dates around the currently selected date, rather than always today
+    const dates = Array.from({ length: 14 }, (_, i) => addDays(selectedDate, i - 3));
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.value) return;
+        const newDate = new Date(e.target.value);
+        if (!isNaN(newDate.getTime())) {
+            onSelectDate(newDate);
+        }
+    };
 
     return (
         <div className="flex items-center gap-2 pl-4 py-2">
@@ -47,10 +55,16 @@ export function DateSelector({ selectedDate, onSelectDate }: DateSelectorProps) 
                     );
                 })}
             </div>
-            <div className="pr-4 pl-1">
-                <button className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-white/5 text-midnight dark:text-white shadow-sm border border-gray-100 dark:border-white/5">
+            <div className="pr-4 pl-1 relative">
+                <button className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-white/5 text-midnight dark:text-white shadow-sm border border-gray-100 dark:border-white/5 pointer-events-none">
                     <span className="material-symbols-outlined">calendar_month</span>
                 </button>
+                <input
+                    type="date"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    onChange={handleDateChange}
+                    value={format(selectedDate, 'yyyy-MM-dd')}
+                />
             </div>
         </div>
     );
