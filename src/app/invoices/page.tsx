@@ -52,7 +52,7 @@ export default function InvoicesPage() {
                             <button
                                 onClick={handleCloseDay}
                                 disabled={generating}
-                                className="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-colors disabled:opacity-50 flex items-center gap-1 h-9 border-2 border-slate-900 dark:border-white"
+                                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
                                 title="Kết thúc ngày"
                             >
                                 {generating ? '...' : (
@@ -71,11 +71,11 @@ export default function InvoicesPage() {
                             <button
                                 onClick={handleCloseDay}
                                 disabled={generating}
-                                className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] border-2 border-slate-900 dark:border-red-900 transition-transform active:translate-y-1 active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
                             >
                                 {generating ? 'Đang xử lý...' : (
                                     <>
-                                        <span className="material-symbols-outlined font-bold">lock_clock</span>
+                                        <span className="material-symbols-outlined">lock_clock</span>
                                         Kết thúc ngày
                                     </>
                                 )}

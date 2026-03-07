@@ -1,20 +1,11 @@
-
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/server';
 import { calculateRentalFee } from '@/lib/pricing';
 
 export async function POST(request: Request) {
     try {
-        // Initialize Supabase Client inside the function scope to prevent build-time crashes
-        // if NEXT_PUBLIC_SUPABASE_URL is missing during static analysis.
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        const supabase = createClient();
 
-        if (!supabaseUrl || !supabaseKey) {
-            return NextResponse.json({ error: "Missing Supabase Environment Variables" }, { status: 500 });
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseKey);
 
         const { date } = await request.json();
         const targetDate = date ? new Date(date) : new Date();
@@ -34,10 +25,6 @@ export async function POST(request: Request) {
         // Supabase doesn't support sophisticated "loading" of filtering related tables easily in one go without join-filter.
         // We'll fetch bookings first, then filter out those with invoices.
 
-        const startBoundary = new Date(targetDate);
-        startBoundary.setDate(startBoundary.getDate() - 14);
-        startBoundary.setHours(0, 0, 0, 0);
-
         const { data: bookings, error: bookingError } = await supabase
             .from('bookings')
             .select(`
@@ -46,8 +33,8 @@ export async function POST(request: Request) {
                 courts ( * ),
                 invoices ( id )
             `)
-            // Start from 14 days ago
-            .gte('start_time', startBoundary.toISOString())
+            // Start from beginning of the month
+            .gte('start_time', new Date(targetDate.getFullYear(), targetDate.getMonth(), 1).toISOString())
             .lte('start_time', endOfDay.toISOString())
             .in('status', ['CONFIRMED', 'CHECKED_IN']); // Only open bookings
 

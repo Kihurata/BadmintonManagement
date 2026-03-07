@@ -78,7 +78,7 @@ export function TransactionHistory() {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col md:flex-row items-center gap-4 bg-white dark:bg-[#0d1b17] p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
-                <div className="flex-1 w-full flex items-center gap-2">
+                <label className="flex-1 w-full flex items-center gap-2 cursor-pointer">
                     <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">Từ ngày</span>
                     <input
                         type="date"
@@ -86,8 +86,8 @@ export function TransactionHistory() {
                         onChange={(e) => setStartDate(e.target.value)}
                         className="w-full bg-transparent border-0 border-b-2 border-slate-900 dark:border-white font-bold text-slate-900 dark:text-white px-0 py-2 focus:ring-0 focus:border-emerald-500 transition-colors"
                     />
-                </div>
-                <div className="flex-1 w-full flex items-center gap-2">
+                </label>
+                <label className="flex-1 w-full flex items-center gap-2 cursor-pointer">
                     <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">Đến ngày</span>
                     <input
                         type="date"
@@ -95,10 +95,10 @@ export function TransactionHistory() {
                         onChange={(e) => setEndDate(e.target.value)}
                         className="w-full bg-transparent border-0 border-b-2 border-slate-900 dark:border-white font-bold text-slate-900 dark:text-white px-0 py-2 focus:ring-0 focus:border-emerald-500 transition-colors"
                     />
-                </div>
+                </label>
                 <button
                     onClick={fetchInvoices}
-                    className="w-full md:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold tracking-wider uppercase text-sm sharp flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                    className="w-full md:w-auto px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-slate-200 transition-all active:scale-[0.98]"
                 >
                     <span className="material-symbols-outlined text-[18px]">search</span>
                     Lọc

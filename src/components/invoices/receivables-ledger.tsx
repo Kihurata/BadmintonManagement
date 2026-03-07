@@ -4,6 +4,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { InvoiceList, Invoice } from '@/components/invoices/invoice-list';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Debtor {
     customerId: string;
@@ -18,6 +25,13 @@ export function ReceivablesLedger() {
     const [debtors, setDebtors] = useState<Debtor[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
+
+    // Payment Modal State
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [selectedDebtor, setSelectedDebtor] = useState<Debtor | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('BANK_TRANSFER');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const fetchUnpaidInvoices = async () => {
         setLoading(true);
@@ -93,10 +107,45 @@ export function ReceivablesLedger() {
         fetchUnpaidInvoices();
     }, []);
 
-    const handlePayAll = (debtor: Debtor, e: React.MouseEvent) => {
+    const openPaymentModal = (debtor: Debtor, e: React.MouseEvent) => {
         e.stopPropagation();
-        alert(`Tính năng thu công nợ tổng cho ${debtor.customerName} với số tiền ${formatCurrency(debtor.totalDebt)} đang được phát triển.`);
-        // Note: Real implementation would create a consolidated payment or update all invoice statuses to PAID
+        setSelectedDebtor(debtor);
+        setPaymentMethod('BANK_TRANSFER');
+        setSuccessMessage(null);
+        setPaymentModalOpen(true);
+    };
+
+    const confirmPayment = async () => {
+        if (!selectedDebtor) return;
+        setIsSubmitting(true);
+
+        try {
+            const res = await fetch('/api/invoices/pay-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer_id: selectedDebtor.customerId === 'guest' ? null : selectedDebtor.customerId,
+                    payment_method: paymentMethod
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                setSuccessMessage(`Đã thu thành công ${formatCurrency(selectedDebtor.totalDebt)} từ ${selectedDebtor.customerName}`);
+                fetchUnpaidInvoices();
+                setTimeout(() => {
+                    setPaymentModalOpen(false);
+                    setSuccessMessage(null);
+                }, 1500);
+            } else {
+                alert('Có lỗi xảy ra: ' + data.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối khi thanh toán');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (loading) {
@@ -118,16 +167,16 @@ export function ReceivablesLedger() {
     return (
         <div className="flex flex-col gap-4">
             {/* Ledger Header */}
-            <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-4 border-2 border-slate-900 dark:border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center justify-between bg-white dark:bg-[#0d1b17] p-6 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
                 <div>
-                    <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mt-1">Tổng công nợ</p>
-                    <h2 className="text-2xl md:text-3xl font-black text-red-600 tracking-tight">
+                    <p className="text-sm font-medium text-slate-500 mt-1">Tổng công nợ</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-red-600">
                         {formatCurrency(debtors.reduce((sum, d) => sum + d.totalDebt, 0))}
                     </h2>
                 </div>
                 <div className="text-right">
-                    <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mt-1">Khách nợ</p>
-                    <p className="text-xl font-black text-slate-900 dark:text-white">{debtors.length}</p>
+                    <p className="text-sm font-medium text-slate-500 mt-1">Khách nợ</p>
+                    <p className="text-xl font-bold text-slate-900 dark:text-white">{debtors.length}</p>
                 </div>
             </div>
 
@@ -136,7 +185,7 @@ export function ReceivablesLedger() {
                 {debtors.map((debtor) => {
                     const isExpanded = expandedCustomerId === debtor.customerId;
                     return (
-                        <div key={debtor.customerId} className="flex flex-col border-2 border-slate-900 dark:border-white bg-white dark:bg-[#0d1b17] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all">
+                        <div key={debtor.customerId} className="flex flex-col bg-white dark:bg-[#0d1b17] rounded-xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800">
 
                             {/* Debtor Header Row */}
                             <div
@@ -144,29 +193,29 @@ export function ReceivablesLedger() {
                                 onClick={() => setExpandedCustomerId(isExpanded ? null : debtor.customerId)}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-red-100 text-red-600 border-2 border-red-200 flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined font-bold">person</span>
+                                    <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-xl">person</span>
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-lg text-slate-900 dark:text-white uppercase tracking-wide">
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white">
                                             {debtor.customerName}
                                         </h3>
-                                        <p className="text-sm font-bold text-slate-500">
+                                        <p className="text-sm text-slate-500">
                                             {debtor.customerPhone || 'Không có số ĐT'} • {debtor.invoiceCount} hóa đơn
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 justify-between md:justify-end border-t-2 border-slate-100 md:border-0 pt-4 md:pt-0">
+                                <div className="flex items-center gap-4 justify-between md:justify-end border-t border-slate-100 dark:border-white/5 md:border-0 pt-4 md:pt-0">
                                     <div className="text-left md:text-right">
-                                        <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Nợ chưa thu</p>
-                                        <span className="text-xl font-black text-red-600">
+                                        <p className="text-xs text-slate-500 font-medium mb-1">Nợ chưa thu</p>
+                                        <span className="text-xl font-bold text-red-600">
                                             {formatCurrency(debtor.totalDebt)}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={(e) => handlePayAll(debtor, e)}
-                                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 flex items-center justify-center transition-colors border-2 border-emerald-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]"
+                                            onClick={(e) => openPaymentModal(debtor, e)}
+                                            className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg flex items-center justify-center transition-colors"
                                             title="Thu nợ tất cả"
                                         >
                                             <span className="material-symbols-outlined text-[18px]">payments</span>
@@ -180,8 +229,8 @@ export function ReceivablesLedger() {
 
                             {/* Expanded Invoices */}
                             {isExpanded && (
-                                <div className="p-4 border-t-2 border-slate-900 dark:border-white bg-slate-50 dark:bg-[#11231e]">
-                                    <p className="text-sm font-bold text-slate-500 mb-4 uppercase tracking-widest border-b-2 border-slate-200 pb-2">Chi tiết hóa đơn nợ</p>
+                                <div className="p-4 border-t border-gray-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#11231e]/50">
+                                    <p className="text-sm font-semibold text-slate-500 mb-4 pb-2 border-b border-gray-100 dark:border-white/5">Chi tiết hóa đơn nợ</p>
                                     <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                         <InvoiceList invoices={debtor.invoices} loading={false} onRefresh={fetchUnpaidInvoices} />
                                     </div>
@@ -191,6 +240,95 @@ export function ReceivablesLedger() {
                     );
                 })}
             </div>
+
+            {/* Payment Modal */}
+            <Dialog open={paymentModalOpen} onOpenChange={(open) => {
+                if (!open && !isSubmitting) setPaymentModalOpen(false);
+            }}>
+                <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border-gray-200 dark:border-gray-800">
+                    {successMessage ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <div className="size-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+                                <span className="material-symbols-outlined text-4xl text-emerald-600">check_circle</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-center text-emerald-600 px-4 leading-relaxed">{successMessage}</h3>
+                        </div>
+                    ) : (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-emerald-500">payments</span>
+                                    Xác nhận thanh toán
+                                </DialogTitle>
+                                <DialogDescription className="text-gray-500 dark:text-gray-400">
+                                    Thu toàn bộ công nợ của khách hàng <span className="font-bold text-gray-900 dark:text-white">{selectedDebtor?.customerName}</span>
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="py-6 flex flex-col gap-6">
+                                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/50 flex flex-col items-center justify-center">
+                                    <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-1">Tổng tiền thanh toán</span>
+                                    <span className="text-3xl font-bold text-emerald-700 dark:text-emerald-500">
+                                        {selectedDebtor ? formatCurrency(selectedDebtor.totalDebt) : formatCurrency(0)}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phương thức thanh toán</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all ${paymentMethod === 'BANK_TRANSFER'
+                                                ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                                                : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-500 hover:border-emerald-200'
+                                                }`}
+                                            onClick={() => setPaymentMethod('BANK_TRANSFER')}
+                                        >
+                                            <span className="material-symbols-outlined text-3xl mb-2">account_balance</span>
+                                            <span className="font-semibold text-sm">Chuyển khoản</span>
+                                            {paymentMethod === 'BANK_TRANSFER' && (
+                                                <span className="absolute top-2 right-2 material-symbols-outlined text-emerald-500 text-sm font-bold">check_circle</span>
+                                            )}
+                                        </button>
+                                        <button
+                                            className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all ${paymentMethod === 'CASH'
+                                                ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                                                : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-500 hover:border-emerald-200'
+                                                }`}
+                                            onClick={() => setPaymentMethod('CASH')}
+                                        >
+                                            <span className="material-symbols-outlined text-3xl mb-2">payments</span>
+                                            <span className="font-semibold text-sm">Tiền mặt</span>
+                                            {paymentMethod === 'CASH' && (
+                                                <span className="absolute top-2 right-2 material-symbols-outlined text-emerald-500 text-sm font-bold">check_circle</span>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center mt-2 w-full">
+                                <button
+                                    disabled={isSubmitting}
+                                    className="w-full px-8 py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all disabled:opacity-50 active:scale-[0.98]"
+                                    onClick={confirmPayment}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="animate-spin material-symbols-outlined text-[20px]">progress_activity</span>
+                                            Đang xử lý...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                                            Xác nhận Thu
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
