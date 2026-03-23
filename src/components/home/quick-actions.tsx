@@ -55,7 +55,7 @@ export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick }: Qui
                     icon="inventory_2"
                     label="Kho hàng"
                     href="/products"
-                    colorClass="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white"
+                    colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white"
                 />
                 <QuickActionItem
                     icon="menu_book"

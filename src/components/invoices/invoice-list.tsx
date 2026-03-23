@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { formatCurrency } from "@/lib/utils";
 import { InvoiceDetailDialog } from "./invoice-detail-dialog";
 
-interface Invoice {
+export interface Invoice {
     id: string;
     customer_name: string;
     date: string;
