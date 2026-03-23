@@ -22,6 +22,7 @@ export function StockAdjustmentForm({ onSuccess, onCancel }: StockAdjustmentForm
     const [type, setType] = useState('RESTOCK');
     const [quantity, setQuantity] = useState('');
     const [purchasePrice, setPurchasePrice] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [reason, setReason] = useState('');
     const [loading, setLoading] = useState(false);
     const [pageLoading, setPageLoading] = useState(true);
@@ -73,7 +74,8 @@ export function StockAdjustmentForm({ onSuccess, onCancel }: StockAdjustmentForm
             type: type,
             quantity: changeQty,
             purchase_price: type === 'RESTOCK' && purchasePrice ? parseFloat(purchasePrice) : null,
-            reason: reason
+            reason: reason,
+            payment_method: type === 'RESTOCK' ? paymentMethod : 'CASH',
         };
 
         const { error: logError } = await supabase.from('inventory_logs').insert([logData]);
@@ -176,17 +178,40 @@ export function StockAdjustmentForm({ onSuccess, onCancel }: StockAdjustmentForm
                 </div>
 
                 {type === 'RESTOCK' && (
-                    <div className="space-y-2">
-                        <Label htmlFor="purchasePrice">Giá nhập (VNĐ) / Đơn vị</Label>
-                        <Input
-                            id="purchasePrice"
-                            type="number"
-                            value={purchasePrice}
-                            onChange={(e) => setPurchasePrice(e.target.value)}
-                            placeholder="0"
-                            min="0"
-                        />
-                    </div>
+                    <>
+                        <div className="space-y-2">
+                            <Label htmlFor="purchasePrice">Giá nhập (VNĐ) / Đơn vị</Label>
+                            <Input
+                                id="purchasePrice"
+                                type="number"
+                                value={purchasePrice}
+                                onChange={(e) => setPurchasePrice(e.target.value)}
+                                placeholder="0"
+                                min="0"
+                            />
+                        </div>
+
+                        {/* Payment Method — only for RESTOCK */}
+                        <div className="space-y-2">
+                            <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Thanh toán từ ví</Label>
+                            <div className="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-xl border border-gray-200 dark:border-slate-700">
+                                <label className="flex-1 cursor-pointer">
+                                    <input type="radio" name="stock-payment" value="CASH" checked={paymentMethod === 'CASH'} onChange={() => setPaymentMethod('CASH')} className="peer sr-only" />
+                                    <div className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-gray-500 transition-all peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-emerald-600 peer-checked:shadow-sm">
+                                        <span className="material-symbols-outlined text-base">payments</span>
+                                        <span className="text-sm font-semibold">Tiền mặt</span>
+                                    </div>
+                                </label>
+                                <label className="flex-1 cursor-pointer">
+                                    <input type="radio" name="stock-payment" value="BANK_TRANSFER" checked={paymentMethod === 'BANK_TRANSFER'} onChange={() => setPaymentMethod('BANK_TRANSFER')} className="peer sr-only" />
+                                    <div className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-gray-500 transition-all peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-emerald-600 peer-checked:shadow-sm">
+                                        <span className="material-symbols-outlined text-base">account_balance</span>
+                                        <span className="text-sm font-semibold">Ngân hàng</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </>
                 )}
 
                 <div className="space-y-2">
