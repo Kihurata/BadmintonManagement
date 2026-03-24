@@ -209,7 +209,7 @@ export default function DashboardPage() {
                     products ( id, product_name, is_packable, unit_price, units_per_pack )
                 )
             `).eq("is_paid", true)
-                .gte("created_at", monthStart + "T00:00:00")
+                .gte("created_at", format(startOfMonth(subMonths(new Date(), 5)), "yyyy-MM-dd") + "T00:00:00")
                 .lte("created_at", monthEnd + "T23:59:59"),
             supabase.from("expenses").select("amount, type")
                 .gte("expense_date", monthStart).lte("expense_date", monthEnd),
@@ -237,12 +237,15 @@ export default function DashboardPage() {
         }
 
         paidInvoices?.forEach((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-            totalRevenue += inv.total_amount;
+            const invDate = new Date(inv.created_at);
+            const isCurrentMonth = format(invDate, "yyyy-MM-dd") >= monthStart;
+
+            if (isCurrentMonth) totalRevenue += inv.total_amount;
             let invProdRev = 0;
 
             inv.invoice_items?.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 const itemRev = item.sale_price * item.quantity;
-                invProdRev += itemRev;
+                if (isCurrentMonth) invProdRev += itemRev;
 
                 if (item.products) {
                     const p = item.products;
@@ -262,21 +265,23 @@ export default function DashboardPage() {
                     const itemCogs = unitCost * unitsConsumed;
                     const itemProfit = itemRev - itemCogs;
 
-                    const cur = productMap.get(p.id) || { id: p.id, name: p.product_name, sales: 0, revenue: 0, profit: 0, margin: 0 };
-                    const newRevenue = cur.revenue + itemRev;
-                    const newProfit = cur.profit + itemProfit;
-                    productMap.set(p.id, {
-                        ...cur,
-                        sales: cur.sales + displayQty,
-                        revenue: newRevenue,
-                        profit: newProfit,
-                        margin: newRevenue > 0 ? (newProfit / newRevenue) * 100 : 0,
-                    });
+                    if (isCurrentMonth) {
+                        const cur = productMap.get(p.id) || { id: p.id, name: p.product_name, sales: 0, revenue: 0, profit: 0, margin: 0 };
+                        const newRevenue = cur.revenue + itemRev;
+                        const newProfit = cur.profit + itemProfit;
+                        productMap.set(p.id, {
+                            ...cur,
+                            sales: cur.sales + displayQty,
+                            revenue: newRevenue,
+                            profit: newProfit,
+                            margin: newRevenue > 0 ? (newProfit / newRevenue) * 100 : 0,
+                        });
 
-                    productProfit += itemProfit;
+                        productProfit += itemProfit;
+                    }
                 }
             });
-            productRevenue += invProdRev;
+            if (isCurrentMonth) productRevenue += invProdRev;
 
             const mk = format(new Date(inv.created_at), "MM/yyyy");
             if (monthlyRevenue.has(mk)) monthlyRevenue.set(mk, (monthlyRevenue.get(mk) || 0) + inv.total_amount);
@@ -325,7 +330,7 @@ export default function DashboardPage() {
         const [{ data: expenses }, { data: restocks }] = await Promise.all([
             supabase
                 .from("expenses")
-                .select("id, description, amount, type, payment_method, expense_date")
+                .select("id, title, amount, type, payment_method, expense_date")
                 .order("expense_date", { ascending: false })
                 .limit(20),
             supabase
@@ -341,7 +346,7 @@ export default function DashboardPage() {
             ...(expenses || []).map((e: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
                 id: "exp-" + e.id,
                 date: e.expense_date,
-                label: e.description || (e.type === "FIXED" ? "Chi phí cố định" : "Chi phí biến động"),
+                label: e.title || (e.type === "FIXED" ? "Chi phí cố định" : "Chi phí biến động"),
                 amount: e.amount,
                 category: e.type as RecentExpenseItem["category"],
                 paymentMethod: e.payment_method || "CASH",
