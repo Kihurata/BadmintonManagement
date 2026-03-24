@@ -32,9 +32,10 @@ function QuickActionItem({ icon, label, colorClass, href, onClick }: QuickAction
 interface QuickActionsSectionProps {
     onNewBookingClick?: () => void;
     onQuickSaleClick?: () => void;
+    onAddExpenseClick?: () => void;
 }
 
-export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick }: QuickActionsSectionProps) {
+export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick, onAddExpenseClick }: QuickActionsSectionProps) {
     return (
         <div>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-3">Thao tác Nhanh</h3>
@@ -58,9 +59,9 @@ export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick }: Qui
                     colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white"
                 />
                 <QuickActionItem
-                    icon="menu_book"
-                    label="Báo cáo ngày"
-                    href="/dashboard"
+                    icon="receipt_long"
+                    label="Nhập chi phí"
+                    onClick={onAddExpenseClick}
                     colorClass="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-500 group-hover:text-white"
                 />
             </div>

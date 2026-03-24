@@ -21,6 +21,7 @@ import { BookingForm } from "@/components/booking/booking-form";
 import { BookingDetails } from "@/components/booking/booking-details";
 import { CheckoutForm } from "@/components/booking/checkout-form";
 import { QuickSaleForm } from "@/components/booking/quick-sale-form";
+import { ExpenseForm } from "@/components/home/expense-form";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,7 @@ export default function HomePage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isBookingDetailsOpen, setIsBookingDetailsOpen] = useState(false);
   const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false);
+  const [isExpenseOpen, setIsExpenseOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -195,6 +197,7 @@ export default function HomePage() {
                   <QuickActionsSection
                     onNewBookingClick={() => setIsBookingOpen(true)}
                     onQuickSaleClick={() => setIsQuickSaleOpen(true)}
+                    onAddExpenseClick={() => setIsExpenseOpen(true)}
                   />
 
                   {/* Overview Metrics */}
@@ -229,6 +232,15 @@ export default function HomePage() {
                 handleRefresh();
               }}
               onCancel={() => setIsQuickSaleOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isExpenseOpen} onOpenChange={setIsExpenseOpen}>
+          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
+            <ExpenseForm
+              onSuccess={() => setIsExpenseOpen(false)}
+              onCancel={() => setIsExpenseOpen(false)}
             />
           </DialogContent>
         </Dialog>

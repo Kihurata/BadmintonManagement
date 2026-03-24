@@ -1,5 +1,5 @@
 
-import { set, isBefore, isAfter, differenceInMinutes } from 'date-fns';
+import { isBefore, isAfter, differenceInMinutes } from 'date-fns';
 import { Court } from '@/types';
 
 export interface PricingResult {
@@ -17,10 +17,20 @@ export function calculateRentalFee(
     customerType: 'LOYAL' | 'GUEST' = 'GUEST'
 ): PricingResult {
     const EVENING_START_HOUR = 18; // 6 PM
+    const VN_TZ_OFFSET_MS = 7 * 60 * 60 * 1000;
 
-    // Define pivot time (17:00 on the same day as startTime)
-    // NOTE: Assumes booking within a single day for now.
-    const eveningPivot = set(startTime, { hours: EVENING_START_HOUR, minutes: 0, seconds: 0, milliseconds: 0 });
+    // Shift to VN epoch to safely calculate boundaries regardless of server timezone (Vercel uses UTC)
+    const startMs = startTime.getTime();
+    const vnStartMs = startMs + VN_TZ_OFFSET_MS;
+
+    // Floor to get 00:00:00 VN time
+    const startOfDayVnMs = vnStartMs - (vnStartMs % (24 * 60 * 60 * 1000));
+
+    // Add 18 hours to get the pivot point in VN time, then shift back to real UTC epoch
+    const eveningPivotVnMs = startOfDayVnMs + (EVENING_START_HOUR * 60 * 60 * 1000);
+    const eveningPivotMs = eveningPivotVnMs - VN_TZ_OFFSET_MS;
+
+    const eveningPivot = new Date(eveningPivotMs);
 
     let morningMins = 0;
     let eveningMins = 0;
