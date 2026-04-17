@@ -144,8 +144,6 @@ export default function DashboardPage() {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const currentMonthLabel = format(selectedDate, "MM/yyyy", { locale: vi });
-    const monthStart = format(startOfMonth(selectedDate), "yyyy-MM-dd");
-    const monthEnd = format(endOfMonth(selectedDate), "yyyy-MM-dd");
 
     const fetchAll = useCallback(async () => {
         setLoading(true);
@@ -275,7 +273,7 @@ export default function DashboardPage() {
                     const itemCogs = unitCost * unitsConsumed;
                     const itemProfit = itemRev - itemCogs;
 
-                    if (isCurrentMonth) {
+                    if (isTargetMonth) {
                         const cur = productMap.get(p.id) || { id: p.id, name: p.product_name, sales: 0, revenue: 0, profit: 0, margin: 0 };
                         const newRevenue = cur.revenue + itemRev;
                         const newProfit = cur.profit + itemProfit;
