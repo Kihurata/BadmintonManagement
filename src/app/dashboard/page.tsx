@@ -150,15 +150,23 @@ export default function DashboardPage() {
     const fetchAll = useCallback(async () => {
         setLoading(true);
         try {
-            await Promise.all([fetchTreasury(), fetchMonthData(), fetchInventoryData()]);
+            // Recalculate bounds inside to be absolutely sure we use current state if closures are tricky
+            const start = format(startOfMonth(selectedDate), "yyyy-MM-dd");
+            const end = format(endOfMonth(selectedDate), "yyyy-MM-dd");
+            
+            await Promise.all([
+                fetchTreasury(), 
+                fetchMonthData(selectedDate, start, end), 
+                fetchInventoryData()
+            ]);
         } catch (err) {
             console.error("Dashboard fetch error:", err);
         } finally {
             setLoading(false);
         }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => { fetchAll(); }, [fetchAll, selectedDate]);
+    useEffect(() => { fetchAll(); }, [fetchAll]);
 
     // ── 1. Treasury (All-time) + Working Capital ──────────────────────
     async function fetchTreasury() {
@@ -202,7 +210,7 @@ export default function DashboardPage() {
     }
 
     // ── 2. Month Metrics (Accrual P&L) ───────────────────────────────
-    async function fetchMonthData() {
+    async function fetchMonthData(targetDate: Date, start: string, end: string) {
         const [{ data: paidInvoices }, { data: expenses }, { data: allRestocks }] = await Promise.all([
             supabase.from("invoices").select(`
                 total_amount, created_at,
@@ -211,10 +219,10 @@ export default function DashboardPage() {
                     products ( id, product_name, is_packable, unit_price, units_per_pack )
                 )
             `).eq("is_paid", true)
-                .gte("created_at", format(startOfMonth(subMonths(selectedDate, 5)), "yyyy-MM-dd") + "T00:00:00")
-                .lte("created_at", monthEnd + "T23:59:59"),
+                .gte("created_at", format(startOfMonth(subMonths(targetDate, 5)), "yyyy-MM-dd") + "T00:00:00")
+                .lte("created_at", end + "T23:59:59"),
             supabase.from("expenses").select("amount, type")
-                .gte("expense_date", monthStart).lte("expense_date", monthEnd),
+                .gte("expense_date", start).lte("expense_date", end),
             // All-time restocks to determine cost_price per product
             supabase.from("inventory_logs").select("product_id, quantity, purchase_price, created_at")
                 .eq("type", "RESTOCK").gt("quantity", 0)
@@ -235,19 +243,19 @@ export default function DashboardPage() {
         const monthlyRevenue = new Map<string, number>();
 
         for (let i = 5; i >= 0; i--) {
-            monthlyRevenue.set(format(subMonths(selectedDate, i), "MM/yyyy"), 0);
+            monthlyRevenue.set(format(subMonths(targetDate, i), "MM/yyyy"), 0);
         }
 
         paidInvoices?.forEach((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
             const invDate = new Date(inv.created_at);
-            const isCurrentMonth = format(invDate, "yyyy-MM-dd") >= monthStart;
+            const isTargetMonth = format(invDate, "yyyy-MM-dd") >= start;
 
-            if (isCurrentMonth) totalRevenue += inv.total_amount;
+            if (isTargetMonth) totalRevenue += inv.total_amount;
             let invProdRev = 0;
 
             inv.invoice_items?.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 const itemRev = item.sale_price * item.quantity;
-                if (isCurrentMonth) invProdRev += itemRev;
+                if (isTargetMonth) invProdRev += itemRev;
 
                 if (item.products) {
                     const p = item.products;
@@ -283,7 +291,7 @@ export default function DashboardPage() {
                     }
                 }
             });
-            if (isCurrentMonth) productRevenue += invProdRev;
+            if (isTargetMonth) productRevenue += invProdRev;
 
             const mk = format(new Date(inv.created_at), "MM/yyyy");
             if (monthlyRevenue.has(mk)) monthlyRevenue.set(mk, (monthlyRevenue.get(mk) || 0) + inv.total_amount);
@@ -314,7 +322,7 @@ export default function DashboardPage() {
         );
 
         // Recent Expenses: fetch & merge expenses + restock logs
-        await fetchRecentExpenses();
+        await fetchRecentExpenses(start, end);
     }
 
     // ── 3. Inventory: Low Stock Alert ─────────────────────────────────
@@ -328,11 +336,12 @@ export default function DashboardPage() {
     }
 
     // ── 4. Recent Expenses (expenses + restocks) ───────────────────────
-    async function fetchRecentExpenses() {
+    async function fetchRecentExpenses(start: string, end: string) {
         const [{ data: expenses }, { data: restocks }] = await Promise.all([
             supabase
                 .from("expenses")
                 .select("id, title, amount, type, payment_method, expense_date")
+                .gte("expense_date", start).lte("expense_date", end)
                 .order("expense_date", { ascending: false })
                 .limit(20),
             supabase
@@ -340,6 +349,7 @@ export default function DashboardPage() {
                 .select("id, purchase_price, reason, created_at, payment_method, products ( product_name )")
                 .eq("type", "RESTOCK")
                 .gt("purchase_price", 0)
+                .gte("created_at", start + "T00:00:00").lte("created_at", end + "T23:59:59")
                 .order("created_at", { ascending: false })
                 .limit(20),
         ]);
