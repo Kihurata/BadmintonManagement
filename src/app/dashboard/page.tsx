@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
-import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, subMonths, addMonths } from "date-fns";
 import { vi } from "date-fns/locale";
 import { StickyHeader } from "@/components/home/sticky-header";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -141,9 +141,11 @@ export default function DashboardPage() {
     const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>([]);
     const [reorderCopied, setReorderCopied] = useState(false);
 
-    const currentMonth = format(new Date(), "MM/yyyy", { locale: vi });
-    const monthStart = format(startOfMonth(new Date()), "yyyy-MM-dd");
-    const monthEnd = format(endOfMonth(new Date()), "yyyy-MM-dd");
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const currentMonthLabel = format(selectedDate, "MM/yyyy", { locale: vi });
+    const monthStart = format(startOfMonth(selectedDate), "yyyy-MM-dd");
+    const monthEnd = format(endOfMonth(selectedDate), "yyyy-MM-dd");
 
     const fetchAll = useCallback(async () => {
         setLoading(true);
@@ -156,7 +158,7 @@ export default function DashboardPage() {
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => { fetchAll(); }, [fetchAll]);
+    useEffect(() => { fetchAll(); }, [fetchAll, selectedDate]);
 
     // ── 1. Treasury (All-time) + Working Capital ──────────────────────
     async function fetchTreasury() {
@@ -209,7 +211,7 @@ export default function DashboardPage() {
                     products ( id, product_name, is_packable, unit_price, units_per_pack )
                 )
             `).eq("is_paid", true)
-                .gte("created_at", format(startOfMonth(subMonths(new Date(), 5)), "yyyy-MM-dd") + "T00:00:00")
+                .gte("created_at", format(startOfMonth(subMonths(selectedDate, 5)), "yyyy-MM-dd") + "T00:00:00")
                 .lte("created_at", monthEnd + "T23:59:59"),
             supabase.from("expenses").select("amount, type")
                 .gte("expense_date", monthStart).lte("expense_date", monthEnd),
@@ -233,7 +235,7 @@ export default function DashboardPage() {
         const monthlyRevenue = new Map<string, number>();
 
         for (let i = 5; i >= 0; i--) {
-            monthlyRevenue.set(format(subMonths(new Date(), i), "MM/yyyy"), 0);
+            monthlyRevenue.set(format(subMonths(selectedDate, i), "MM/yyyy"), 0);
         }
 
         paidInvoices?.forEach((inv: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -398,9 +400,43 @@ export default function DashboardPage() {
                     <div className="max-w-7xl mx-auto space-y-6">
 
                         {/* Page Header */}
-                        <header className="hidden md:block">
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Buồng lái Tài chính</h1>
-                            <p className="text-gray-500 dark:text-gray-400 mt-1">Ngân quỹ lũy kế & hiệu suất kinh doanh tháng {currentMonth}.</p>
+                        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Buồng lái Tài chính</h1>
+                                <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm md:text-base">Ngân quỹ lũy kế & hiệu suất kinh doanh tháng {currentMonthLabel}.</p>
+                            </div>
+                            
+                            {/* Month Selector */}
+                            <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-1 shadow-sm w-fit">
+                                <button
+                                    onClick={() => setSelectedDate(subMonths(selectedDate, 1))}
+                                    className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-2xl">chevron_left</span>
+                                </button>
+                                <div className="px-4 flex flex-col items-center min-w-[120px]">
+                                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none mb-1">Thời gian báo cáo</span>
+                                    <span className="text-sm font-black text-gray-900 dark:text-white tabular-nums">
+                                        {format(selectedDate, "MM / yyyy")}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedDate(addMonths(selectedDate, 1))}
+                                    className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors"
+                                    disabled={format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy")}
+                                >
+                                    <span className={cn("material-symbols-outlined text-2xl", 
+                                        format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy") && "opacity-20"
+                                    )}>chevron_right</span>
+                                </button>
+                                <div className="h-6 w-px bg-gray-100 dark:bg-slate-700 mx-1" />
+                                <button
+                                    onClick={() => setSelectedDate(new Date())}
+                                    className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all"
+                                >
+                                    Hiện tại
+                                </button>
+                            </div>
                         </header>
 
                         {/* ── SECTION 1: Treasury ───────────────────── */}
@@ -434,7 +470,7 @@ export default function DashboardPage() {
                         <section>
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="material-symbols-outlined text-gray-400 text-lg">bar_chart</span>
-                                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lãi / Lỗ tháng {currentMonth}</h2>
+                                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lãi / Lỗ tháng {currentMonthLabel}</h2>
                             </div>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
