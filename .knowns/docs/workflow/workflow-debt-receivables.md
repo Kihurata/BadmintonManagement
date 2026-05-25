@@ -2,7 +2,7 @@
 title: workflow-debt-receivables
 description: Managing customer receivables, bulk debt payments, and day-end close logic.
 createdAt: '2026-05-24T09:04:19.614Z'
-updatedAt: '2026-05-24T09:04:19.614Z'
+updatedAt: '2026-05-25T08:22:08.014Z'
 tags: []
 ---
 
@@ -16,11 +16,9 @@ Tài liệu này mô tả chi tiết nghiệp vụ theo dõi công nợ khách h
 
 Đặc thù câu lạc bộ thể thao thường cho phép khách hàng quen ghi nợ chi phí chơi sân hoặc tiền nước uống để thanh toán gộp cuối tháng. Hệ thống hỗ trợ:
 1. **Sổ Thu Chi (Invoices Ledger)**: Phân tách thành 2 chế độ xem:
-   - **Công Nợ (Receivables)**: Gom nhóm tất cả hóa đơn chưa thanh toán theo từng khách hàng. Cho phép xem chi tiết từng hóa đơn nợ và bấm **Thu Nợ Nhanh** gộp tất cả hóa đơn nợ của khách đó.
-   - **Lịch Sử Giao Dịch (Transaction History)**: Nhật ký hiển thị các hóa đơn đã thanh toán theo trình tự thời gian, hỗ trợ lọc theo ngày.
-2. **Chốt Ca Cuối Ngày (Day-End Close)**: Cuối ngày, nhân viên nhấn nút "Kết thúc ngày". Hệ thống tự động quét toàn bộ ca chơi đang hoạt động (`CHECKED_IN`) hoặc đã đặt lịch nhưng chưa làm thủ tục thanh toán (`CONFIRMED`), tự động chốt giờ theo lịch hẹn, tính tiền sân, đổi trạng thái booking thành `COMPLETED` và kết xuất hóa đơn nợ (`is_paid = false`) tương ứng với khách hàng để tránh bỏ quên doanh thu.
-
----
+   - **Công Nợ (Receivables)**: Gom nhóm tất cả hóa đơn chưa thanh toán theo từng khách hàng. Cho phép xem chi tiết từng hóa đơn nợ và bấm **Thu Nợ Nhanh** gộp tất cả hóa đơn nợ của khách đó. *(Chỉ áp dụng cho vai trò Quản lý - OWNER/MANAGER, bị chặn đối với Nhân viên - STAFF)*.
+   - **Lịch Sử Giao Dịch (Transaction History)**: Nhật ký hiển thị các hóa đơn đã thanh toán theo trình tự thời gian, hỗ trợ lọc theo ngày. *(Nhân viên và Quản lý đều có quyền truy cập)*.
+2. **Chốt Ca Cuối Ngày (Day-End Close)**: Cuối ngày, quản lý nhấn nút 'Kết thúc ngày'. Hệ thống tự động quét toàn bộ ca chơi đang hoạt động (`CHECKED_IN`) hoặc đã đặt lịch nhưng chưa làm thủ tục thanh toán (`CONFIRMED`), tự động chốt giờ theo lịch hẹn, tính tiền sân, đổi trạng thái booking thành `COMPLETED` và kết xuất hóa đơn nợ (`is_paid = false`) tương ứng với khách hàng để tránh bỏ quên doanh thu. *(Chỉ áp dụng cho vai trò Quản lý - OWNER/MANAGER, nút bấm bị ẩn hoàn toàn đối với Nhân viên - STAFF)*.
 
 ## 2. Biểu đồ Luồng Xử lý (Workflow Diagram)
 

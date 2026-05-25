@@ -2,7 +2,7 @@
 title: CONVENTIONS
 description: Development guidelines, code style, state management practices, and API design conventions.
 createdAt: '2026-05-24T08:36:44.396Z'
-updatedAt: '2026-05-24T09:04:14.022Z'
+updatedAt: '2026-05-25T08:19:55.768Z'
 tags:
   - core
 ---
@@ -52,3 +52,11 @@ This document outlines the coding standards, patterns, and conventions used thro
   * Link related tasks, documentation, and specs using references like task-123 or @doc/workflow/workflow-booking-checkin
   * Never manually edit Knowns metadata block (frontmatter) in `.knowns/` markdown files without using the CLI tools or keeping formatting intact.
 * **Validation**: Run `knowns validate` after making changes to documentation, templates, or tasks.
+
+
+## 6. Access Control & Authorization
+
+* **User Roles**: The system separates users into `OWNER` / `MANAGER` (Managers) and `STAFF` (Employees).
+* **Role Hook**: Client components must use the `useUserRole` hook from `@/components/auth-provider` to access the user role and email.
+* **Client Gating**: Hide write buttons, tabs, or forms if the user role is `STAFF`.
+* **Route Protection**: Sensitive routes (like `/dashboard` and `/onboarding`) must redirect `STAFF` users to `/` with an error message in the query params.

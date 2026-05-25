@@ -2,7 +2,7 @@
 title: ARCHITECTURE
 description: Core architectural patterns, system components, data flow, and DB synchronization triggers.
 createdAt: '2026-05-24T08:36:04.423Z'
-updatedAt: '2026-05-24T08:36:42.409Z'
+updatedAt: '2026-05-25T08:20:05.566Z'
 tags:
   - core
 ---
@@ -61,3 +61,10 @@ To ensure stock consistency and avoid race conditions, the system delegates stoc
 For critical multi-table transactions, we use database functions (RPCs) to ensure atomicity:
 * `check_in_booking`: Starts a session. Updates booking state to `CHECKED_IN`, calculates initial court fees, and creates a pending unpaid invoice (`is_paid = false`). Refer to @doc/workflow/workflow-booking-checkin.
 * `close_booking_and_invoice`: Used in the day-end routine to close active sessions, calculate final fees, and log unpaid invoices as receivables (debt). Refer to @doc/workflow/workflow-debt-receivables.
+
+
+### 3. Role-Based Authorization
+The application uses client-side gating and route redirection based on user roles retrieved from the `user_roles` database table.
+* **Role Retrieval**: The `AuthProvider` fetches the logged-in user's role by querying `user_roles.role` where `user_id = auth.uid()`.
+* **State Management**: The resolved role state is shared globally through `UserRoleContext` (`useUserRole` hook).
+* **Route Protection**: Client-side layouts/pages (`/dashboard`, `/onboarding`) intercept access for `STAFF` roles and redirect them to `/?error=...`.
