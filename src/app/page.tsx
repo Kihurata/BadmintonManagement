@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { startOfToday, format, isAfter, isBefore } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -24,7 +24,7 @@ import { CheckoutForm } from "@/components/booking/checkout-form";
 import { QuickSaleForm } from "@/components/booking/quick-sale-form";
 import { ExpenseForm } from "@/components/home/expense-form";
 
-export default function HomePage() {
+function HomePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -308,5 +308,17 @@ export default function HomePage() {
         `}</style>
       </div>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   );
 }
