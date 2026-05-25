@@ -7,7 +7,8 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
-import { Loader2, Plus, Minus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { ProductSelectorList, type ProductSelectorItem } from './product-selector-list';
 
 interface BookingDetailsProps {
     bookingId: string;
@@ -27,7 +28,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
     // POS / Invoice State
     const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-    const [products, setProducts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [products, setProducts] = useState<ProductSelectorItem[]>([]);
     const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Fetch Booking & Invoice & Products
@@ -341,6 +342,13 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const startTime = new Date(booking.start_time);
     const endTime = new Date(booking.end_time);
 
+    const itemsQuantities = Object.fromEntries(
+        products.map(p => {
+            const existingItem = invoiceItems.find(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1);
+            return [p.key, existingItem ? existingItem.quantity : 0];
+        })
+    );
+
     return (
         <div className="bg-white dark:bg-[#0d1b17] w-full max-w-md mx-auto rounded-lg overflow-hidden flex flex-col h-full max-h-[90vh]">
             <DialogHeader className="px-6 py-4 border-b border-gray-100 dark:border-white/10">
@@ -459,56 +467,16 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                                 Đang tạo hóa đơn...
                             </div>
                         ) : (
-                            <div className="space-y-3">
-                                {products.map(product => {
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    const existingItem = invoiceItems.find((i: any) =>
-                                        i.product_id === product.productId &&
-                                        Math.abs(i.sale_price - product.price) < 1
-                                    );
-                                    const quantity = existingItem ? existingItem.quantity : 0;
-
-                                    return (
-                                        <div key={product.key} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-3 rounded-xl flex justify-between items-center shadow-sm">
-                                            <div>
-                                                <div className="font-bold text-midnight dark:text-gray-100">{product.name}</div>
-                                                <div className="text-xs text-gray-500">
-                                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)} / {product.unit}
-                                                </div>
-                                            </div>
-
-                                            {quantity === 0 ? (
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-emerald-200 dark:shadow-none"
-                                                    onClick={() => handleAddItem(product)}
-                                                    disabled={actionLoading}
-                                                >
-                                                    <Plus className="size-4 mr-1" /> Thêm
-                                                </Button>
-                                            ) : (
-                                                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                                                    <button
-                                                        onClick={() => handleUpdateQuantity(existingItem, -1, product)}
-                                                        className="size-8 flex items-center justify-center bg-white dark:bg-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
-                                                        disabled={actionLoading}
-                                                    >
-                                                        <Minus className="size-4" />
-                                                    </button>
-                                                    <span className="w-8 text-center font-bold text-lg text-midnight dark:text-white">{quantity}</span>
-                                                    <button
-                                                        onClick={() => handleUpdateQuantity(existingItem, 1, product)}
-                                                        className="size-8 flex items-center justify-center bg-emerald-600 rounded-md shadow-sm text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
-                                                        disabled={actionLoading}
-                                                    >
-                                                        <Plus className="size-4" />
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                            <ProductSelectorList
+                                products={products}
+                                quantities={itemsQuantities}
+                                onAdd={(p) => handleAddItem(p)}
+                                onUpdateQuantity={(p, delta) => {
+                                    const existingItem = invoiceItems.find(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1);
+                                    if (existingItem) handleUpdateQuantity(existingItem, delta, p);
+                                }}
+                                loading={actionLoading}
+                            />
                         )}
                     </div>
                 )}

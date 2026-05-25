@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { PaymentSelector } from '@/components/invoices/payment-selector';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn, formatCurrency } from '@/lib/utils';
-import { Check, ChevronsUpDown, Loader2, Plus, Minus } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { ProductSelectorList, type ProductSelectorItem } from './product-selector-list';
 import {
     Command,
     CommandEmpty,
@@ -20,19 +21,9 @@ interface QuickSaleFormProps {
     onCancel: () => void;
 }
 
-interface ProductItem {
-    key: string;
-    productId: string;
-    name: string;
-    unit: string;
-    price: number;
-    isPack: boolean;
-    deduct: number;
-}
-
 interface CartItem {
     id: string; // generated locally
-    productItem: ProductItem;
+    productItem: ProductSelectorItem;
     quantity: number;
 }
 
@@ -43,7 +34,7 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
     const [customerOpen, setCustomerOpen] = useState(false);
 
     // Products & Cart State
-    const [products, setProducts] = useState<ProductItem[]>([]);
+    const [products, setProducts] = useState<ProductSelectorItem[]>([]);
     const [cart, setCart] = useState<CartItem[]>([]);
 
     // Payment State
@@ -66,7 +57,7 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
                 .order('product_name');
 
             if (prodData) {
-                const processedProducts: ProductItem[] = [];
+                const processedProducts: ProductSelectorItem[] = [];
                 prodData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                     // Base Unit
                     processedProducts.push({
@@ -98,7 +89,7 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
         fetchData();
     }, []);
 
-    const handleUpdateQuantity = (product: ProductItem, delta: number) => {
+    const handleUpdateQuantity = (product: ProductSelectorItem, delta: number) => {
         setCart((prev) => {
             const existing = prev.find(item => item.productItem.key === product.key);
             if (!existing) {
@@ -228,6 +219,8 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
         );
     }
 
+    const cartQuantities = Object.fromEntries(cart.map(item => [item.productItem.key, item.quantity]));
+
     return (
         <div className="bg-white dark:bg-[#0d1b17] w-full max-w-md mx-auto rounded-lg overflow-hidden flex flex-col h-full max-h-[90vh]">
             <div className="flex shrink-0 items-center px-4 pt-6 pb-4 border-b border-gray-100 dark:border-white/10">
@@ -313,57 +306,13 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
                 {/* Products List */}
                 <div className="space-y-3">
                     <Label className="text-xs uppercase font-bold text-gray-500">Sản phẩm / Dịch vụ</Label>
-
-                    {products.length === 0 ? (
-                        <div className="text-center py-4 text-sm text-gray-500">Không có sản phẩm nào trong kho.</div>
-                    ) : (
-                        <div className="space-y-3">
-                            {products.map(product => {
-                                const cartItem = cart.find(i => i.productItem.key === product.key);
-                                const quantity = cartItem ? cartItem.quantity : 0;
-
-                                return (
-                                    <div key={product.key} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-3 rounded-xl flex justify-between items-center shadow-sm">
-                                        <div>
-                                            <div className="font-bold text-midnight dark:text-gray-100">{product.name}</div>
-                                            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                                                {formatCurrency(product.price)} / {product.unit}
-                                            </div>
-                                        </div>
-
-                                        {quantity === 0 ? (
-                                            <Button
-                                                size="sm"
-                                                className="bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 text-emerald-700 font-bold rounded-lg shadow-none"
-                                                onClick={() => handleUpdateQuantity(product, 1)}
-                                                disabled={loading}
-                                            >
-                                                <Plus className="size-4 mr-1" /> Thêm
-                                            </Button>
-                                        ) : (
-                                            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                                                <button
-                                                    onClick={() => handleUpdateQuantity(product, -1)}
-                                                    className="size-8 flex items-center justify-center bg-white dark:bg-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors"
-                                                    disabled={loading}
-                                                >
-                                                    <Minus className="size-4" />
-                                                </button>
-                                                <span className="w-8 text-center font-bold text-lg text-midnight dark:text-white">{quantity}</span>
-                                                <button
-                                                    onClick={() => handleUpdateQuantity(product, 1)}
-                                                    className="size-8 flex items-center justify-center bg-emerald-600 rounded-md shadow-sm text-white hover:bg-emerald-700 transition-colors"
-                                                    disabled={loading}
-                                                >
-                                                    <Plus className="size-4" />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                    <ProductSelectorList
+                        products={products}
+                        quantities={cartQuantities}
+                        onAdd={(p) => handleUpdateQuantity(p, 1)}
+                        onUpdateQuantity={(p, delta) => handleUpdateQuantity(p, delta)}
+                        loading={loading}
+                    />
                 </div>
 
                 {/* Invoice Summary */}
@@ -376,59 +325,13 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
                     </div>
                 )}
 
-                {/* Payment Method */}
-                <div className="pt-2">
-                    <p className="text-black text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Phương thức thanh toán</p>
-                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700">
-                        <label className="flex-1 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                value="CASH"
-                                checked={paymentMethod === 'CASH'}
-                                onChange={() => setPaymentMethod('CASH')}
-                                className="peer sr-only"
-                            />
-                            <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-emerald-600 peer-checked:shadow-sm">
-                                <span className="material-symbols-outlined text-lg">payments</span>
-                                <span className="text-sm font-bold">Tiền mặt</span>
-                            </div>
-                        </label>
-                        <label className="flex-1 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                value="BANK_TRANSFER"
-                                checked={paymentMethod === 'BANK_TRANSFER'}
-                                onChange={() => setPaymentMethod('BANK_TRANSFER')}
-                                className="peer sr-only"
-                            />
-                            <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-emerald-600 peer-checked:shadow-sm">
-                                <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
-                                <span className="text-sm font-bold">Chuyển khoản</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    {/* QR Code Display */}
-                    {paymentMethod === 'BANK_TRANSFER' && totalAmount > 0 && (
-                        <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
-                            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 relative w-[332px] h-[332px] mx-auto max-w-full">
-                                <Image
-                                    src={`https://img.vietqr.io/image/tpbank-07119136101-compact2.jpg?amount=${totalAmount}&addInfo=${encodeURIComponent(`Thanh toan mua le`)}&accountName=TRAN MINH QUAN`}
-                                    alt="QR Code Thanh Toán"
-                                    fill
-                                    className="object-contain rounded-lg"
-                                    unoptimized
-                                    sizes="332px"
-                                />
-                            </div>
-                            <p className="mt-3 text-[11px] text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full font-medium">
-                                Số tiền: {formatCurrency(totalAmount)}
-                            </p>
-                        </div>
-                    )}
-                </div>
+                {/* Payment Selector */}
+                <PaymentSelector
+                    totalAmount={totalAmount}
+                    qrDescription="Thanh toan mua le"
+                    paymentMethod={paymentMethod}
+                    onChangePaymentMethod={setPaymentMethod}
+                />
             </div>
 
             {/* Bottom Button */}

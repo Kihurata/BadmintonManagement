@@ -12,6 +12,15 @@ jest.mock('@/components/layout/sidebar', () => ({
 jest.mock('@/components/layout/bottom-nav', () => ({
     BottomNav: () => <div data-testid="bottom-nav">BottomNav Mock</div>
 }));
+jest.mock('@/components/auth-provider', () => ({
+    useUserRole: () => ({
+        role: 'OWNER',
+        loading: false,
+        email: 'admin@example.com',
+        tenantId: 'tenant-123',
+        refreshRole: jest.fn()
+    })
+}));
 jest.mock('@/lib/supabase', () => ({
     supabase: {
         from: jest.fn().mockReturnThis(),

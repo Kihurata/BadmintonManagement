@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { calculateRentalFee } from '@/lib/pricing';
+import { InvoiceSummaryCard, type InvoiceItemSummary } from '@/components/invoices/invoice-summary-card';
+import { PaymentSelector } from '@/components/invoices/payment-selector';
 
 interface CheckoutFormProps {
     bookingId: string;
@@ -142,6 +142,14 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
         }
     };
 
+    // Format products list for InvoiceSummaryCard
+    const formattedItems: InvoiceItemSummary[] = invoiceItems.map(item => ({
+        name: item.products?.product_name || item.product_name,
+        quantity: item.quantity,
+        price: item.sale_price,
+        unit: item.is_pack_sold ? item.products?.pack_unit : item.products?.base_unit
+    }));
+
     return (
         <div className="flex flex-col h-full max-h-[100dvh] sm:max-h-[90vh] bg-background-light dark:bg-background-dark font-sans w-full max-w-md mx-auto sm:rounded-lg overflow-hidden">
             {/* Header */}
@@ -170,129 +178,28 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                     </div>
                 </div>
 
-                {/* Invoice Summary */}
-                <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
-                    <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-2">Chi tiết thanh toán</h4>
+                {/* Invoice Summary Card */}
+                <InvoiceSummaryCard
+                    rentalFee={rentalFee}
+                    overtimeFee={overtimeFee}
+                    overtimeMins={overtimeMins}
+                    itemsFee={productsFee}
+                    deposit={deposit}
+                    totalAmount={total}
+                    items={formattedItems}
+                    startTime={startTime}
+                    endTime={scheduledEndTime}
+                    morningHours={pricingResult.morningHours}
+                    eveningHours={pricingResult.eveningHours}
+                />
 
-                    <div className="flex justify-between items-start text-sm">
-                        <div className="flex flex-col">
-                            <span className="text-black dark:text-gray-200">Tiền sân</span>
-                            {(pricingResult.morningHours > 0 || pricingResult.eveningHours > 0) && (
-                                <span className="text-[10px] text-gray-400">
-                                    {pricingResult.morningHours > 0 && `${pricingResult.morningHours.toFixed(1)}h sáng `}
-                                    {pricingResult.eveningHours > 0 && `${pricingResult.eveningHours.toFixed(1)}h tối`}
-                                </span>
-                            )}
-                        </div>
-                        <span className="font-bold">{formatCurrency(rentalFee)}</span>
-                    </div>
-
-                    {overtimeMins > 0 && (
-                        <div className="flex justify-between items-start text-sm text-red-500">
-                            <div className="flex flex-col">
-                                <span className="font-medium flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ ({overtimeMins}p)
-                                </span>
-                                {(overtimeFee > 0) && (
-                                    <span className="text-[10px] text-red-400 pl-4">
-                                        Phí tính theo giờ thực tế
-                                    </span>
-                                )}
-                            </div>
-                            <span className="font-bold">{formatCurrency(overtimeFee)}</span>
-                        </div>
-                    )}
-
-                    {/* Products List (Read Only) */}
-                    {invoiceItems.length > 0 && (
-                        <div className="py-2 border-t border-dashed border-gray-100 dark:border-gray-800">
-                            <div className="flex justify-between items-center text-sm text-blue-600 mb-1">
-                                <span className="font-medium">Dịch vụ ({invoiceItems.length})</span>
-                                <span className="font-bold">{formatCurrency(productsFee)}</span>
-                            </div>
-                            <div className="space-y-1 pl-2">
-                                {invoiceItems.map((item, idx) => {
-                                    const unit = item.is_pack_sold ? item.products?.pack_unit : item.products?.base_unit;
-                                    return (
-                                        <div key={idx} className="flex justify-between text-xs text-gray-500">
-                                            <span>{item.products?.product_name || item.product_name} ({unit}) x{item.quantity}</span>
-                                            <span>{formatCurrency(item.sale_price * item.quantity)}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    {deposit > 0 && (
-                        <div className="flex justify-between items-center text-sm text-gray-500 border-t border-dashed border-gray-100 dark:border-gray-800 pt-2">
-                            <span>Đã cọc</span>
-                            <span>-{formatCurrency(deposit)}</span>
-                        </div>
-                    )}
-
-                    <div className="border-t border-dashed border-gray-200 dark:border-gray-700 my-2"></div>
-                    <div className="flex justify-between items-end">
-                        <span className="text-base font-bold">Tổng cộng</span>
-                        <span className="text-2xl font-extrabold text-primary">{formatCurrency(total)}</span>
-                    </div>
-                </div>
-
-                {/* Payment Method */}
-                <div className="pt-2">
-                    <p className="text-black text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Phương thức thanh toán</p>
-                    <div className="flex bg-gray-200/50 dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700">
-                        <label className="flex-1 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                value="CASH"
-                                checked={paymentMethod === 'CASH'}
-                                onChange={() => setPaymentMethod('CASH')}
-                                className="peer sr-only"
-                            />
-                            <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-primary peer-checked:shadow-sm">
-                                <span className="material-symbols-outlined text-lg">payments</span>
-                                <span className="text-sm font-bold">Tiền mặt</span>
-                            </div>
-                        </label>
-                        <label className="flex-1 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                value="BANK_TRANSFER"
-                                checked={paymentMethod === 'BANK_TRANSFER'}
-                                onChange={() => setPaymentMethod('BANK_TRANSFER')}
-                                className="peer sr-only"
-                            />
-                            <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-primary peer-checked:shadow-sm">
-                                <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
-                                <span className="text-sm font-bold">Chuyển khoản</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    {/* QR Code Display */}
-                    {paymentMethod === 'BANK_TRANSFER' && (
-                        <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
-                            <div className="text-center mb-3">
-                            </div>
-                            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 relative w-[332px] h-[332px] mx-auto max-w-full">
-                                <Image
-                                    src={`https://img.vietqr.io/image/tpbank-07119136101-compact2.jpg?amount=${total}&addInfo=${encodeURIComponent(`Thanh toan san ${booking?.courts?.court_name || ''}`)}&accountName=TRAN MINH QUAN`}
-                                    alt="QR Code Thanh Toán"
-                                    fill
-                                    className="object-contain rounded-lg"
-                                    unoptimized
-                                    sizes="332px"
-                                />
-                            </div>
-                            <p className="mt-3 text-[11px] text-primary bg-primary/10 px-3 py-1.5 rounded-full font-medium">
-                                Số tiền: {formatCurrency(total)}
-                            </p>
-                        </div>
-                    )}
-                </div>
+                {/* Payment Selector */}
+                <PaymentSelector
+                    totalAmount={total}
+                    qrDescription={`Thanh toan san ${booking?.courts?.court_name || ''}`}
+                    paymentMethod={paymentMethod}
+                    onChangePaymentMethod={setPaymentMethod}
+                />
             </div>
 
             {/* Bottom Button */}

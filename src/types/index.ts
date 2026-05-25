@@ -37,9 +37,11 @@ export interface InvoiceItem {
     product_id: string;
     quantity: number;
     sale_price: number;
+    is_pack_sold?: boolean;
     products?: {
         product_name: string;
         base_unit: string;
+        pack_unit?: string | null;
     };
 }
 

@@ -7,11 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ProductForm } from './product-form';
 import { Product } from '@/types';
+import { useUserRole } from '@/components/auth-provider';
 
 export function ProductList() {
     const [products, setProducts] = useState<Product[]>([]);
     const [filter, setFilter] = useState('');
     const [loading, setLoading] = useState(true);
+    const { role } = useUserRole();
 
     // Dialog States
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -78,9 +80,11 @@ export function ProductList() {
                         onChange={(e) => setFilter(e.target.value)}
                     />
                 </div>
-                <Button onClick={handleAddNew} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20">
-                    <Plus className="size-5" />
-                </Button>
+                {role !== 'STAFF' && (
+                    <Button onClick={handleAddNew} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20">
+                        <Plus className="size-5" />
+                    </Button>
+                )}
             </div>
 
             {/* List */}
@@ -109,14 +113,16 @@ export function ProductList() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500" onClick={() => handleEdit(product)}>
-                                <Edit className="size-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(product.id)}>
-                                <Trash2 className="size-4" />
-                            </Button>
-                        </div>
+                        {role !== 'STAFF' && (
+                            <div className="flex items-center gap-1">
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500" onClick={() => handleEdit(product)}>
+                                    <Edit className="size-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(product.id)}>
+                                    <Trash2 className="size-4" />
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 ))}
 

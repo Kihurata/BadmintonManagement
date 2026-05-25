@@ -9,6 +9,8 @@ import { StickyHeader } from "@/components/home/sticky-header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { cn, formatCurrency } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useUserRole } from "@/components/auth-provider";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { TopProducts } from "@/components/dashboard/top-products";
 import { RecentExpenses, type RecentExpenseItem } from "@/components/dashboard/recent-expenses";
@@ -129,6 +131,15 @@ function ReorderAlert({ items, onCopy, copied }: {
 
 // ─── Main Page ────────────────────────────────────────────────────────
 export default function DashboardPage() {
+    const { role, loading: roleLoading } = useUserRole();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!roleLoading && role === 'STAFF') {
+            router.replace('/?error=' + encodeURIComponent('Bạn không có quyền truy cập vào báo cáo tài chính.'));
+        }
+    }, [role, roleLoading, router]);
+
     const [loading, setLoading] = useState(true);
     const [treasury, setTreasury] = useState<Treasury>({ cashBalance: 0, bankBalance: 0, workingCapital: 0 });
     const [monthMetrics, setMonthMetrics] = useState<MonthMetrics>({
@@ -385,7 +396,7 @@ export default function DashboardPage() {
         setTimeout(() => setReorderCopied(false), 2500);
     }
 
-    if (loading) {
+    if (loading || roleLoading || role === 'STAFF') {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-gray-50 dark:bg-black">
                 <Loader2 className="animate-spin text-emerald-600 size-10" />

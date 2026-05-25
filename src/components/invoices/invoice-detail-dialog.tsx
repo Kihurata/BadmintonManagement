@@ -12,8 +12,10 @@ import {
 import { formatCurrency } from '@/lib/utils';
 import { Loader2, Plus, Trash2, Minus, Share } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format } from 'date-fns';
 import { InvoiceItem } from '@/types';
+import { InvoiceSummaryCard } from '@/components/invoices/invoice-summary-card';
+import { PaymentSelector } from '@/components/invoices/payment-selector';
+import { formatInvoiceShareText } from '@/lib/invoice-utils';
 
 interface InvoiceDetailDialogProps {
     invoiceId: string | null;
@@ -313,42 +315,31 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
 
         try {
             const isQuickSale = !invoice.bookings;
+            const rentalFee = invoice.bookings?.total_court_fee || 0;
+            const overtimeFee = invoice.bookings?.overtime_fee || 0;
+            const deposit = invoice.bookings?.deposit_amount || 0;
+            const formattedItems = items.map(i => ({
+                name: i.products?.product_name || 'Sản phẩm',
+                quantity: i.quantity,
+                price: i.sale_price,
+                unit: (i.is_pack_sold ? i.products?.pack_unit : i.products?.base_unit) || undefined
+            }));
 
-            let text = `🏸 HOÁ ĐƠN ${isQuickSale ? 'BÁN LẺ' : 'SÂN CẦU LÔNG'}\n`;
-            text += `👤 Khách: ${invoice.customers?.name || 'Khách lẻ'}\n`;
-
-            if (!isQuickSale) {
-                const date = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'dd/MM/yyyy') : '---';
-                const startTime = invoice.bookings?.start_time ? format(new Date(invoice.bookings.start_time), 'HH:mm') : '--:--';
-                const endTime = invoice.bookings?.end_time ? format(new Date(invoice.bookings.end_time), 'HH:mm') : '--:--';
-
-                text += `🏟 Sân: ${invoice.bookings?.courts?.court_name || '---'}\n`;
-                text += `📅 Ngày: ${date}\n`;
-                text += `⏰ Giờ: ${startTime} - ${endTime}\n`;
-            } else {
-                text += `📅 Ngày: ${format(new Date(invoice.created_at || new Date()), 'dd/MM/yyyy HH:mm')}\n`;
-            }
-
-            text += `----------------------\n`;
-
-            const itemsFee = items.reduce((sum, i) => sum + (i.sale_price * i.quantity), 0);
-
-            if (!isQuickSale) {
-                const rentalFee = invoice.bookings?.total_court_fee || 0;
-                const overtimeFee = invoice.bookings?.overtime_fee || 0;
-                const deposit = invoice.bookings?.deposit_amount || 0;
-
-                text += `💰 Tiền sân: ${formatCurrency(rentalFee)}\n`;
-                if (overtimeFee > 0) text += `⏳ Quá giờ/Phụ phí: ${formatCurrency(overtimeFee)}\n`;
-                if (itemsFee > 0) text += `🥤 Dịch vụ: ${formatCurrency(itemsFee)}\n`;
-                if (deposit > 0) text += `💵 Đã cọc: -${formatCurrency(deposit)}\n`;
-            } else {
-                if (itemsFee > 0) text += `🥤 Dịch vụ/Sản phẩm: ${formatCurrency(itemsFee)}\n`;
-            }
-
-            text += `----------------------\n`;
-            text += `💳 TỔNG CỘNG: ${formatCurrency(invoice.total_amount)}\n`;
-            text += `Trạng thái: ${invoice.is_paid ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'}`;
+            const text = formatInvoiceShareText({
+                customerName: invoice.customers?.name || 'Khách lẻ',
+                isQuickSale,
+                courtName: invoice.bookings?.courts?.court_name,
+                startTime: invoice.bookings?.start_time,
+                endTime: invoice.bookings?.end_time,
+                rentalFee,
+                overtimeFee,
+                itemsFee,
+                deposit,
+                totalAmount: invoice.total_amount,
+                isPaid: invoice.is_paid,
+                paymentMethod: invoice.payment_method,
+                items: formattedItems
+            });
 
             if (navigator.share) {
                 await navigator.share({
@@ -471,92 +462,34 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                             </div>
                         )}
 
-                        {/* Invoice Summary */}
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
-                            <h4 className="text-black dark:text-gray-300 text-xs font-bold uppercase tracking-widest border-b border-gray-50 dark:border-gray-800 pb-2 mb-2">Chi tiết thanh toán</h4>
+                        {/* Invoice Summary Card */}
+                        <InvoiceSummaryCard
+                            rentalFee={rentalFee}
+                            overtimeFee={overtimeFee}
+                            itemsFee={itemsFee}
+                            deposit={deposit}
+                            totalAmount={invoice.total_amount}
+                            items={items.map(i => ({
+                                name: i.products?.product_name || 'Sản phẩm',
+                                quantity: i.quantity,
+                                price: i.sale_price,
+                                unit: (i.is_pack_sold ? i.products?.pack_unit : i.products?.base_unit) || undefined
+                            }))}
+                            startTime={invoice.bookings?.start_time}
+                            endTime={invoice.bookings?.end_time}
+                            isQuickSale={!invoice.bookings}
+                            showItemsList={invoice.is_paid}
+                        />
 
-                            {/* Detail conditionally show only if booking exists */}
-                            {invoice.bookings && (
-                                <>
-                                    <div className="flex justify-between items-start text-sm">
-                                        <div className="flex flex-col">
-                                            <span className="text-black dark:text-gray-200">Tiền sân</span>
-                                            <span className="text-[10px] text-gray-400">
-                                                {format(new Date(invoice.bookings.start_time), 'HH:mm')} - {format(new Date(invoice.bookings.end_time), 'HH:mm')}
-                                            </span>
-                                        </div>
-                                        <span className="font-bold">{formatCurrency(rentalFee)}</span>
-                                    </div>
-
-                                    {overtimeFee > 0 && (
-                                        <div className="flex justify-between items-start text-sm text-red-500">
-                                            <span className="font-medium flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-[14px]">warning</span> Quá giờ / Phụ phí
-                                            </span>
-                                            <span className="font-bold">{formatCurrency(overtimeFee)}</span>
-                                        </div>
-                                    )}
-                                </>
-                            )}
-
-                            {itemsFee > 0 && (
-                                <div className="flex justify-between items-center text-sm text-blue-600">
-                                    <span className="font-medium">Tiền dịch vụ</span>
-                                    <span className="font-bold">{formatCurrency(itemsFee)}</span>
-                                </div>
-                            )}
-
-                            {invoice.bookings && deposit > 0 && (
-                                <div className="flex justify-between items-center text-sm text-gray-500">
-                                    <span>Đã cọc</span>
-                                    <span>-{formatCurrency(deposit)}</span>
-                                </div>
-                            )}
-
-                            <div className="border-t border-dashed border-gray-200 dark:border-gray-700 my-2"></div>
-                            <div className="flex justify-between items-end">
-                                <span className="text-base font-bold">Tổng cộng</span>
-                                <span className="text-2xl font-extrabold text-primary">{formatCurrency(invoice.total_amount)}</span>
-                            </div>
-                        </div>
-
-                        {/* Payment Method */}
-                        {!invoice.is_paid && (
-                            <div className="pt-2">
-                                <p className="text-black text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Phương thức thanh toán</p>
-                                <div className="flex bg-gray-200/50 dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700">
-                                    <label className="flex-1 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="payment_method"
-                                            value="CASH"
-                                            checked={paymentMethod === 'CASH'}
-                                            onChange={() => setPaymentMethod('CASH')}
-                                            className="peer sr-only"
-                                        />
-                                        <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-primary peer-checked:shadow-sm">
-                                            <span className="material-symbols-outlined text-lg">payments</span>
-                                            <span className="text-sm font-bold">Tiền mặt</span>
-                                        </div>
-                                    </label>
-                                    <label className="flex-1 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="payment_method"
-                                            value="BANK_TRANSFER"
-                                            checked={paymentMethod === 'BANK_TRANSFER'}
-                                            onChange={() => setPaymentMethod('BANK_TRANSFER')}
-                                            className="peer sr-only"
-                                        />
-                                        <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-gray-500 dark:text-gray-400 transition-all peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-primary peer-checked:shadow-sm">
-                                            <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
-                                            <span className="text-sm font-bold">Chuyển khoản</span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        )}
-                        {invoice.is_paid && (
+                        {/* Payment Selector or Paid Alert */}
+                        {!invoice.is_paid ? (
+                            <PaymentSelector
+                                totalAmount={invoice.total_amount}
+                                qrDescription={invoice.bookings ? `Thanh toan san ${invoice.bookings.courts?.court_name || ''}` : 'Thanh toan mua le'}
+                                paymentMethod={paymentMethod}
+                                onChangePaymentMethod={setPaymentMethod}
+                            />
+                        ) : (
                             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl text-center border border-green-100 dark:border-green-800">
                                 <span className="text-green-700 dark:text-green-400 font-bold flex items-center justify-center gap-2">
                                     <span className="material-symbols-outlined">check_circle</span>

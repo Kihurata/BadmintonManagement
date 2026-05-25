@@ -1,18 +1,25 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { Sidebar } from '@/components/layout/sidebar';
 import { StickyHeader } from '@/components/home/sticky-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { TransactionHistory } from '@/components/invoices/transaction-history';
 import { ReceivablesLedger } from '@/components/invoices/receivables-ledger';
+import { useUserRole } from '@/components/auth-provider';
 
 export default function InvoicesPage() {
+    const { role, loading } = useUserRole();
     const [activeTab, setActiveTab] = useState<'TRANSACTIONS' | 'RECEIVABLES'>('RECEIVABLES');
     const [generating, setGenerating] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+
+    useEffect(() => {
+        if (!loading && role === 'STAFF') {
+            setActiveTab('TRANSACTIONS');
+        }
+    }, [role, loading]);
 
     const handleCloseDay = async () => {
         if (!confirm('Bạn có chắc chắn muốn kết thúc ngày? Hệ thống sẽ tự động tạo hóa đơn cho các đơn chưa thanh toán.')) return;
@@ -49,16 +56,18 @@ export default function InvoicesPage() {
                     <StickyHeader
                         title="Hóa Đơn & Công Nợ"
                         rightContent={
-                            <button
-                                onClick={handleCloseDay}
-                                disabled={generating}
-                                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
-                                title="Kết thúc ngày"
-                            >
-                                {generating ? '...' : (
-                                    <span className="material-symbols-outlined text-[18px]">lock_clock</span>
-                                )}
-                            </button>
+                            role !== 'STAFF' ? (
+                                <button
+                                    onClick={handleCloseDay}
+                                    disabled={generating}
+                                    className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
+                                    title="Kết thúc ngày"
+                                >
+                                    {generating ? '...' : (
+                                        <span className="material-symbols-outlined text-[18px]">lock_clock</span>
+                                    )}
+                                </button>
+                            ) : undefined
                         }
                     />
                 </div>
@@ -67,37 +76,51 @@ export default function InvoicesPage() {
                 <main className="flex-1 px-4 md:px-6 pb-24 top-6 md:pt-10 overflow-y-auto no-scrollbar">
                     <div className="flex items-center justify-between mb-8">
                         <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Sổ Thu Chi</h1>
-                        <div className="hidden md:block">
-                            <button
-                                onClick={handleCloseDay}
-                                disabled={generating}
-                                className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
-                            >
-                                {generating ? 'Đang xử lý...' : (
-                                    <>
-                                        <span className="material-symbols-outlined">lock_clock</span>
-                                        Kết thúc ngày
-                                    </>
-                                )}
-                            </button>
-                        </div>
+                        {role !== 'STAFF' && (
+                            <div className="hidden md:block">
+                                <button
+                                    onClick={handleCloseDay}
+                                    disabled={generating}
+                                    className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    {generating ? 'Đang xử lý...' : (
+                                        <>
+                                            <span className="material-symbols-outlined">lock_clock</span>
+                                            Kết thúc ngày
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Brutalist Tab Control */}
-                    <div className="mb-8">
-                        <SegmentedControl
-                            activeTab={activeTab}
-                            onChange={(id) => setActiveTab(id as 'TRANSACTIONS' | 'RECEIVABLES')}
-                            tabs={[
-                                { id: 'RECEIVABLES', label: 'Công Nợ' },
-                                { id: 'TRANSACTIONS', label: 'Lịch Sử Giao Dịch' },
-                            ]}
-                        />
-                    </div>
+                    {/* Tab Control */}
+                    {role !== 'STAFF' ? (
+                        <div className="mb-8">
+                            <SegmentedControl
+                                activeTab={activeTab}
+                                onChange={(id) => setActiveTab(id as 'TRANSACTIONS' | 'RECEIVABLES')}
+                                tabs={[
+                                    { id: 'RECEIVABLES', label: 'Công Nợ' },
+                                    { id: 'TRANSACTIONS', label: 'Lịch Sử Giao Dịch' },
+                                ]}
+                            />
+                        </div>
+                    ) : (
+                        <div className="mb-8 border-b border-gray-100 dark:border-gray-800 pb-2">
+                            <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lịch Sử Giao Dịch</h2>
+                        </div>
+                    )}
 
                     {/* Active View */}
                     <div key={refreshKey} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                        {activeTab === 'RECEIVABLES' ? <ReceivablesLedger /> : <TransactionHistory />}
+                        {role === 'STAFF' ? (
+                            <TransactionHistory />
+                        ) : activeTab === 'RECEIVABLES' ? (
+                            <ReceivablesLedger />
+                        ) : (
+                            <TransactionHistory />
+                        )}
                     </div>
 
                 </main>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { startOfToday, format, isAfter, isBefore } from "date-fns";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { supabase } from "@/lib/supabase";
 
@@ -24,6 +25,17 @@ import { QuickSaleForm } from "@/components/booking/quick-sale-form";
 import { ExpenseForm } from "@/components/home/expense-form";
 
 export default function HomePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      alert(errorParam);
+      router.replace('/');
+    }
+  }, [searchParams, router]);
+
   const [loading, setLoading] = useState(true);
 
   // Data States
