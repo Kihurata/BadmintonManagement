@@ -1,0 +1,46 @@
+{
+  "name": "BadmintonManagement",
+  "id": "BadmintonManagement",
+  "createdAt": "2026-05-24T08:10:40.9869739Z",
+  "settings": {
+    "defaultPriority": "medium",
+    "gitTrackingMode": "git-ignored",
+    "statuses": [
+      "todo",
+      "in-progress",
+      "in-review",
+      "done",
+      "blocked",
+      "on-hold",
+      "urgent"
+    ],
+    "statusColors": {
+      "blocked": "red",
+      "done": "green",
+      "in-progress": "blue",
+      "in-review": "purple",
+      "on-hold": "yellow",
+      "todo": "gray",
+      "urgent": "orange"
+    },
+    "visibleColumns": [
+      "todo",
+      "in-progress",
+      "blocked",
+      "done",
+      "in-review"
+    ],
+    "semanticSearch": {
+      "enabled": true,
+      "model": "gte-base",
+      "huggingFaceId": "Xenova/gte-base",
+      "dimensions": 768,
+      "maxTokens": 512
+    },
+    "serverPort": 6420,
+    "platforms": [
+      "antigravity"
+    ],
+    "enableChatUI": false
+  }
+}

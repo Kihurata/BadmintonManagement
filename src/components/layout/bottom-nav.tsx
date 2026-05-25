@@ -2,15 +2,19 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/components/auth-provider';
 
 export function BottomNav() {
     const pathname = usePathname();
+    const { role } = useUserRole();
 
     const navItems = [
         { icon: 'calendar_today', label: 'Lịch đặt', href: '/schedule', active: pathname === '/schedule' },
         { icon: 'receipt_long', label: 'Hóa đơn', href: '/invoices', active: pathname === '/invoices' },
         { icon: 'home', label: 'Trang chủ', href: '/', active: pathname === '/', isCenter: true },
-        { icon: 'analytics', label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' },
+        ...(role !== 'STAFF' ? [
+            { icon: 'analytics', label: 'Báo cáo', href: '/dashboard', active: pathname === '/dashboard' }
+        ] : []),
         { icon: 'groups', label: 'Khách hàng', href: '/customers', active: pathname === '/customers' },
     ];
 

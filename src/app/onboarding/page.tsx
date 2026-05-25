@@ -1,13 +1,36 @@
-import { setupCourts } from '@/app/onboarding/actions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUserRole } from '@/components/auth-provider';
+import { setupCourts } from '@/app/onboarding/actions';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 
 export default function OnboardingPage({
     searchParams,
 }: {
     searchParams: { message?: string; error?: string }
 }) {
+    const { role, loading } = useUserRole();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && role === 'STAFF') {
+            router.replace('/?error=' + encodeURIComponent('Bạn không có quyền truy cập vào cấu hình hệ thống.'));
+        }
+    }, [role, loading, router]);
+
+    if (loading || role === 'STAFF') {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center bg-gray-50 dark:bg-black">
+                <Loader2 className="animate-spin text-emerald-600 size-10" />
+            </div>
+        );
+    }
+
     return (
         <div className="flex min-h-screen w-screen items-center justify-center bg-gray-50 p-4">
             <div className="z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl">

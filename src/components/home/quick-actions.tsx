@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useUserRole } from "@/components/auth-provider";
 
 interface QuickActionProps {
     icon: string;
@@ -36,10 +39,17 @@ interface QuickActionsSectionProps {
 }
 
 export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick, onAddExpenseClick }: QuickActionsSectionProps) {
+    const { role } = useUserRole();
+
     return (
         <div>
             <h3 className="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-3">Thao tác Nhanh</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+            <div className={cn(
+                "grid gap-3 md:gap-4",
+                role === 'STAFF' 
+                    ? "grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3" 
+                    : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4"
+            )}>
                 <QuickActionItem
                     icon="add_circle"
                     label="Đặt sân mới"
@@ -58,12 +68,14 @@ export function QuickActionsSection({ onNewBookingClick, onQuickSaleClick, onAdd
                     href="/products"
                     colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white"
                 />
-                <QuickActionItem
-                    icon="receipt_long"
-                    label="Nhập chi phí"
-                    onClick={onAddExpenseClick}
-                    colorClass="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-500 group-hover:text-white"
-                />
+                {role !== 'STAFF' && (
+                    <QuickActionItem
+                        icon="receipt_long"
+                        label="Nhập chi phí"
+                        onClick={onAddExpenseClick}
+                        colorClass="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-500 group-hover:text-white"
+                    />
+                )}
             </div>
         </div>
     );

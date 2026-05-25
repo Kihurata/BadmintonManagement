@@ -194,7 +194,7 @@ describe('Bookings Feature', () => {
 
             // Need to mock the insert invoice_item & update invoice total 
             supabaseMock.insert.mockResolvedValueOnce({ error: null });
-            supabaseMock.update.mockResolvedValueOnce({ error: null });
+            supabaseMock.update.mockReturnValueOnce({ eq: jest.fn().mockResolvedValue({ error: null }) });
 
             // Mock refreshInvoice reload
             supabaseMock.maybeSingle.mockResolvedValueOnce({ data: { ...mockInvoice, total_amount: 165000 } });
