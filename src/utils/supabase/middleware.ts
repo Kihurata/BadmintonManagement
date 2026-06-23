@@ -44,6 +44,19 @@ export async function updateSession(request: NextRequest) {
     const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')
 
     if (!user && !isAuthRoute) {
+        // Nếu là API request, trả về 401 Unauthorized dạng JSON
+        if (request.nextUrl.pathname.startsWith('/api/')) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: {
+                        code: 'UNAUTHORIZED',
+                        message: 'Unauthorized: Please log in.',
+                    },
+                },
+                { status: 401 }
+            );
+        }
         // Không có user đang đăng nhập và không nằm ở các trang Auth -> Redirect sang /login
         const url = request.nextUrl.clone()
         url.pathname = '/login'

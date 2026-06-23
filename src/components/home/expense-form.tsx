@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { supabase } from "@/lib/supabase";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
@@ -63,18 +63,25 @@ export function ExpenseForm({ onSuccess, onCancel }: ExpenseFormProps) {
 
         setLoading(true);
         try {
-            const { error: insertError } = await supabase.from("expenses").insert([
-                {
+            const response = await fetch("/api/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     title: title.trim(),
                     type,
                     amount: parsedAmount,
-                    expense_date: expenseDate,
+                    expenseDate,
                     note: note.trim() || null,
-                    payment_method: paymentMethod,
-                },
-            ]);
+                    paymentMethod,
+                }),
+            });
 
-            if (insertError) throw new Error(insertError.message);
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || "Không thể lưu chi phí");
+            }
 
             setSuccess(true);
             setTimeout(() => onSuccess(), 900);

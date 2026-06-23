@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { InvoiceList, Invoice } from '@/components/invoices/invoice-list';
 import {
@@ -36,69 +35,58 @@ export function ReceivablesLedger() {
     const fetchUnpaidInvoices = async () => {
         setLoading(true);
 
-        const { data } = await supabase
-            .from('invoices')
-            .select(`
-                id,
-                total_amount,
-                created_at,
-                is_paid,
-                customer_id,
-                customers ( name, phone ),
-                bookings (
-                    courts ( court_name ),
-                    start_time,
-                    end_time
-                ),
-                invoice_items ( sale_price, quantity )
-            `)
-            .eq('is_paid', false)
-            .order('created_at', { ascending: false });
+        try {
+            const res = await fetch('/api/invoices?unpaid=true');
+            const resData = await res.json();
 
-        if (data) {
-            // Group by customer
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const grouped = data.reduce((acc: Record<string, Debtor>, inv: any) => {
-                const cId = inv.customer_id || 'guest';
-                if (!acc[cId]) {
-                    acc[cId] = {
-                        customerId: cId,
-                        customerName: inv.customers?.name || 'Khách vãng lai',
-                        customerPhone: inv.customers?.phone || '',
-                        totalDebt: 0,
-                        invoiceCount: 0,
-                        invoices: []
-                    };
-                }
+            if (res.ok && resData.success && resData.data) {
+                const data = resData.data;
+                // Group by customer
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const grouped = data.reduce((acc: Record<string, Debtor>, inv: any) => {
+                    const cId = inv.customer_id || 'guest';
+                    if (!acc[cId]) {
+                        acc[cId] = {
+                            customerId: cId,
+                            customerName: inv.customers?.name || 'Khách vãng lai',
+                            customerPhone: inv.customers?.phone || '',
+                            totalDebt: 0,
+                            invoiceCount: 0,
+                            invoices: []
+                        };
+                    }
 
-                acc[cId].totalDebt += inv.total_amount;
-                acc[cId].invoiceCount += 1;
+                    acc[cId].totalDebt += inv.total_amount;
+                    acc[cId].invoiceCount += 1;
 
-                // Format invoice for the InvoiceList component
-                const startTime = inv.bookings?.start_time ? new Date(inv.bookings.start_time) : null;
-                const endTime = inv.bookings?.end_time ? new Date(inv.bookings.end_time) : null;
-                const duration = startTime && endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) : 0;
-                const displayDate = startTime || new Date(inv.created_at);
+                    // Format invoice for the InvoiceList component
+                    const startTime = inv.bookings?.start_time ? new Date(inv.bookings.start_time) : null;
+                    const endTime = inv.bookings?.end_time ? new Date(inv.bookings.end_time) : null;
+                    const duration = startTime && endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) : 0;
+                    const displayDate = startTime || new Date(inv.created_at);
 
-                acc[cId].invoices.push({
-                    id: inv.id,
-                    customer_name: inv.customers?.name || 'Khách vãng lai',
-                    date: displayDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
-                    time: displayDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                    status: 'PENDING',
-                    summary: inv.bookings?.courts?.court_name
-                        ? `${inv.bookings.courts.court_name} • ${duration.toFixed(1)} giờ`
-                        : 'Mua hàng',
-                    total: inv.total_amount,
-                    rawDate: displayDate.toISOString()
-                });
+                    acc[cId].invoices.push({
+                        id: inv.id,
+                        customer_name: inv.customers?.name || 'Khách vãng lai',
+                        date: displayDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
+                        time: displayDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                        status: 'PENDING',
+                        summary: inv.bookings?.courts?.court_name
+                            ? `${inv.bookings.courts.court_name} • ${duration.toFixed(1)} giờ`
+                            : 'Mua hàng',
+                        total: inv.total_amount,
+                        rawDate: displayDate.toISOString()
+                    });
 
-                return acc;
-            }, {});
+                    return acc;
+                }, {} as Record<string, Debtor>);
 
-            // Sort by highest debt first
-            const sortedDebtors = Object.values(grouped).sort((a: Debtor, b: Debtor) => b.totalDebt - a.totalDebt);
-            setDebtors(sortedDebtors as unknown as Debtor[]);
+                // Sort by highest debt first
+                const sortedDebtors = (Object.values(grouped) as Debtor[]).sort((a, b) => b.totalDebt - a.totalDebt);
+                setDebtors(sortedDebtors);
+            }
+        } catch (err) {
+            console.error("Error fetching unpaid invoices:", err);
         }
         setLoading(false);
     };

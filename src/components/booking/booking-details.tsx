@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { supabase } from '@/lib/supabase';
 import { calculateRentalFee } from '@/lib/pricing';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,7 +17,6 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOutClick }: BookingDetailsProps) {
-    // Original State
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -26,79 +24,60 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const [editStartTime, setEditStartTime] = useState('');
     const [editEndTime, setEditEndTime] = useState('');
 
-    // POS / Invoice State
     const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [products, setProducts] = useState<ProductSelectorItem[]>([]);
     const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-    // Fetch Booking & Invoice & Products
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
 
-            // 1. Fetch Booking
-            const { data: bookingData } = await supabase
-                .from('bookings')
-                .select(`*, customers ( name, phone, type ), courts ( * )`)
-                .eq('id', bookingId)
-                .single();
-
-            if (bookingData) {
-                setBooking(bookingData);
-
-                // 2. Fetch Invoice (if exists)
-                const { data: inv } = await supabase
-                    .from('invoices')
-                    .select('*')
-                    .eq('booking_id', bookingId)
-                    .maybeSingle(); // Use maybeSingle to avoid error if not found
-
-                if (inv) {
-                    setInvoice(inv);
-                    // 3. Fetch Invoice Items
-                    const { data: items } = await supabase
-                        .from('invoice_items')
-                        .select('*, products (product_name, base_unit, pack_unit)')
-                        .eq('invoice_id', inv.id);
-                    setInvoiceItems(items || []);
-                }
-            }
-
-            // 4. Fetch Products (for POS)
-            const { data: prodData } = await supabase
-                .from('products')
-                .select('*')
-                .gt('stock_quantity', 0)
-                .order('product_name');
-
-            if (prodData) {
-                const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
-                prodData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-                    // Base Unit
-                    processedProducts.push({
-                        key: `${p.id}-base`,
-                        productId: p.id,
-                        name: p.product_name,
-                        unit: p.base_unit,
-                        price: p.unit_price,
-                        isPack: false,
-                        deduct: 1
-                    });
-                    // Pack Unit
-                    if (p.is_packable && p.pack_unit) {
-                        const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
-                        processedProducts.push({
-                            key: `${p.id}-pack`,
-                            productId: p.id,
-                            name: `${p.product_name} (${p.pack_unit})`,
-                            unit: p.pack_unit,
-                            price: packPrice,
-                            isPack: true,
-                            deduct: p.units_per_pack
-                        });
+            try {
+                // 1. Fetch Booking, Invoice & Items via API
+                const res = await fetch(`/api/bookings/details?bookingId=${bookingId}`);
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    setBooking(data.booking);
+                    if (data.invoice) {
+                        setInvoice(data.invoice);
+                        setInvoiceItems(data.invoiceItems || []);
                     }
-                });
-                setProducts(processedProducts);
+                }
+
+                // 2. Fetch Products via API
+                const prodRes = await fetch('/api/v1/products');
+                const prodData = await prodRes.json();
+                if (prodRes.ok && prodData.success) {
+                    const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+                    prodData.data.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+                        // Base Unit
+                        processedProducts.push({
+                            key: `${p.id}-base`,
+                            productId: p.id,
+                            name: p.product_name,
+                            unit: p.base_unit || 'Cái',
+                            price: p.unit_price,
+                            isPack: false,
+                            deduct: 1
+                        });
+                        // Pack Unit
+                        if (p.is_packable && p.pack_unit) {
+                            const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
+                            processedProducts.push({
+                                key: `${p.id}-pack`,
+                                productId: p.id,
+                                name: `${p.product_name} (${p.pack_unit})`,
+                                unit: p.pack_unit,
+                                price: packPrice,
+                                isPack: true,
+                                deduct: p.units_per_pack
+                            });
+                        }
+                    });
+                    setProducts(processedProducts);
+                }
+            } catch (err) {
+                console.error("Error loading booking details:", err);
             }
 
             setLoading(false);
@@ -108,11 +87,17 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
     const refreshInvoice = async () => {
         if (!bookingId) return;
-        const { data: inv } = await supabase.from('invoices').select('*').eq('booking_id', bookingId).maybeSingle();
-        if (inv) {
-            setInvoice(inv);
-            const { data: items } = await supabase.from('invoice_items').select('*, products (product_name)').eq('invoice_id', inv.id);
-            setInvoiceItems(items || []);
+        try {
+            const res = await fetch(`/api/bookings/details?bookingId=${bookingId}`);
+            const data = await res.json();
+            if (res.ok && data.success) {
+                if (data.invoice) {
+                    setInvoice(data.invoice);
+                    setInvoiceItems(data.invoiceItems || []);
+                }
+            }
+        } catch (err) {
+            console.error("Error refreshing invoice:", err);
         }
     };
 
@@ -120,28 +105,38 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
         if (!editStartTime || !editEndTime) return;
 
         setActionLoading(true);
-        // Combine date from original booking with new time
         const originalDate = new Date(booking.start_time);
         const dateStr = format(originalDate, 'yyyy-MM-dd');
 
         const newStart = new Date(`${dateStr}T${editStartTime}`);
         const newEnd = new Date(`${dateStr}T${editEndTime}`);
 
-        const { error } = await supabase
-            .from('bookings')
-            .update({
-                start_time: newStart.toISOString(),
-                end_time: newEnd.toISOString()
-            })
-            .eq('id', bookingId);
-
-        if (!error) {
-            setBooking({
-                ...booking,
-                start_time: newStart.toISOString(),
-                end_time: newEnd.toISOString()
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookingId,
+                    startTime: newStart.toISOString(),
+                    endTime: newEnd.toISOString()
+                })
             });
-            setIsEditingTime(false);
+
+            const resData = await response.json();
+            if (response.ok && resData.success) {
+                setBooking({
+                    ...booking,
+                    start_time: newStart.toISOString(),
+                    end_time: newEnd.toISOString()
+                });
+                setIsEditingTime(false);
+            } else {
+                alert('Lỗi cập nhật: ' + (resData.error || 'Unknown error'));
+            }
+        } catch (err) {
+            alert('Lỗi cập nhật: ' + (err as Error).message);
         }
         setActionLoading(false);
     };
@@ -162,25 +157,28 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
             console.error("Lỗi tính tiền sân dự kiến:", err);
         }
 
-        const { data: rpcResult, error: rpcError } = await supabase.rpc('check_in_booking', {
-            p_booking_id: bookingId,
-            p_customer_id: booking.customer_id,
-            p_rental_fee: currentRentalFee
-        });
+        try {
+            const response = await fetch('/api/bookings/check-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookingId,
+                    customerId: booking.customer_id,
+                    rentalFee: currentRentalFee
+                })
+            });
 
-        if (rpcError) {
-            alert('Lỗi Check-in: ' + rpcError.message);
-            setActionLoading(false);
-            return;
-        }
-
-        const result = rpcResult as { success: boolean; error?: string };
-        if (!result.success) {
-            alert('Lỗi Check-in (DB): ' + result.error);
-        } else {
-            // Check in ok, refresh data
-            await refreshInvoice();
-            onCheckInSuccess();
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                alert('Lỗi Check-in: ' + (resData.error || 'Check-in failed'));
+            } else {
+                await refreshInvoice();
+                onCheckInSuccess();
+            }
+        } catch (err) {
+            alert('Lỗi Check-in: ' + (err as Error).message);
         }
 
         setActionLoading(false);
@@ -190,65 +188,75 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
         if (!confirm('Bạn có chắc chắn muốn hủy đặt sân này không?')) return;
 
         setActionLoading(true);
-        const { error } = await supabase
-            .from('bookings')
-            .update({ status: 'CANCELLED' })
-            .eq('id', bookingId);
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookingId,
+                    status: 'CANCELLED'
+                })
+            });
 
-        setActionLoading(false);
-        if (!error) {
-            onCheckInSuccess();
-            onClose();
+            const resData = await response.json();
+            if (response.ok && resData.success) {
+                onCheckInSuccess();
+                onClose();
+            } else {
+                alert('Lỗi hủy sân: ' + (resData.error || 'Unknown error'));
+            }
+        } catch (err) {
+            alert('Lỗi hủy sân: ' + (err as Error).message);
         }
+        setActionLoading(false);
     };
 
     // --- POS Handlers ---
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleAddItem = async (product: any) => {
+    const handleAddItem = async (product: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!invoice) return;
 
-        // Optimistic
         const tempId = 'temp-' + Date.now();
         const optimisticItem = { id: tempId, product_id: product.productId, quantity: 1, sale_price: product.price, products: { product_name: product.name } };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setInvoiceItems((prev: any[]) => [...prev, optimisticItem]);
+        setInvoiceItems((prev) => [...prev, optimisticItem]);
 
         try {
-            // Check existing
             const existing = invoiceItems.find(i => i.product_id === product.productId && Math.abs(i.sale_price - product.price) < 1);
 
             if (existing) {
-                // Update
                 await handleUpdateQuantity(existing, 1, product);
-                // Remove optimistic duplicate since we delegated to update
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== tempId));
+                setInvoiceItems((prev) => prev.filter(i => i.id !== tempId));
             } else {
-                // Insert
-                const { error } = await supabase.from('invoice_items').insert([{
-                    invoice_id: invoice.id,
-                    product_id: product.productId,
-                    quantity: 1,
-                    sale_price: product.price,
-                    is_pack_sold: product.isPack
-                }]);
-                if (error) throw error;
+                const response = await fetch('/api/invoices/items', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        invoiceId: invoice.id,
+                        productId: product.productId,
+                        quantity: 1,
+                        salePrice: product.price,
+                        isPackSold: product.isPack,
+                        invoiceTotalAmount: invoice.total_amount
+                    })
+                });
 
-                // Update Total
-                const newTotal = invoice.total_amount + product.price;
-                await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
+                const resData = await response.json();
+                if (!response.ok || !resData.success) {
+                    throw new Error(resData.error || 'Lỗi thêm món hàng');
+                }
 
                 await refreshInvoice();
             }
         } catch (err) {
             console.error(err);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== tempId));
+            setInvoiceItems((prev) => prev.filter(i => i.id !== tempId));
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleUpdateQuantity = async (item: any, delta: number, product: any) => {
+    const handleUpdateQuantity = async (item: any, delta: number, product: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         const newQty = item.quantity + delta;
         if (newQty <= 0) {
             if (confirm('Xóa món này khỏi hóa đơn?')) {
@@ -257,79 +265,72 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
             return;
         }
 
-        // Optimistic
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setInvoiceItems((prev: any[]) => prev.map(i => i.id === item.id ? { ...i, quantity: newQty } : i));
+        setInvoiceItems((prev) => prev.map(i => i.id === item.id ? { ...i, quantity: newQty } : i));
 
         try {
-            const { error } = await supabase.from('invoice_items')
-                .update({ quantity: newQty })
-                .eq('id', item.id);
+            const response = await fetch('/api/invoices/items', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    itemId: item.id,
+                    invoiceId: invoice.id,
+                    newQty,
+                    delta,
+                    salePrice: item.sale_price,
+                    invoiceTotalAmount: invoice.total_amount
+                })
+            });
 
-            if (error) throw error;
-
-            // Update Total
-            const newTotal = invoice.total_amount + (delta * item.sale_price);
-            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
-
-            // Manual Sync for UPDATE (Trigger only handles INSERT?) 
-            // WAIT - The trigger `fn_auto_sync_inventory_v2` handles BOTH INSERT and UPDATE.
-            // So we DO NOT need manual sync here anymore, unlike InvoiceDetailDialog where I was keeping it for safety/legacy.
-            // Let's trust the Trigger `fn_auto_sync_inventory_v2`.
-
-            // However, we DO need to refresh to get updated totals if `fn_update_invoice_total` runs.
-            await refreshInvoice();
-
-        } catch (err) {
-            console.error(err);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setInvoiceItems((prev: any[]) => prev.map(i => i.id === item.id ? { ...i, quantity: item.quantity } : i));
-        }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleRemoveItem = async (item: any, product: any) => {
-        // Optimistic
-        const oldItems = [...invoiceItems];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setInvoiceItems((prev: any[]) => prev.filter(i => i.id !== item.id));
-
-        try {
-            // Delete
-            const { error } = await supabase.from('invoice_items').delete().eq('id', item.id);
-            if (error) throw error;
-
-            // Update Total
-            const newTotal = invoice.total_amount - (item.sale_price * item.quantity);
-            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
-
-            // Restore Inventory for DELETE
-            const isPack = product?.isPack || item.is_pack_sold;
-            const deduct = isPack ? (product?.deduct || 1) : 1;
-            const restoreQty = item.quantity * deduct;
-
-            await supabase.from('inventory_logs').insert([{
-                product_id: item.product_id,
-                type: 'RETURN',
-                quantity: restoreQty,
-                reason: `Xóa khỏi HĐ #${invoice.id.slice(0, 6)}`
-            }]);
-
-            const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.product_id).single();
-            if (prod) {
-                await supabase.from('products')
-                    .update({ stock_quantity: prod.stock_quantity + restoreQty })
-                    .eq('id', item.product_id);
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Lỗi cập nhật số lượng');
             }
 
             await refreshInvoice();
+        } catch (err) {
+            console.error(err);
+            setInvoiceItems((prev) => prev.map(i => i.id === item.id ? { ...i, quantity: item.quantity } : i));
+        }
+    };
 
+    const handleRemoveItem = async (item: any, product: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        const oldItems = [...invoiceItems];
+        setInvoiceItems((prev) => prev.filter(i => i.id !== item.id));
+
+        try {
+            const isPack = product?.isPack || item.is_pack_sold;
+            const deduct = isPack ? (product?.deduct || 1) : 1;
+
+            const response = await fetch('/api/invoices/items', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    itemId: item.id,
+                    invoiceId: invoice.id,
+                    productId: item.product_id,
+                    quantity: item.quantity,
+                    salePrice: item.sale_price,
+                    isPackSold: isPack,
+                    deduct,
+                    invoiceTotalAmount: invoice.total_amount
+                })
+            });
+
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Lỗi xóa món hàng');
+            }
+
+            await refreshInvoice();
         } catch (err) {
             console.error(err);
             setInvoiceItems(oldItems);
         }
     };
-
 
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;

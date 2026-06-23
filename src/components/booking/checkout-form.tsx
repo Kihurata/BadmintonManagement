@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { calculateRentalFee } from '@/lib/pricing';
@@ -15,7 +15,7 @@ interface CheckoutFormProps {
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-    const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [checkoutTime, setCheckoutTime] = useState(new Date());
@@ -23,34 +23,28 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
+            try {
+                const res = await fetch(`/api/bookings/details?bookingId=${bookingId}`);
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    // Map customer layout for legacy compat
+                    const mappedBooking = {
+                        ...data.booking,
+                        customers: data.booking.customers ? {
+                            ...data.booking.customers,
+                            display_name: data.booking.customers.name
+                        } : null
+                    };
+                    setBooking(mappedBooking);
+                    setCheckoutTime(new Date());
 
-            // 1. Fetch Booking
-            const { data: bookingData } = await supabase
-                .from('bookings')
-                .select(`*, customers ( display_name:name, type, id ), courts ( * )`)
-                .eq('id', bookingId)
-                .single();
-
-            if (bookingData) {
-                setBooking(bookingData);
-                setCheckoutTime(new Date());
-
-                // 2. Fetch Invoice
-                const { data: inv } = await supabase
-                    .from('invoices')
-                    .select('*')
-                    .eq('booking_id', bookingId)
-                    .maybeSingle();
-
-                if (inv) {
-                    setInvoice(inv);
-                    // 3. Fetch Items
-                    const { data: items } = await supabase
-                        .from('invoice_items')
-                        .select('*, products (product_name, base_unit, pack_unit)')
-                        .eq('invoice_id', inv.id);
-                    setInvoiceItems(items || []);
+                    if (data.invoice) {
+                        setInvoice(data.invoice);
+                        setInvoiceItems(data.invoiceItems || []);
+                    }
                 }
+            } catch (err) {
+                console.error("Error loading checkout details:", err);
             }
             setLoading(false);
         }
@@ -94,49 +88,32 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
         setLoading(true);
 
         try {
-            // 1. Update Booking
-            const { error: bookingError } = await supabase
-                .from('bookings')
-                .update({
-                    status: 'COMPLETED',
-                    actual_end_time: actualEndTime.toISOString(),
-                    overtime_fee: overtimeFee,
-                    total_court_fee: rentalFee,
-                })
-                .eq('id', booking.id);
+            const response = await fetch('/api/bookings/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookingId: booking.id,
+                    actualEndTime: actualEndTime.toISOString(),
+                    overtimeFee,
+                    rentalFee,
+                    totalAmount: total,
+                    paymentMethod,
+                    customerId: booking.customer_id,
+                }),
+            });
 
-            if (bookingError) throw bookingError;
-
-            // 2. Update Invoice (or Create if missing - legacy support)
-            if (invoice) {
-                const { error: invoiceError } = await supabase
-                    .from('invoices')
-                    .update({
-                        total_amount: total,
-                        payment_method: paymentMethod,
-                        is_paid: true
-                    })
-                    .eq('id', invoice.id);
-                if (invoiceError) throw invoiceError;
-            } else {
-                // Create new invoice for legacy booking
-                const { error: invoiceError } = await supabase
-                    .from('invoices')
-                    .insert([{
-                        booking_id: booking.id,
-                        customer_id: booking.customer_id,
-                        total_amount: total,
-                        payment_method: paymentMethod,
-                        is_paid: true
-                    }]);
-                if (invoiceError) throw invoiceError;
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Thanh toán thất bại');
             }
 
             onSuccess();
 
         } catch (err: unknown) {
             console.error(err);
-            alert('Lỗi thanh toán: ' + (err instanceof Error ? err.message : String(err)));
+            alert('Lỗi thanh toán: ' + (err instanceof Error ? (err as Error).message : String(err)));
         } finally {
             setLoading(false);
         }
