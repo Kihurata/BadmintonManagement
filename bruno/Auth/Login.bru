@@ -1,0 +1,40 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{supabaseUrl}}/auth/v1/token?grant_type=password
+  body: json
+  auth: none
+}
+
+headers {
+  apikey: {{supabaseAnonKey}}
+}
+
+body:json {
+  {
+    "email": "{{testUserEmail}}",
+    "password": "{{testUserPassword}}"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+  if (res.status === 200 && data && data.access_token) {
+    const session = {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+      expires_at: Math.floor(Date.now() / 1000) + data.expires_in
+    };
+    const jsonStr = JSON.stringify(session);
+    const base64 = Buffer.from(jsonStr).toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    bru.setVar('supabaseCookie', 'base64-' + base64);
+  }
+}

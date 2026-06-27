@@ -1,0 +1,17 @@
+meta {
+  name: List Products
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products
+  body: none
+  auth: none
+}
+
+query {
+  ~onlyAvailable: false
+  ~search: 
+  ~status: ACTIVE
+}

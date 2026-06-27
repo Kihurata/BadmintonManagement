@@ -59,3 +59,13 @@ Defining dependent fields (e.g. packaging price, packaging units) as independent
 Relying solely on physical `DELETE` endpoints creates data constraint violations (409 Conflict) when the entity is referenced by transactional history (e.g. invoice items). Always introduce a `status` field (`ACTIVE` | `INACTIVE`) to support soft deactivation, permitting the frontend to hide items without breaking database integrity.
 
 **Full entry:** @doc/learnings/learning-rest-products-api
+
+
+## 2026-06-27 Bruno API Test Automation
+**Category:** convention
+**Source:** @task-jnm8r7
+**Tags:** [testing, api, automation]
+
+Every time you write or modify a Next.js API Route Handler, write a corresponding `.bru` request file inside the `bruno/` directory. Run the Bruno CLI runner (`npx @usebruno/cli run bruno/ --env Local`) to verify that all API endpoints function securely and successfully before committing code.
+
+**Full entry:** @doc/learnings/learning-bruno-api-testing

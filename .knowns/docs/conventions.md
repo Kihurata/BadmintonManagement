@@ -60,3 +60,13 @@ This document outlines the coding standards, patterns, and conventions used thro
 * **Role Hook**: Client components must use the `useUserRole` hook from `@/components/auth-provider` to access the user role and email.
 * **Client Gating**: Hide write buttons, tabs, or forms if the user role is `STAFF`.
 * **Route Protection**: Sensitive routes (like `/dashboard` and `/onboarding`) must redirect `STAFF` users to `/` with an error message in the query params.
+
+
+## 7. API Testing & Documentation (Bruno)
+
+* **Mandatory Bruno requests**: Every time you write, modify, or add a Next.js API Route Handler under `src/app/api/`, you **must** create or update a corresponding `.bru` request file inside the [bruno/](file:///d:/BadmintonManagement/bruno) folder.
+* **CLI verification**: Always verify your API endpoints locally before committing by running the Bruno CLI runner:
+  ```bash
+  npx @usebruno/cli run bruno/ --env Local
+  ```
+  Ensure all requests (including authentication and database CRUD assertions) succeed with green status codes.
