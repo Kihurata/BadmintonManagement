@@ -1,3 +1,10 @@
+---
+title: restful-products-api-documentation
+description: RESTful Products API (v1) documentation detailing endpoints, validation schemas, and soft deactivation.
+createdAt: '2026-06-27T07:00:00.000Z'
+updatedAt: '2026-06-27T07:05:00.000Z'
+---
+
 # Tài liệu Đặc tả RESTful Products API (v1)
 
 Tài liệu này cung cấp chi tiết thiết kế, cấu trúc dữ liệu, và cách thức tương tác với RESTful Products API (phiên bản v1). API hỗ trợ đầy đủ các thao tác CRUD và được bảo mật chặt chẽ bằng phân quyền người dùng (Role-Based Access Control - RBAC).
