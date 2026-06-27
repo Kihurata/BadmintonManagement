@@ -26,6 +26,11 @@ Learnings from implementing the REST products API, focusing on Zod validation, N
 - **When to use:** When writing to a database repository where Zod optional inputs can be `undefined`, but the database expects specific `null` values or defaults, and during partial (`PATCH`) updates to prevent default values from overriding omitted fields.
 - **Source:** @task-0gih9b
 
+### Conditional Cross-Field Validation (Zod Refine)
+- **What:** Use Zod `.refine()` (or `.superRefine()`) to enforce conditional requirements where the presence or value of one field mandates validation of other fields (e.g., if `is_packable === true`, then `pack_unit`, `units_per_pack`, and `pack_price` must be provided).
+- **When to use:** When schema attributes have dependent validations that cannot be modeled as simple field types.
+- **Source:** @task-0gih9b
+
 ## Decisions
 
 ### Inline Schemas over Shared Validator Helper File
@@ -49,6 +54,13 @@ Learnings from implementing the REST products API, focusing on Zod validation, N
 - **Outcome:** Correctly exposes request formatting errors to clients (400) rather than reporting them as system faults (500).
 - **Recommendation:** Always wrap `await req.json()` in a try-catch block in Next.js Route Handlers.
 
+### Product Status field for Soft Deactivation
+- **Chose:** Adding a `status` column (`'ACTIVE' | 'INACTIVE'`) to products to support soft deactivation.
+- **Over:** Relying solely on physical DELETE (which returns 409 Conflict when products are linked to historic invoices).
+- **Tag:** GOOD_CALL
+- **Outcome:** Allows frontend to deactivate/hide products without causing Foreign Key constraint violations on historical invoice records.
+- **Recommendation:** Always include a `status` field or soft-delete timestamps on entities that are likely to be referenced by financial or transactional records.
+
 ## Failures
 
 ### Zod Partial on Refined Schema
@@ -62,3 +74,9 @@ Learnings from implementing the REST products API, focusing on Zod validation, N
 - **Root cause:** Zod treats omitted partial fields as `undefined`, and defaults are applied when a field is `undefined`.
 - **Time lost:** ~15 minutes.
 - **Prevention:** Avoid `.default()` in schemas used for partial updates. Use `.optional()` without defaults, and handle fallbacks in the database or repository layer during inserts.
+
+### Zod Optional Field Logic Vulnerability (Missing Cross-Field Constraints)
+- **What went wrong:** We defined pack unit, price, and count fields as optional in the Zod schema. A client could send `is_packable: true` but omit the pack details, leading to incomplete or invalid business data in the database.
+- **Root cause:** Defining fields as independent optional properties instead of modeling the cross-field dependency.
+- **Time lost:** ~20 minutes.
+- **Prevention:** Use `.refine()` or `.superRefine()` on the base object schema to assert cross-field constraints.
