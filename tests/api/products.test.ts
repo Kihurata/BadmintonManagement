@@ -98,6 +98,56 @@ describe('Products API Route Handlers', () => {
       const body = await res.json();
       expect(body).toEqual({ success: true, data: mockProduct });
     });
+
+    it('should return 400 if is_packable is true but pack details are missing', async () => {
+      (verifyUserRole as jest.Mock).mockResolvedValueOnce({ success: true, role: 'OWNER' });
+
+      const req = {
+        json: jest.fn().mockResolvedValueOnce({
+          product_name: 'Stinger Pack',
+          unit_price: 10000,
+          stock_quantity: 10,
+          is_packable: true,
+        }),
+      } as unknown as NextRequest;
+
+      const res = await createProductApi(req);
+      expect(res.status).toBe(400);
+
+      const body = await res.json();
+      expect(body.success).toBe(false);
+      expect(body.error.message).toContain('Nếu sản phẩm có đóng gói');
+    });
+
+    it('should create product successfully with packaging details when is_packable is true', async () => {
+      (verifyUserRole as jest.Mock).mockResolvedValueOnce({ success: true, role: 'OWNER' });
+      const mockProduct = {
+        id: 'p1',
+        product_name: 'Stinger Pack',
+        unit_price: 10000,
+        stock_quantity: 10,
+        is_packable: true,
+        pack_unit: 'Thùng',
+        units_per_pack: 24,
+        pack_price: 220000,
+      };
+      (productRepo.createProduct as jest.Mock).mockResolvedValueOnce({ success: true, data: mockProduct });
+
+      const req = {
+        json: jest.fn().mockResolvedValueOnce({
+          product_name: 'Stinger Pack',
+          unit_price: 10000,
+          stock_quantity: 10,
+          is_packable: true,
+          pack_unit: 'Thùng',
+          units_per_pack: 24,
+          pack_price: 220000,
+        }),
+      } as unknown as NextRequest;
+
+      const res = await createProductApi(req);
+      expect(res.status).toBe(201);
+    });
   });
 
   describe('PUT /api/v1/products/[productId]', () => {
@@ -155,6 +205,25 @@ describe('Products API Route Handlers', () => {
       const body = await res.json();
       expect(body).toEqual({ success: true, data: updatedProduct });
       expect(productRepo.updateProduct).toHaveBeenCalledWith('p1', { unit_price: 170000 });
+    });
+
+    it('should return 400 if patching is_packable to true without packaging details', async () => {
+      (verifyUserRole as jest.Mock).mockResolvedValueOnce({ success: true, role: 'OWNER' });
+      const existingProduct = { id: 'p1', product_name: 'Stinger', unit_price: 150000, stock_quantity: 10 };
+      (productRepo.getProductById as jest.Mock).mockResolvedValueOnce(existingProduct);
+
+      const req = {
+        json: jest.fn().mockResolvedValueOnce({
+          is_packable: true,
+        }),
+      } as unknown as NextRequest;
+
+      const res = await patchProduct(req, { params: { productId: 'p1' } });
+      expect(res.status).toBe(400);
+
+      const body = await res.json();
+      expect(body.success).toBe(false);
+      expect(body.error.message).toContain('Nếu sản phẩm có đóng gói');
     });
   });
 

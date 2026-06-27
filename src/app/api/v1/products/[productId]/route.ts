@@ -3,7 +3,7 @@ import { getProductById, updateProduct, deleteProduct } from "@/server/repositor
 import { verifyUserRole } from "@/lib/api-auth";
 import z from 'zod';
 
-const productSchema = z.object({
+const baseProductSchema = z.object({
     product_name: z.string().trim().min(1, "Tên sản phẩm không được để trống"),
     unit_price: z.number().positive("Giá sản phẩm phải lớn hơn 0"),
     stock_quantity: z.number().int().nonnegative("Số lượng tồn kho phải là số nguyên không âm"),
@@ -14,7 +14,25 @@ const productSchema = z.object({
     pack_price: z.number().positive("Giá mỗi gói phải lớn hơn 0").nullable().optional(),
 });
 
-const productPartialSchema = productSchema.partial();
+const productSchema = baseProductSchema.refine(data => {
+    if (data.is_packable) {
+        return !!data.pack_unit && data.units_per_pack !== undefined && data.units_per_pack !== null && data.pack_price !== undefined && data.pack_price !== null;
+    }
+    return true;
+}, {
+    message: "Nếu sản phẩm có đóng gói (is_packable: true), các trường pack_unit, units_per_pack và pack_price không được để trống.",
+    path: ["is_packable"]
+});
+
+const productPartialSchema = baseProductSchema.partial().refine(data => {
+    if (data.is_packable === true) {
+        return !!data.pack_unit && data.units_per_pack !== undefined && data.units_per_pack !== null && data.pack_price !== undefined && data.pack_price !== null;
+    }
+    return true;
+}, {
+    message: "Nếu sản phẩm có đóng gói (is_packable: true), các trường pack_unit, units_per_pack và pack_price không được để trống.",
+    path: ["is_packable"]
+});
 
 export async function GET(
     req: NextRequest,

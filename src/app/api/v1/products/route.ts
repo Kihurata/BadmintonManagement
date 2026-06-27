@@ -12,6 +12,14 @@ const productSchema = z.object({
     pack_unit: z.string().nullable().optional(),
     units_per_pack: z.number().int().positive("Số lượng sản phẩm mỗi gói phải là số nguyên dương").nullable().optional(),
     pack_price: z.number().positive("Giá mỗi gói phải lớn hơn 0").nullable().optional(),
+}).refine(data => {
+    if (data.is_packable) {
+        return !!data.pack_unit && data.units_per_pack !== undefined && data.units_per_pack !== null && data.pack_price !== undefined && data.pack_price !== null;
+    }
+    return true;
+}, {
+    message: "Nếu sản phẩm có đóng gói (is_packable: true), các trường pack_unit, units_per_pack và pack_price không được để trống.",
+    path: ["is_packable"]
 });
 
 export async function GET(req: NextRequest) {
