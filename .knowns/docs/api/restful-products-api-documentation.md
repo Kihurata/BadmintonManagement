@@ -1,40 +1,22 @@
----
-title: RESTful Products API Documentation
-description: API reference and integration guide for the versioned RESTful Products API (v1).
-createdAt: '2026-06-27T06:04:50.315Z'
-updatedAt: '2026-06-27T06:05:00.000Z'
-tags:
-  - api
-  - products
-  - reference
----
+# Tài liệu Đặc tả RESTful Products API (v1)
 
-# Tài liệu RESTful Products API (v1)
-
-Tài liệu đặc tả chi tiết và hướng dẫn tích hợp các API quản lý sản phẩm thuộc tài nguyên `products` phiên bản v1 (`/api/v1/products/*`).
+Tài liệu này cung cấp chi tiết thiết kế, cấu trúc dữ liệu, và cách thức tương tác với RESTful Products API (phiên bản v1). API hỗ trợ đầy đủ các thao tác CRUD và được bảo mật chặt chẽ bằng phân quyền người dùng (Role-Based Access Control - RBAC).
 
 ---
 
-## 1. Cấu trúc Chung & Định dạng Dữ liệu
+## 1. Cấu trúc Response chuẩn hóa
 
-### Địa chỉ gốc (Base Path)
-Tất cả các API được triển khai dưới cấu trúc App Router của Next.js với địa chỉ gốc:
-```
-/api/v1/products
-```
+Tất cả các phản hồi từ API đều tuân thủ cấu trúc JSON thống nhất:
 
-### Định dạng Dữ liệu Phản hồi (Response Format)
-
-#### Phản hồi Thành công (Success Response)
+### Phản hồi Thành công
 ```json
 {
   "success": true,
-  "data": <Dữ_liệu_trả_về>
+  "data": { ... } // Đối tượng hoặc Mảng chứa dữ liệu trả về
 }
 ```
 
-#### Phản hồi Thất bại (Error Response)
-Mọi lỗi phát sinh từ hệ thống hoặc lỗi do phía client gửi yêu cầu không hợp lệ đều được định dạng chuẩn hóa:
+### Phản hồi Thất bại
 ```json
 {
   "success": false,
@@ -65,6 +47,7 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
 * **Query Parameters (Tùy chọn)**:
   * `onlyAvailable` (boolean): Nếu truyền `true`, chỉ trả về các sản phẩm còn hàng (`stock_quantity > 0`).
   * `search` (string): Tìm kiếm sản phẩm theo tên (không phân biệt hoa thường, hỗ trợ tìm kiếm một phần).
+  * `status` (string, `ACTIVE` | `INACTIVE` | `ALL`): Mặc định là `ACTIVE` (chỉ lấy các sản phẩm đang hiển thị/hoạt động). Truyền `INACTIVE` để lấy sản phẩm đã ẩn, hoặc `ALL` để lấy toàn bộ.
 * **Quy tắc Sắp xếp**: Mặc định sắp xếp theo tên sản phẩm (`product_name`) tăng dần.
 
 #### Phản hồi mẫu (200 OK)
@@ -82,6 +65,7 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
       "pack_unit": "Thùng",
       "units_per_pack": 24,
       "pack_price": 220000,
+      "status": "ACTIVE",
       "created_at": "2026-06-20T14:42:00.000Z"
     }
   ]
@@ -110,6 +94,7 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
     "pack_unit": "Khay",
     "units_per_pack": 24,
     "pack_price": 270000,
+    "status": "ACTIVE",
     "created_at": "2026-06-24T00:30:00.000Z"
   }
 }
@@ -135,6 +120,7 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
     "pack_unit": "Thùng",
     "units_per_pack": 24,
     "pack_price": 220000,
+    "status": "ACTIVE",
     "created_at": "2026-06-20T14:42:00.000Z"
   }
 }
@@ -163,6 +149,7 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
     "pack_unit": "Thùng",
     "units_per_pack": 24,
     "pack_price": 220000,
+    "status": "ACTIVE",
     "created_at": "2026-06-20T14:42:00.000Z"
   }
 }
@@ -174,11 +161,40 @@ Các quyền hạn tương tác với API được quản lý trực tiếp bằ
 * **Method & URL**: `PATCH /api/v1/products/[productId]`
 * **Phân quyền**: Chỉ `OWNER` hoặc `MANAGER`
 * **Mô tả**: Dùng để cập nhật **một số** thuộc tính chỉ định. API chỉ validate các trường được gửi lên trong request body.
-* **Lưu ý quan trọng**: Các trường không được gửi lên (omitted/undefined) sẽ được giữ nguyên giá trị hiện có trong database (không bị ghi đè thành giá trị mặc định).
+* **Cơ chế Soft Deactivation (Ẩn sản phẩm)**:
+  * Khi sản phẩm đã phát sinh hóa đơn bán hàng, việc xóa vật lý (DELETE) sẽ bị chặn do ràng buộc ngoại khóa (ForeignKeyViolation - Lỗi 409).
+  * Frontend nên gọi `PATCH` với payload `{ "status": "INACTIVE" }` để ẩn sản phẩm đi, đảm bảo tính toàn vẹn của dữ liệu lịch sử.
+
+#### Yêu cầu mẫu (PATCH đổi trạng thái)
+```json
+{
+  "status": "INACTIVE"
+}
+```
+
+#### Phản hồi mẫu (200 OK)
+```json
+{
+  "success": true,
+  "data": {
+    "id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+    "product_name": "Nước suối Aquafina 500ml",
+    "unit_price": 10000,
+    "stock_quantity": 48,
+    "base_unit": "Chai",
+    "is_packable": true,
+    "pack_unit": "Thùng",
+    "units_per_pack": 24,
+    "pack_price": 220000,
+    "status": "INACTIVE",
+    "created_at": "2026-06-20T14:42:00.000Z"
+  }
+}
+```
 
 ---
 
-### 3.6. Xóa sản phẩm
+### 3.6. Xóa sản phẩm (DELETE)
 * **Method & URL**: `DELETE /api/v1/products/[productId]`
 * **Phân quyền**: Chỉ `OWNER` hoặc `MANAGER`
 
@@ -210,6 +226,7 @@ API sử dụng Zod để kiểm tra tính hợp lệ của dữ liệu đầu v
 | `pack_unit` | string / null | Không* | Bắt buộc phải có giá trị chuỗi hợp lệ nếu `is_packable` là `true`. |
 | `units_per_pack`| number (int) | Không* | Phải là số nguyên dương lớn hơn `0` (Bắt buộc nếu `is_packable` là `true`). |
 | `pack_price` | number | Không* | Phải lớn hơn `0` (Bắt buộc nếu `is_packable` là `true`). |
+| `status` | string | Không | Giá trị hợp lệ: `'ACTIVE'` hoặc `'INACTIVE'`. Mặc định khi tạo mới là `'ACTIVE'`. |
 
 > [!IMPORTANT]
 > **Ràng buộc đóng gói có điều kiện (Conditional Validation):**

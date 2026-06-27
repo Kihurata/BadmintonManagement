@@ -10,6 +10,7 @@ export interface Product {
   units_per_pack: number | null;
   pack_price: number | null;
   stock_quantity: number;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface Customer {
@@ -55,6 +56,7 @@ export async function getAvailableProducts(): Promise<Product[]> {
     .from('products')
     .select('*')
     .gt('stock_quantity', 0)
+    .eq('status', 'ACTIVE')
     .order('product_name');
 
   if (error) {
@@ -106,7 +108,7 @@ export async function getOrCreateGuestCustomer(): Promise<Customer> {
   return newGuest as Customer;
 }
 
-export async function getProducts(filters?: { onlyAvailable?: boolean; search?: string; }): Promise<Product[]> {
+export async function getProducts(filters?: { onlyAvailable?: boolean; search?: string; status?: 'ACTIVE' | 'INACTIVE' | 'ALL'; }): Promise<Product[]> {
   const supabase = createClient();
   let query = supabase.from('products').select('*');
 
@@ -116,6 +118,11 @@ export async function getProducts(filters?: { onlyAvailable?: boolean; search?: 
 
   if (filters?.search) {
     query = query.ilike('product_name', `%${filters?.search}%`);
+  }
+
+  const statusFilter = filters?.status || 'ACTIVE';
+  if (statusFilter !== 'ALL') {
+    query = query.eq('status', statusFilter);
   }
 
   const { data, error } = await query.order('product_name');

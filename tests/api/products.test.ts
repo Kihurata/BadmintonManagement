@@ -23,7 +23,7 @@ describe('Products API Route Handlers', () => {
 
   describe('GET /api/v1/products', () => {
     it('should return list of products', async () => {
-      const mockProducts = [{ id: 'p1', product_name: 'Water', unit_price: 10000, stock_quantity: 5 }];
+      const mockProducts = [{ id: 'p1', product_name: 'Water', unit_price: 10000, stock_quantity: 5, status: 'ACTIVE' }];
       (productRepo.getProducts as jest.Mock).mockResolvedValueOnce(mockProducts);
 
       const req = {
@@ -35,7 +35,20 @@ describe('Products API Route Handlers', () => {
 
       const body = await res.json();
       expect(body).toEqual({ success: true, data: mockProducts });
-      expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: false, search: undefined });
+      expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: false, search: undefined, status: undefined });
+    });
+
+    it('should pass status parameter to getProducts', async () => {
+      const mockProducts = [{ id: 'p2', product_name: 'Inactive Soda', unit_price: 12000, stock_quantity: 0, status: 'INACTIVE' }];
+      (productRepo.getProducts as jest.Mock).mockResolvedValueOnce(mockProducts);
+
+      const req = {
+        url: 'http://localhost/api/v1/products?status=INACTIVE',
+      } as unknown as NextRequest;
+
+      const res = await getList(req);
+      expect(res.status).toBe(200);
+      expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: false, search: undefined, status: 'INACTIVE' });
     });
   });
 
@@ -224,6 +237,28 @@ describe('Products API Route Handlers', () => {
       const body = await res.json();
       expect(body.success).toBe(false);
       expect(body.error.message).toContain('Nếu sản phẩm có đóng gói');
+    });
+
+    it('should allow updating product status', async () => {
+      (verifyUserRole as jest.Mock).mockResolvedValueOnce({ success: true, role: 'OWNER' });
+      const existingProduct = { id: 'p1', product_name: 'Stinger', unit_price: 150000, stock_quantity: 10, status: 'ACTIVE' };
+      (productRepo.getProductById as jest.Mock).mockResolvedValueOnce(existingProduct);
+
+      const updatedProduct = { ...existingProduct, status: 'INACTIVE' };
+      (productRepo.updateProduct as jest.Mock).mockResolvedValueOnce({ success: true, data: updatedProduct });
+
+      const req = {
+        json: jest.fn().mockResolvedValueOnce({
+          status: 'INACTIVE',
+        }),
+      } as unknown as NextRequest;
+
+      const res = await patchProduct(req, { params: { productId: 'p1' } });
+      expect(res.status).toBe(200);
+
+      const body = await res.json();
+      expect(body).toEqual({ success: true, data: updatedProduct });
+      expect(productRepo.updateProduct).toHaveBeenCalledWith('p1', { status: 'INACTIVE' });
     });
   });
 

@@ -12,6 +12,7 @@ const baseProductSchema = z.object({
     pack_unit: z.string().nullable().optional(),
     units_per_pack: z.number().int().positive("Số lượng sản phẩm mỗi gói phải là số nguyên dương").nullable().optional(),
     pack_price: z.number().positive("Giá mỗi gói phải lớn hơn 0").nullable().optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
 const productSchema = baseProductSchema.refine(data => {
@@ -122,7 +123,8 @@ export async function PUT(
             is_packable,
             pack_unit,
             units_per_pack,
-            pack_price
+            pack_price,
+            status
         } = validationResult.data;
 
         const res = await updateProduct(productId, {
@@ -134,6 +136,7 @@ export async function PUT(
             pack_unit: pack_unit || null,
             units_per_pack: units_per_pack || null,
             pack_price: pack_price || null,
+            status: status || 'ACTIVE',
         });
 
         if (!res.success || !res.data) {

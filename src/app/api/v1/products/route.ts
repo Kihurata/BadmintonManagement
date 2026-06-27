@@ -12,6 +12,7 @@ const productSchema = z.object({
     pack_unit: z.string().nullable().optional(),
     units_per_pack: z.number().int().positive("Số lượng sản phẩm mỗi gói phải là số nguyên dương").nullable().optional(),
     pack_price: z.number().positive("Giá mỗi gói phải lớn hơn 0").nullable().optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
 }).refine(data => {
     if (data.is_packable) {
         return !!data.pack_unit && data.units_per_pack !== undefined && data.units_per_pack !== null && data.pack_price !== undefined && data.pack_price !== null;
@@ -27,8 +28,9 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url);
         const onlyAvailable = searchParams.get('onlyAvailable') === 'true';
         const search = searchParams.get('search') || undefined;
+        const status = (searchParams.get('status') as 'ACTIVE' | 'INACTIVE' | 'ALL') || undefined;
 
-        const products = await getProducts({ onlyAvailable, search });
+        const products = await getProducts({ onlyAvailable, search, status });
 
         return NextResponse.json({ success: true, data: products });
     } catch (error) {
@@ -75,6 +77,7 @@ export async function POST(req: NextRequest) {
             pack_unit: validData.pack_unit ?? null,
             units_per_pack: validData.units_per_pack ?? null,
             pack_price: validData.pack_price ?? null,
+            status: validData.status,
         });
 
         if (!res.success || !res.data) {
