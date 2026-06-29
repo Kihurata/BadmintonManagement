@@ -10,8 +10,13 @@ get {
   auth: none
 }
 
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
 query {
   ~onlyAvailable: false
   ~search: 
   ~status: ACTIVE
 }
+

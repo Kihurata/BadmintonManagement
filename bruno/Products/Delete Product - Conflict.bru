@@ -1,0 +1,21 @@
+meta {
+  name: Delete Product - Conflict
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/products/{{conflictProductId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+assert {
+  res.status: eq 409
+  res.body.success: eq false
+  res.body.error.code: eq CONFLICT
+}
