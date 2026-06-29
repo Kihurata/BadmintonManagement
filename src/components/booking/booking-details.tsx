@@ -104,6 +104,12 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const handleUpdateBookingTime = async () => {
         if (!editStartTime || !editEndTime) return;
 
+        if (booking.recurring_rule_id) {
+            if (!confirm('Lưu ý: Ca đặt sân này thuộc một chuỗi lịch cố định. Thay đổi này sẽ chỉ áp dụng cho riêng ca đặt sân này. Bạn có chắc chắn muốn tiếp tục?')) {
+                return;
+            }
+        }
+
         setActionLoading(true);
         const originalDate = new Date(booking.start_time);
         const dateStr = format(originalDate, 'yyyy-MM-dd');
@@ -176,7 +182,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
             } else {
                 await refreshInvoice();
                 onCheckInSuccess();
-            }
+              }
         } catch (err) {
             alert('Lỗi Check-in: ' + (err as Error).message);
         }
@@ -185,7 +191,12 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     };
 
     const handleCancelBooking = async () => {
-        if (!confirm('Bạn có chắc chắn muốn hủy đặt sân này không?')) return;
+        const isRecurring = !!booking.recurring_rule_id;
+        const confirmMsg = isRecurring 
+            ? 'Lưu ý: Ca đặt sân này thuộc một chuỗi lịch cố định. Việc hủy này sẽ chỉ áp dụng cho riêng ca đặt sân này. Bạn có chắc chắn muốn hủy?' 
+            : 'Bạn có chắc chắn muốn hủy đặt sân này không?';
+
+        if (!confirm(confirmMsg)) return;
 
         setActionLoading(true);
         try {
