@@ -1,0 +1,147 @@
+{
+  "taskId": "t0w714",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "t0w714",
+      "version": 1,
+      "timestamp": "2026-05-24T09:30:45.7689136Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a unified presentational card component InvoiceSummaryCard that handles fee breakdowns and lists of products.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Build InvoiceSummaryCard component"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "t0w714",
+      "version": 2,
+      "timestamp": "2026-05-24T09:32:21.0881738Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a unified presentational card component InvoiceSummaryCard that handles fee breakdowns and lists of products.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Build InvoiceSummaryCard component"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "t0w714",
+      "version": 3,
+      "timestamp": "2026-05-24T09:32:21.249705Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create src/components/invoices/invoice-summary-card.tsx\n2. Design the component to handle both dynamic \u0026 static fields\n3. Export component"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a unified presentational card component InvoiceSummaryCard that handles fee breakdowns and lists of products.",
+        "implementationPlan": "1. Create src/components/invoices/invoice-summary-card.tsx\n2. Design the component to handle both dynamic \u0026 static fields\n3. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Build InvoiceSummaryCard component"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "t0w714",
+      "version": 4,
+      "timestamp": "2026-05-24T09:32:27.1183931Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Built InvoiceSummaryCard component under src/components/invoices/invoice-summary-card.tsx"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a unified presentational card component InvoiceSummaryCard that handles fee breakdowns and lists of products.",
+        "implementationNotes": "Built InvoiceSummaryCard component under src/components/invoices/invoice-summary-card.tsx",
+        "implementationPlan": "1. Create src/components/invoices/invoice-summary-card.tsx\n2. Design the component to handle both dynamic \u0026 static fields\n3. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Build InvoiceSummaryCard component"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "t0w714",
+      "version": 5,
+      "timestamp": "2026-05-24T09:41:00.8938397Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "text": "Implement presentational component InvoiceSummaryCard",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement presentational component InvoiceSummaryCard",
+            "completed": false
+          }
+        ],
+        "description": "Create a unified presentational card component InvoiceSummaryCard that handles fee breakdowns and lists of products.",
+        "implementationNotes": "Built InvoiceSummaryCard component under src/components/invoices/invoice-summary-card.tsx",
+        "implementationPlan": "1. Create src/components/invoices/invoice-summary-card.tsx\n2. Design the component to handle both dynamic \u0026 static fields\n3. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Build InvoiceSummaryCard component"
+      }
+    }
+  ]
+}

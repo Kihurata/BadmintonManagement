@@ -1,0 +1,137 @@
+{
+  "taskId": "4yzeo6",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "4yzeo6",
+      "version": 1,
+      "timestamp": "2026-05-24T09:30:46.0224564Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Group water and shuttlecocks on top and collapse remaining items under a 'View more' toggle button in both POS interfaces.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Collapse and prioritize product listing in QuickSaleForm and BookingDetails"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "4yzeo6",
+      "version": 2,
+      "timestamp": "2026-05-24T09:39:42.1917965Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Group water and shuttlecocks on top and collapse remaining items under a 'View more' toggle button in both POS interfaces.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Collapse and prioritize product listing in QuickSaleForm and BookingDetails"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "4yzeo6",
+      "version": 3,
+      "timestamp": "2026-05-24T09:40:51.3204558Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented prioritized and collapsible product list in QuickSaleForm and BookingDetails components. Created isPopularProduct helper and toggle buttons. Fully verified."
+        }
+      ],
+      "snapshot": {
+        "description": "Group water and shuttlecocks on top and collapse remaining items under a 'View more' toggle button in both POS interfaces.",
+        "implementationNotes": "Implemented prioritized and collapsible product list in QuickSaleForm and BookingDetails components. Created isPopularProduct helper and toggle buttons. Fully verified.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Collapse and prioritize product listing in QuickSaleForm and BookingDetails"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "4yzeo6",
+      "version": 4,
+      "timestamp": "2026-05-24T09:41:01.1416762Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "text": "Prioritize water and shuttlecocks on top",
+              "completed": false
+            },
+            {
+              "text": "Collapse less popular products in QuickSaleForm",
+              "completed": false
+            },
+            {
+              "text": "Collapse less popular products in BookingDetails",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Prioritize water and shuttlecocks on top",
+            "completed": false
+          },
+          {
+            "text": "Collapse less popular products in QuickSaleForm",
+            "completed": false
+          },
+          {
+            "text": "Collapse less popular products in BookingDetails",
+            "completed": false
+          }
+        ],
+        "description": "Group water and shuttlecocks on top and collapse remaining items under a 'View more' toggle button in both POS interfaces.",
+        "implementationNotes": "Implemented prioritized and collapsible product list in QuickSaleForm and BookingDetails components. Created isPopularProduct helper and toggle buttons. Fully verified.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Collapse and prioritize product listing in QuickSaleForm and BookingDetails"
+      }
+    }
+  ]
+}

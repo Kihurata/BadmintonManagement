@@ -1,0 +1,80 @@
+{
+  "docPath": "readme",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "readme",
+      "version": 1,
+      "timestamp": "2026-05-24T08:31:57.6842944Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "README"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Project overview and setup guide."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "core"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "Project overview and setup guide.",
+        "tags": [
+          "core"
+        ],
+        "title": "README"
+      }
+    },
+    {
+      "id": "v2",
+      "docPath": "readme",
+      "version": 2,
+      "timestamp": "2026-05-24T08:32:06.3103027Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": null,
+          "newValue": "Hello World"
+        }
+      ],
+      "snapshot": {
+        "content": "Hello World",
+        "description": "Project overview and setup guide.",
+        "tags": [
+          "core"
+        ],
+        "title": "README"
+      }
+    },
+    {
+      "id": "v3",
+      "docPath": "readme",
+      "version": 3,
+      "timestamp": "2026-05-24T08:36:02.7555748Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "Hello World",
+          "newValue": "# Badminton Management System\n\nKnowns documentation and resources for the Badminton Management System.\n\n## Project Goal\nA comprehensive web application designed to streamline the operations of badminton court facilities, including court bookings, check-ins, inventory tracking (POS), invoicing, and debt/financial management.\n\n## Key Subsystems\n- **Court Booking \u0026 Check-in**: Manages court schedules, slot availability, and check-in fees. Refer to @doc/workflow/workflow-booking-checkin.\n- **Checkout \u0026 Payments**: Calculates fees (court + POS items) and integrates VietQR. Refer to @doc/workflow/workflow-checkout-payment.\n- **Point of Sale (POS) \u0026 Inventory**: Sells items (individual or packs) with automatic trigger-based stock deduction. Refer to @doc/workflow/workflow-pos-service-ordering.\n- **Quick Sale**: Sells goods directly to walk-in customers without booking. Refer to @doc/workflow/workflow-quick-sale.\n- **Debt \u0026 Day-End**: Tracks unpaid invoices and automates day-end closing. Refer to @doc/workflow/workflow-debt-receivables.\n\n## Getting Started\n1. Run local Supabase development environment: `supabase start`\n2. Create `.env.local` based on Supabase CLI outputs.\n3. Install dependencies: `npm install`\n4. Run locally: `npm run dev`"
+        }
+      ],
+      "snapshot": {
+        "content": "# Badminton Management System\n\nKnowns documentation and resources for the Badminton Management System.\n\n## Project Goal\nA comprehensive web application designed to streamline the operations of badminton court facilities, including court bookings, check-ins, inventory tracking (POS), invoicing, and debt/financial management.\n\n## Key Subsystems\n- **Court Booking \u0026 Check-in**: Manages court schedules, slot availability, and check-in fees. Refer to @doc/workflow/workflow-booking-checkin.\n- **Checkout \u0026 Payments**: Calculates fees (court + POS items) and integrates VietQR. Refer to @doc/workflow/workflow-checkout-payment.\n- **Point of Sale (POS) \u0026 Inventory**: Sells items (individual or packs) with automatic trigger-based stock deduction. Refer to @doc/workflow/workflow-pos-service-ordering.\n- **Quick Sale**: Sells goods directly to walk-in customers without booking. Refer to @doc/workflow/workflow-quick-sale.\n- **Debt \u0026 Day-End**: Tracks unpaid invoices and automates day-end closing. Refer to @doc/workflow/workflow-debt-receivables.\n\n## Getting Started\n1. Run local Supabase development environment: `supabase start`\n2. Create `.env.local` based on Supabase CLI outputs.\n3. Install dependencies: `npm install`\n4. Run locally: `npm run dev`",
+        "description": "Project overview and setup guide.",
+        "tags": [
+          "core"
+        ],
+        "title": "README"
+      }
+    }
+  ]
+}

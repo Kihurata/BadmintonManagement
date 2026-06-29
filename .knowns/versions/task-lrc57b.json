@@ -1,0 +1,163 @@
+{
+  "taskId": "lrc57b",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "lrc57b",
+      "version": 1,
+      "timestamp": "2026-05-24T09:30:45.9275925Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor CheckoutForm and InvoiceDetailDialog to use the new InvoiceSummaryCard and PaymentSelector components, removing duplicated code.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Integrate unified components into CheckoutForm and InvoiceDetailDialog"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "lrc57b",
+      "version": 2,
+      "timestamp": "2026-05-24T09:32:42.7247998Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor CheckoutForm and InvoiceDetailDialog to use the new InvoiceSummaryCard and PaymentSelector components, removing duplicated code.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Integrate unified components into CheckoutForm and InvoiceDetailDialog"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "lrc57b",
+      "version": 3,
+      "timestamp": "2026-05-24T09:32:42.8701927Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Modify CheckoutForm to use InvoiceSummaryCard and PaymentSelector\n2. Modify InvoiceDetailDialog to use InvoiceSummaryCard, PaymentSelector, and formatInvoiceShareText\n3. Modify QuickSaleForm to use PaymentSelector\n4. Verify code compiling and work fine"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor CheckoutForm and InvoiceDetailDialog to use the new InvoiceSummaryCard and PaymentSelector components, removing duplicated code.",
+        "implementationPlan": "1. Modify CheckoutForm to use InvoiceSummaryCard and PaymentSelector\n2. Modify InvoiceDetailDialog to use InvoiceSummaryCard, PaymentSelector, and formatInvoiceShareText\n3. Modify QuickSaleForm to use PaymentSelector\n4. Verify code compiling and work fine",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Integrate unified components into CheckoutForm and InvoiceDetailDialog"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "lrc57b",
+      "version": 4,
+      "timestamp": "2026-05-24T09:39:36.0344838Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Integrate unified components into CheckoutForm and InvoiceDetailDialog. Types fix completed and Next.js compiler errors resolved."
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor CheckoutForm and InvoiceDetailDialog to use the new InvoiceSummaryCard and PaymentSelector components, removing duplicated code.",
+        "implementationNotes": "Integrate unified components into CheckoutForm and InvoiceDetailDialog. Types fix completed and Next.js compiler errors resolved.",
+        "implementationPlan": "1. Modify CheckoutForm to use InvoiceSummaryCard and PaymentSelector\n2. Modify InvoiceDetailDialog to use InvoiceSummaryCard, PaymentSelector, and formatInvoiceShareText\n3. Modify QuickSaleForm to use PaymentSelector\n4. Verify code compiling and work fine",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Integrate unified components into CheckoutForm and InvoiceDetailDialog"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "lrc57b",
+      "version": 5,
+      "timestamp": "2026-05-24T09:41:01.0630548Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "text": "CheckoutForm refactored to use new card and payment selector",
+              "completed": false
+            },
+            {
+              "text": "InvoiceDetailDialog refactored to use new card and payment selector",
+              "completed": false
+            },
+            {
+              "text": "Verify type compilation passes clean",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "CheckoutForm refactored to use new card and payment selector",
+            "completed": false
+          },
+          {
+            "text": "InvoiceDetailDialog refactored to use new card and payment selector",
+            "completed": false
+          },
+          {
+            "text": "Verify type compilation passes clean",
+            "completed": false
+          }
+        ],
+        "description": "Refactor CheckoutForm and InvoiceDetailDialog to use the new InvoiceSummaryCard and PaymentSelector components, removing duplicated code.",
+        "implementationNotes": "Integrate unified components into CheckoutForm and InvoiceDetailDialog. Types fix completed and Next.js compiler errors resolved.",
+        "implementationPlan": "1. Modify CheckoutForm to use InvoiceSummaryCard and PaymentSelector\n2. Modify InvoiceDetailDialog to use InvoiceSummaryCard, PaymentSelector, and formatInvoiceShareText\n3. Modify QuickSaleForm to use PaymentSelector\n4. Verify code compiling and work fine",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Integrate unified components into CheckoutForm and InvoiceDetailDialog"
+      }
+    }
+  ]
+}

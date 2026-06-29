@@ -1,0 +1,167 @@
+{
+  "taskId": "g08kvn",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "g08kvn",
+      "version": 1,
+      "timestamp": "2026-05-24T09:34:47.0378397Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Hide Nhập chi phí on Home page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Lịch sử kho tab on Products page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Stock adjustment icon on Products page for STAFF"
+          }
+        ],
+        "description": "Hide Nhập chi phí button on home page for STAFF. Hide Lịch sử kho tab and stock adjustment swap icon on Products page for STAFF.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Gate Actions on Home \u0026 Products Pages"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "g08kvn",
+      "version": 2,
+      "timestamp": "2026-05-24T09:36:02.6309353Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Hide Nhập chi phí on Home page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Lịch sử kho tab on Products page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Stock adjustment icon on Products page for STAFF"
+          }
+        ],
+        "description": "Hide Nhập chi phí button on home page for STAFF. Hide Lịch sử kho tab and stock adjustment swap icon on Products page for STAFF.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Gate Actions on Home \u0026 Products Pages"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "g08kvn",
+      "version": 3,
+      "timestamp": "2026-05-24T09:36:05.3614517Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Edit quick-actions.tsx: check useUserRole, conditionally render the Nhập chi phí button\n2. Edit products/page.tsx: check useUserRole, conditionally render Lịch sử kho tab button and swap_vert stock adjustment button\n3. Verify everything builds without compilation errors."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Hide Nhập chi phí on Home page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Lịch sử kho tab on Products page for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Hide Stock adjustment icon on Products page for STAFF"
+          }
+        ],
+        "description": "Hide Nhập chi phí button on home page for STAFF. Hide Lịch sử kho tab and stock adjustment swap icon on Products page for STAFF.",
+        "implementationPlan": "1. Edit quick-actions.tsx: check useUserRole, conditionally render the Nhập chi phí button\n2. Edit products/page.tsx: check useUserRole, conditionally render Lịch sử kho tab button and swap_vert stock adjustment button\n3. Verify everything builds without compilation errors.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Gate Actions on Home \u0026 Products Pages"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "g08kvn",
+      "version": 4,
+      "timestamp": "2026-05-24T09:36:32.5895558Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Gated Quick Actions on Home page and Products page for STAFF users. Hidden Nhập chi phí, Lịch sử kho tab, and Stock adjustment button. Also restricted day-end chốt ca and Công nợ (debt ledger) on Invoices page."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Hide Nhập chi phí on Home page for STAFF",
+            "completed": true
+          },
+          {
+            "text": "Hide Lịch sử kho tab on Products page for STAFF",
+            "completed": true
+          },
+          {
+            "text": "Hide Stock adjustment icon on Products page for STAFF",
+            "completed": true
+          }
+        ],
+        "description": "Hide Nhập chi phí button on home page for STAFF. Hide Lịch sử kho tab and stock adjustment swap icon on Products page for STAFF.",
+        "implementationNotes": "Gated Quick Actions on Home page and Products page for STAFF users. Hidden Nhập chi phí, Lịch sử kho tab, and Stock adjustment button. Also restricted day-end chốt ca and Công nợ (debt ledger) on Invoices page.",
+        "implementationPlan": "1. Edit quick-actions.tsx: check useUserRole, conditionally render the Nhập chi phí button\n2. Edit products/page.tsx: check useUserRole, conditionally render Lịch sử kho tab button and swap_vert stock adjustment button\n3. Verify everything builds without compilation errors.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Gate Actions on Home \u0026 Products Pages"
+      }
+    }
+  ]
+}

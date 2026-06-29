@@ -1,0 +1,120 @@
+{
+  "taskId": "oanevi",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "oanevi",
+      "version": 1,
+      "timestamp": "2026-06-27T20:20:49.3254869Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Configure local development and Bruno collection to use staging Supabase database, stop local Supabase docker, and make Bruno cookie names environment-dynamic.",
+        "priority": "high",
+        "status": "todo",
+        "title": "Use Staging Supabase for Dev and Bruno Testing"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "oanevi",
+      "version": 2,
+      "timestamp": "2026-06-27T20:20:57.2033107Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Configure local development and Bruno collection to use staging Supabase database, stop local Supabase docker, and make Bruno cookie names environment-dynamic.",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Use Staging Supabase for Dev and Bruno Testing"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "oanevi",
+      "version": 3,
+      "timestamp": "2026-06-27T20:21:30.1247429Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Stop local Supabase container. 2. Configure .env.local with staging credentials. 3. Update environments/Local.bru in Bruno. 4. Refactor Bruno product requests to use dynamic supabaseCookieName variables. 5. Run tests using Bruno CLI."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Configure local development and Bruno collection to use staging Supabase database, stop local Supabase docker, and make Bruno cookie names environment-dynamic.",
+        "implementationPlan": "1. Stop local Supabase container. 2. Configure .env.local with staging credentials. 3. Update environments/Local.bru in Bruno. 4. Refactor Bruno product requests to use dynamic supabaseCookieName variables. 5. Run tests using Bruno CLI.",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Use Staging Supabase for Dev and Bruno Testing"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "oanevi",
+      "version": 4,
+      "timestamp": "2026-06-27T20:23:36.103337Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Stopped local Supabase docker, copied staging credentials to .env.local, updated bruno/environments/Local.bru with staging URL/keys and dynamic supabaseCookieName variable. Updated all product .bru files to use dynamic cookie headers."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Configure local development and Bruno collection to use staging Supabase database, stop local Supabase docker, and make Bruno cookie names environment-dynamic.",
+        "implementationNotes": "Stopped local Supabase docker, copied staging credentials to .env.local, updated bruno/environments/Local.bru with staging URL/keys and dynamic supabaseCookieName variable. Updated all product .bru files to use dynamic cookie headers.",
+        "implementationPlan": "1. Stop local Supabase container. 2. Configure .env.local with staging credentials. 3. Update environments/Local.bru in Bruno. 4. Refactor Bruno product requests to use dynamic supabaseCookieName variables. 5. Run tests using Bruno CLI.",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Use Staging Supabase for Dev and Bruno Testing"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "oanevi",
+      "version": 5,
+      "timestamp": "2026-06-27T20:23:40.6518714Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Configure local development and Bruno collection to use staging Supabase database, stop local Supabase docker, and make Bruno cookie names environment-dynamic.",
+        "implementationNotes": "Stopped local Supabase docker, copied staging credentials to .env.local, updated bruno/environments/Local.bru with staging URL/keys and dynamic supabaseCookieName variable. Updated all product .bru files to use dynamic cookie headers.",
+        "implementationPlan": "1. Stop local Supabase container. 2. Configure .env.local with staging credentials. 3. Update environments/Local.bru in Bruno. 4. Refactor Bruno product requests to use dynamic supabaseCookieName variables. 5. Run tests using Bruno CLI.",
+        "priority": "high",
+        "status": "done",
+        "title": "Use Staging Supabase for Dev and Bruno Testing"
+      }
+    }
+  ]
+}

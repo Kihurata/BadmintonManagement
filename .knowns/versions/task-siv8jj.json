@@ -1,0 +1,147 @@
+{
+  "taskId": "siv8jj",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "siv8jj",
+      "version": 1,
+      "timestamp": "2026-05-24T09:30:45.8515479Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a presentational payment method selector component that handles Cash/Bank selection and displays VietQR.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Build PaymentSelector component"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "siv8jj",
+      "version": 2,
+      "timestamp": "2026-05-24T09:32:31.3357569Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a presentational payment method selector component that handles Cash/Bank selection and displays VietQR.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Build PaymentSelector component"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "siv8jj",
+      "version": 3,
+      "timestamp": "2026-05-24T09:32:31.4892305Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create src/components/invoices/payment-selector.tsx\n2. Render Cash and Bank options\n3. Display VietQR dynamically via invoice-utils.ts\n4. Export component"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a presentational payment method selector component that handles Cash/Bank selection and displays VietQR.",
+        "implementationPlan": "1. Create src/components/invoices/payment-selector.tsx\n2. Render Cash and Bank options\n3. Display VietQR dynamically via invoice-utils.ts\n4. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Build PaymentSelector component"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "siv8jj",
+      "version": 4,
+      "timestamp": "2026-05-24T09:32:37.5568637Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Built PaymentSelector component under src/components/invoices/payment-selector.tsx"
+        }
+      ],
+      "snapshot": {
+        "description": "Create a presentational payment method selector component that handles Cash/Bank selection and displays VietQR.",
+        "implementationNotes": "Built PaymentSelector component under src/components/invoices/payment-selector.tsx",
+        "implementationPlan": "1. Create src/components/invoices/payment-selector.tsx\n2. Render Cash and Bank options\n3. Display VietQR dynamically via invoice-utils.ts\n4. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Build PaymentSelector component"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "siv8jj",
+      "version": 5,
+      "timestamp": "2026-05-24T09:41:00.9686822Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "text": "Implement presentational component PaymentSelector with VietQR support",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement presentational component PaymentSelector with VietQR support",
+            "completed": false
+          }
+        ],
+        "description": "Create a presentational payment method selector component that handles Cash/Bank selection and displays VietQR.",
+        "implementationNotes": "Built PaymentSelector component under src/components/invoices/payment-selector.tsx",
+        "implementationPlan": "1. Create src/components/invoices/payment-selector.tsx\n2. Render Cash and Bank options\n3. Display VietQR dynamically via invoice-utils.ts\n4. Export component",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Build PaymentSelector component"
+      }
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "taskId": "0gih9b",
+  "currentVersion": 7,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "0gih9b",
+      "version": 1,
+      "timestamp": "2026-06-20T08:49:37.313138Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": false,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": false,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "0gih9b",
+      "version": 2,
+      "timestamp": "2026-06-20T16:21:52.7061715Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": false,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": false,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "0gih9b",
+      "version": 3,
+      "timestamp": "2026-06-20T16:22:05.2931736Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Add createProduct, updateProduct, deleteProduct to product-repo.ts. 2. Implement POST /api/v1/products route handler. 3. Implement PUT, PATCH, DELETE /api/v1/products/[productId] route handlers. 4. Verify with npm test."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": false,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": false,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "implementationPlan": "1. Add createProduct, updateProduct, deleteProduct to product-repo.ts. 2. Implement POST /api/v1/products route handler. 3. Implement PUT, PATCH, DELETE /api/v1/products/[productId] route handlers. 4. Verify with npm test.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "0gih9b",
+      "version": 4,
+      "timestamp": "2026-06-22T12:23:15.1823585Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": "1. Add createProduct, updateProduct, deleteProduct to product-repo.ts. 2. Implement POST /api/v1/products route handler. 3. Implement PUT, PATCH, DELETE /api/v1/products/[productId] route handlers. 4. Verify with npm test.",
+          "newValue": "1. Add deleteProduct(productId) in product-repo.ts. 2. Implement POST /api/v1/products with RBAC verifyUserRole(['OWNER', 'MANAGER']) and validation. 3. Implement PUT, PATCH, DELETE in /api/v1/products/[productId] with RBAC, validation, and conflict mapping (23503 -\u003e 409). 4. Add test file tests/api/products.test.ts. 5. Run npm test and npm run build to verify."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": false,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": false,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "implementationPlan": "1. Add deleteProduct(productId) in product-repo.ts. 2. Implement POST /api/v1/products with RBAC verifyUserRole(['OWNER', 'MANAGER']) and validation. 3. Implement PUT, PATCH, DELETE in /api/v1/products/[productId] with RBAC, validation, and conflict mapping (23503 -\u003e 409). 4. Add test file tests/api/products.test.ts. 5. Run npm test and npm run build to verify.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "0gih9b",
+      "version": 5,
+      "timestamp": "2026-06-23T16:43:18.5829039Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": "1. Add deleteProduct(productId) in product-repo.ts. 2. Implement POST /api/v1/products with RBAC verifyUserRole(['OWNER', 'MANAGER']) and validation. 3. Implement PUT, PATCH, DELETE in /api/v1/products/[productId] with RBAC, validation, and conflict mapping (23503 -\u003e 409). 4. Add test file tests/api/products.test.ts. 5. Run npm test and npm run build to verify.",
+          "newValue": "1. Create src/lib/product-validator.ts to handle full and partial validation. 2. Implement POST in products/route.ts catching JSON parse errors (400) and validating with helper. 3. Implement PUT, PATCH, DELETE in products/[productId]/route.ts with validation, RBAC, and conflict mapping. 4. Write tests/api/products.test.ts to verify errors and normal flow. 5. Run npm test and npm run build."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": false,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": false,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "implementationPlan": "1. Create src/lib/product-validator.ts to handle full and partial validation. 2. Implement POST in products/route.ts catching JSON parse errors (400) and validating with helper. 3. Implement PUT, PATCH, DELETE in products/[productId]/route.ts with validation, RBAC, and conflict mapping. 4. Write tests/api/products.test.ts to verify errors and normal flow. 5. Run npm test and npm run build.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "0gih9b",
+      "version": 6,
+      "timestamp": "2026-06-23T16:47:50.8325178Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented RESTful product API write endpoints (POST, PUT, PATCH, DELETE) with body parse try-catch protection (returning 400 Bad Request on parse fail), a clean reusable validation utility in product-validator.ts, RBAC checks, and 409 Conflict mapping for referenced products in DELETE."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Implement POST /api/v1/products (return 201)"
+          },
+          {
+            "completed": true,
+            "text": "Implement PUT /api/v1/products/[productId] for full update"
+          },
+          {
+            "completed": true,
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update"
+          },
+          {
+            "completed": true,
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced"
+          },
+          {
+            "completed": true,
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "implementationNotes": "Implemented RESTful product API write endpoints (POST, PUT, PATCH, DELETE) with body parse try-catch protection (returning 400 Bad Request on parse fail), a clean reusable validation utility in product-validator.ts, RBAC checks, and 409 Conflict mapping for referenced products in DELETE.",
+        "implementationPlan": "1. Create src/lib/product-validator.ts to handle full and partial validation. 2. Implement POST in products/route.ts catching JSON parse errors (400) and validating with helper. 3. Implement PUT, PATCH, DELETE in products/[productId]/route.ts with validation, RBAC, and conflict mapping. 4. Write tests/api/products.test.ts to verify errors and normal flow. 5. Run npm test and npm run build.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    },
+    {
+      "id": "v7",
+      "taskId": "0gih9b",
+      "version": 7,
+      "timestamp": "2026-06-23T17:32:06.1834321Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Implemented RESTful product API write endpoints (POST, PUT, PATCH, DELETE) with body parse try-catch protection (returning 400 Bad Request on parse fail), a clean reusable validation utility in product-validator.ts, RBAC checks, and 409 Conflict mapping for referenced products in DELETE.",
+          "newValue": "Implemented RESTful product API write endpoints (POST, PUT, PATCH, DELETE) with body parse try-catch protection (returning 400 Bad Request on parse fail), a clean reusable validation utility in product-validator.ts, RBAC checks, and 409 Conflict mapping for referenced products in DELETE.\n📚 Extracted to @doc/learnings/learning-rest-products-api"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement POST /api/v1/products (return 201)",
+            "completed": true
+          },
+          {
+            "text": "Implement PUT /api/v1/products/[productId] for full update",
+            "completed": true
+          },
+          {
+            "text": "Implement PATCH /api/v1/products/[productId] for partial update",
+            "completed": true
+          },
+          {
+            "text": "Implement DELETE /api/v1/products/[productId] and return 409 Conflict if product is referenced",
+            "completed": true
+          },
+          {
+            "text": "Integrate RBAC helper to restrict STAFF write requests with 403",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement POST, PUT, PATCH, and DELETE handlers for products under /api/v1/products, integrating RBAC and constraint error handling.",
+        "implementationNotes": "Implemented RESTful product API write endpoints (POST, PUT, PATCH, DELETE) with body parse try-catch protection (returning 400 Bad Request on parse fail), a clean reusable validation utility in product-validator.ts, RBAC checks, and 409 Conflict mapping for referenced products in DELETE.\n📚 Extracted to @doc/learnings/learning-rest-products-api",
+        "implementationPlan": "1. Create src/lib/product-validator.ts to handle full and partial validation. 2. Implement POST in products/route.ts catching JSON parse errors (400) and validating with helper. 3. Implement PUT, PATCH, DELETE in products/[productId]/route.ts with validation, RBAC, and conflict mapping. 4. Write tests/api/products.test.ts to verify errors and normal flow. 5. Run npm test and npm run build.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Implement RESTful Write Endpoints for Products"
+      }
+    }
+  ]
+}
