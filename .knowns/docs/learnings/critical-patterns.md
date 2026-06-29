@@ -69,3 +69,13 @@ Relying solely on physical `DELETE` endpoints creates data constraint violations
 Every time you write or modify a Next.js API Route Handler, write a corresponding `.bru` request file inside the `bruno/` directory. Run the Bruno CLI runner (`npx @usebruno/cli run bruno/ --env Local`) to verify that all API endpoints function securely and successfully before committing code.
 
 **Full entry:** @doc/learnings/learning-bruno-api-testing
+
+## 2026-06-29 TypeScript Safe-Casting Supabase Join Relations
+**Category:** pattern
+**Source:** @task-rres6a
+**Tags:** [typescript, supabase]
+
+When querying join tables (e.g. `customers(name)`) under strict typescript config (`@typescript-eslint/no-explicit-any`), cast relation returns using `Array.isArray` check and `unknown` casting rather than bypassing checks with `as any`.
+
+**Full entry:** @doc/learnings/learning-typescript-strict-compilation
+

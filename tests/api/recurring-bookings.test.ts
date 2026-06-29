@@ -177,7 +177,7 @@ describe('Recurring Bookings API Route Handlers', () => {
       const body = await res.json();
       expect(body.success).toBe(true);
       expect(body.data.ruleId).toBe(VALID_RULE_ID);
-      expect(body.data.bookingsCreatedCount).toBe(2);
+      expect(body.data.bookingsCount).toBe(2);
     });
   });
 
@@ -236,6 +236,25 @@ describe('Recurring Bookings API Route Handlers', () => {
       const body = await res.json();
       expect(body.success).toBe(true);
       expect(body.data.cancelledCount).toBe(1);
+    });
+
+    it('should return 400 Bad Request if scope is missing', async () => {
+      (verifyUserRole as jest.Mock).mockResolvedValueOnce({
+        success: true,
+        tenantId: 'tenant_123',
+        role: 'OWNER',
+      });
+
+      const req = {
+        url: `http://localhost/api/v1/bookings/recurring?ruleId=${VALID_RULE_ID}`,
+      } as unknown as NextRequest;
+
+      const res = await DELETE(req);
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.success).toBe(false);
+      expect(body.error.code).toBe('BAD_REQUEST');
+      expect(body.error.message).toContain('scope');
     });
   });
 });

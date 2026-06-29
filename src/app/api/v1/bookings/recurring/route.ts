@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
         success: true,
         data: {
           ruleId: createResult.ruleId,
-          bookingsCreatedCount: candidates.length,
+          bookingsCount: candidates.length,
         },
       }
     );
@@ -223,7 +223,7 @@ export async function DELETE(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const ruleId = searchParams.get('ruleId');
-    const scope = searchParams.get('scope') || 'FUTURE'; // 'ALL' or 'FUTURE'
+    const scope = searchParams.get('scope'); // 'ALL' or 'FUTURE'
 
     if (!ruleId || !z.string().uuid().safeParse(ruleId).success) {
       return NextResponse.json(
@@ -232,9 +232,9 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    if (scope !== 'ALL' && scope !== 'FUTURE') {
+    if (!scope || (scope !== 'ALL' && scope !== 'FUTURE')) {
       return NextResponse.json(
-        { success: false, error: { code: 'BAD_REQUEST', message: 'Scope must be ALL or FUTURE.' } },
+        { success: false, error: { code: 'BAD_REQUEST', message: 'Missing or invalid scope. Scope must be ALL or FUTURE.' } },
         { status: 400 }
       );
     }

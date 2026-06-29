@@ -25,7 +25,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { useUserRole } from '@/components/auth-provider';
 import {
   Dialog,
   DialogContent,
@@ -42,7 +41,6 @@ interface RecurringBookingFormProps {
 }
 
 export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }: RecurringBookingFormProps) {
-  const { role } = useUserRole();
   const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [courtId, setCourtId] = useState('');
   

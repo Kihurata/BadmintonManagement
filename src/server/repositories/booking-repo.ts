@@ -227,7 +227,9 @@ export async function checkRecurringConflicts(
           id: dbBooking.id,
           start_time: dbBooking.start_time,
           end_time: dbBooking.end_time,
-          customerName: (dbBooking.customers as any)?.name || 'Khách vãng lai',
+          customerName: (Array.isArray(dbBooking.customers)
+            ? (dbBooking.customers[0] as unknown as { name: string })?.name
+            : (dbBooking.customers as unknown as { name: string })?.name) || 'Khách vãng lai',
         });
         break; // Avoid adding same booking multiple times if it spans multiple candidate slots
       }
@@ -372,7 +374,7 @@ export async function updateRecurringBookings(params: {
   }
 
   // 2. Build the update payload for recurring_rules
-  const ruleUpdate: any = {};
+  const ruleUpdate: { customer_id?: string } = {};
   if (params.customerId !== undefined) ruleUpdate.customer_id = params.customerId;
 
   if (Object.keys(ruleUpdate).length > 0) {
@@ -387,7 +389,7 @@ export async function updateRecurringBookings(params: {
   }
 
   // 3. Build the update payload for individual bookings
-  const bookingUpdate: any = {};
+  const bookingUpdate: { customer_id?: string; note?: string | null } = {};
   if (params.customerId !== undefined) bookingUpdate.customer_id = params.customerId;
   if (params.note !== undefined) bookingUpdate.note = params.note;
 
