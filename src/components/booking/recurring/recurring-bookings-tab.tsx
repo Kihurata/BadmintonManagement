@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { RecurringBookingForm } from './recurring-booking-form';
 import { Loader2, Plus, Calendar, User, Trash2, ArrowRight } from 'lucide-react';
-import { useUserRole } from '@/components/auth-provider';
 
 interface RecurringRule {
   id: string;
@@ -24,7 +22,6 @@ interface RecurringRule {
 }
 
 export function RecurringBookingsTab() {
-  const { role } = useUserRole();
   const [rules, setRules] = useState<RecurringRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +86,7 @@ export function RecurringBookingsTab() {
   };
 
   const getDayNames = (days: number[]) => {
+    if (!days || !Array.isArray(days)) return 'N/A';
     const map: Record<number, string> = {
       1: 'Thứ 2', 2: 'Thứ 3', 3: 'Thứ 4', 4: 'Thứ 5', 5: 'Thứ 6', 6: 'Thứ 7', 0: 'CN'
     };
