@@ -1,0 +1,24 @@
+meta {
+  name: Update Recurring
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/bookings/recurring
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "ruleId": "{{createdRecurringRuleId}}",
+    "customerId": "{{testCustomerId}}",
+    "note": "Ghi chú đã cập nhật bởi Bruno Integration Test",
+    "scope": "FUTURE"
+  }
+}

@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -80,27 +79,34 @@ export function ProductForm({ productToEdit, onSuccess, onCancel }: ProductFormP
             pack_price: (isPackable && packPrice) ? parseFloat(packPrice) : null // Can be null if auto-calc wanted, but simpler to force or default? database can handle null.
         };
 
-        let error;
+        try {
+            const url = productToEdit 
+                ? `/api/v1/products/${productToEdit.id}`
+                : '/api/v1/products';
+            const method = productToEdit ? 'PUT' : 'POST';
 
-        if (productToEdit) {
-            const { error: updateError } = await supabase
-                .from('products')
-                .update(productData)
-                .eq('id', productToEdit.id);
-            error = updateError;
-        } else {
-            const { error: insertError } = await supabase
-                .from('products')
-                .insert([productData]);
-            error = insertError;
-        }
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(productData),
+            });
 
-        setLoading(false);
+            const result = await response.json();
 
-        if (error) {
-            setError(error.message);
-        } else {
-            onSuccess();
+            if (!response.ok || !result.success) {
+                const errMsg = result.error?.message || 'Đã xảy ra lỗi khi lưu sản phẩm.';
+                setError(errMsg);
+                console.error('Error saving product via API:', result.error);
+            } else {
+                onSuccess();
+            }
+        } catch (err) {
+            console.error('Unhandled form submission error:', err);
+            setError(err instanceof Error ? err.message : 'Đã xảy ra lỗi không xác định.');
+        } finally {
+            setLoading(false);
         }
     };
 

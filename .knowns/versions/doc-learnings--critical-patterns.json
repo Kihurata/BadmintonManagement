@@ -1,0 +1,62 @@
+{
+  "docPath": "learnings/critical-patterns",
+  "currentVersion": 2,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "learnings/critical-patterns",
+      "version": 1,
+      "timestamp": "2026-05-25T10:03:03.8054752Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Critical Patterns"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Promoted learnings that save the most time. Read at session start."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "critical"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "Promoted learnings that save the most time. Read at session start.",
+        "tags": [
+          "learning",
+          "critical"
+        ],
+        "title": "Critical Patterns"
+      }
+    },
+    {
+      "id": "v2",
+      "docPath": "learnings/critical-patterns",
+      "version": 2,
+      "timestamp": "2026-06-23T17:32:01.2286643Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit",
+          "newValue": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n"
+        }
+      ],
+      "snapshot": {
+        "content": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n",
+        "description": "Promoted learnings that save the most time. Read at session start.",
+        "tags": [
+          "learning",
+          "critical"
+        ],
+        "title": "Critical Patterns"
+      }
+    }
+  ]
+}

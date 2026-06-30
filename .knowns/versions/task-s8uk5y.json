@@ -1,0 +1,146 @@
+{
+  "taskId": "s8uk5y",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "s8uk5y",
+      "version": 1,
+      "timestamp": "2026-05-25T10:07:38.5496354Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create /api/bookings/check-in route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/bookings/checkout route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/invoices/pay route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/expenses route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/quick-sale route"
+          }
+        ],
+        "description": "Implement API routes under src/app/api/ for booking mutations, checkout, quick sale, and expenses using the new Server-side Repositories.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Create Next.js API Routes for Mutations"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "s8uk5y",
+      "version": 2,
+      "timestamp": "2026-05-25T10:09:15.7322149Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create /api/bookings/check-in route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/bookings/checkout route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/invoices/pay route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/expenses route"
+          },
+          {
+            "completed": false,
+            "text": "Create /api/quick-sale route"
+          }
+        ],
+        "description": "Implement API routes under src/app/api/ for booking mutations, checkout, quick sale, and expenses using the new Server-side Repositories.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Create Next.js API Routes for Mutations"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "s8uk5y",
+      "version": 3,
+      "timestamp": "2026-05-25T10:09:41.1137539Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create /api/bookings/check-in route",
+            "completed": true
+          },
+          {
+            "text": "Create /api/bookings/checkout route",
+            "completed": true
+          },
+          {
+            "text": "Create /api/invoices/pay route",
+            "completed": true
+          },
+          {
+            "text": "Create /api/expenses route",
+            "completed": true
+          },
+          {
+            "text": "Create /api/quick-sale route",
+            "completed": true
+          }
+        ],
+        "description": "Implement API routes under src/app/api/ for booking mutations, checkout, quick sale, and expenses using the new Server-side Repositories.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Create Next.js API Routes for Mutations"
+      }
+    }
+  ]
+}

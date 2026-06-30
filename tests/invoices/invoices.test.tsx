@@ -3,9 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import InvoicesPage from '@/app/invoices/page';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { TransactionHistory } from '@/components/invoices/transaction-history';
-import { supabase } from '@/lib/supabase';
 
-// 1. Mock External Dependencies
+// Mock External Dependencies
 jest.mock('@/components/layout/sidebar', () => ({
     Sidebar: () => <div data-testid="sidebar">Sidebar Mock</div>
 }));
@@ -28,21 +27,37 @@ jest.mock('@/lib/supabase', () => ({
         gte: jest.fn().mockReturnThis(),
         lte: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: [] }),
+        order: jest.fn().mockReturnThis(),
     }
 }));
 
-global.fetch = jest.fn();
-
 describe('Invoice Feature - Dual Mode', () => {
+    let fetchMock: jest.Mock;
+
     beforeEach(() => {
         jest.clearAllMocks();
         window.alert = jest.fn();
         window.confirm = jest.fn();
+
+        fetchMock = jest.fn();
+        global.fetch = fetchMock;
     });
 
     describe('InvoicesPage Layout & Tab Logic', () => {
         it('should render ReceivablesLedger (Công Nợ) by default', async () => {
+            fetchMock.mockImplementation((url) => {
+                if (url.includes('/api/invoices?unpaid=true')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, data: [] })
+                    });
+                }
+                return Promise.resolve({
+                    ok: false,
+                    json: async () => ({ success: false, error: 'Not found' })
+                });
+            });
+
             render(<InvoicesPage />);
             expect(screen.getByText('Sổ Thu Chi')).toBeInTheDocument();
 
@@ -54,6 +69,25 @@ describe('Invoice Feature - Dual Mode', () => {
         });
 
         it('should toggle to TransactionHistory when tab is clicked', async () => {
+            fetchMock.mockImplementation((url) => {
+                if (url.includes('/api/invoices?unpaid=true')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, data: [] })
+                    });
+                }
+                if (url.includes('/api/invoices?startDate=')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, data: [] })
+                    });
+                }
+                return Promise.resolve({
+                    ok: false,
+                    json: async () => ({ success: false, error: 'Not found' })
+                });
+            });
+
             render(<InvoicesPage />);
 
             const historyTab = screen.getByText('Lịch Sử Giao Dịch');
@@ -67,8 +101,24 @@ describe('Invoice Feature - Dual Mode', () => {
 
         it('should handle end of day closing successfully and check payload', async () => {
             (window.confirm as jest.Mock).mockReturnValue(true);
-            const fetchMock = (global.fetch as jest.Mock).mockResolvedValueOnce({
-                json: async () => ({ success: true, generated: 5 })
+
+            fetchMock.mockImplementation((url) => {
+                if (url.includes('/api/invoices?unpaid=true')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, data: [] })
+                    });
+                }
+                if (url.includes('/api/invoices/auto-generate')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, generated: 5 })
+                    });
+                }
+                return Promise.resolve({
+                    ok: false,
+                    json: async () => ({ success: false, error: 'Not found' })
+                });
             });
 
             render(<InvoicesPage />);
@@ -78,14 +128,14 @@ describe('Invoice Feature - Dual Mode', () => {
             fireEvent.click(closeDayButtons[0]);
 
             expect(window.confirm).toHaveBeenCalled();
-            expect(global.fetch).toHaveBeenCalledWith('/api/invoices/auto-generate', expect.objectContaining({
+            expect(fetchMock).toHaveBeenCalledWith('/api/invoices/auto-generate', expect.objectContaining({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: expect.any(String)
             }));
 
             // Validate payload specifically includes date payload
-            const callArgs = fetchMock.mock.calls[0];
+            const callArgs = fetchMock.mock.calls.find(c => c[0].includes('/api/invoices/auto-generate'));
             const payload = JSON.parse(callArgs[1].body);
             expect(payload.date).toBeDefined();
 
@@ -134,12 +184,23 @@ describe('Invoice Feature - Dual Mode', () => {
                 }
             ];
 
-            (supabase as unknown as { order: jest.Mock }).order.mockResolvedValueOnce({ data: mockData });
+            fetchMock.mockImplementation((url) => {
+                if (url.includes('/api/invoices?startDate=')) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: async () => ({ success: true, data: mockData })
+                    });
+                }
+                return Promise.resolve({
+                    ok: false,
+                    json: async () => ({ success: false, error: 'Not found' })
+                });
+            });
 
             render(<TransactionHistory />);
 
             await waitFor(() => {
-                expect(supabase.from).toHaveBeenCalledWith('invoices');
+                expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/invoices?startDate='));
                 // The transaction list should now have Nguyen Van A
                 expect(screen.getByText('Nguyen Van A')).toBeInTheDocument();
                 // Check if duration rendering (1.0 giờ) exists

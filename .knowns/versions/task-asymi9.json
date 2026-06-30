@@ -1,0 +1,116 @@
+{
+  "taskId": "asymi9",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "asymi9",
+      "version": 1,
+      "timestamp": "2026-05-24T09:34:48.608856Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Block direct /dashboard access for STAFF and redirect with Toast"
+          },
+          {
+            "completed": false,
+            "text": "Block direct /onboarding access for STAFF and redirect with Toast"
+          }
+        ],
+        "description": "Intercept access to /dashboard and /onboarding routes for STAFF. Redirect to / with Toast error message.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Client-side Route Protection for Dashboard \u0026 Onboarding"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "asymi9",
+      "version": 2,
+      "timestamp": "2026-05-24T09:36:36.3515194Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Block direct /dashboard access for STAFF and redirect with Toast"
+          },
+          {
+            "completed": false,
+            "text": "Block direct /onboarding access for STAFF and redirect with Toast"
+          }
+        ],
+        "description": "Intercept access to /dashboard and /onboarding routes for STAFF. Redirect to / with Toast error message.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Client-side Route Protection for Dashboard \u0026 Onboarding"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "asymi9",
+      "version": 3,
+      "timestamp": "2026-05-24T09:37:09.0458177Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented client-side route protection for /dashboard and /onboarding pages. If a STAFF user attempts direct access, they are redirected to / with an alert message."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Block direct /dashboard access for STAFF and redirect with Toast",
+            "completed": true
+          },
+          {
+            "text": "Block direct /onboarding access for STAFF and redirect with Toast",
+            "completed": true
+          }
+        ],
+        "description": "Intercept access to /dashboard and /onboarding routes for STAFF. Redirect to / with Toast error message.",
+        "implementationNotes": "Implemented client-side route protection for /dashboard and /onboarding pages. If a STAFF user attempts direct access, they are redirected to / with an alert message.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Client-side Route Protection for Dashboard \u0026 Onboarding"
+      }
+    }
+  ]
+}

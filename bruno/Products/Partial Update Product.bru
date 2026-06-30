@@ -1,0 +1,21 @@
+meta {
+  name: Partial Update Product
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/products/{{createdProductId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "status": "INACTIVE"
+  }
+}

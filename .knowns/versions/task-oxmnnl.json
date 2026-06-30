@@ -1,0 +1,140 @@
+{
+  "taskId": "oxmnnl",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "oxmnnl",
+      "version": 1,
+      "timestamp": "2026-05-25T10:07:44.7113082Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Refactor Page files to Server Components"
+          },
+          {
+            "completed": false,
+            "text": "Refactor Dialogs/Forms to use API routes"
+          },
+          {
+            "completed": false,
+            "text": "Remove direct supabase.from usage in client components"
+          },
+          {
+            "completed": false,
+            "text": "Update unit tests and verify all green"
+          }
+        ],
+        "description": "Refactor Dashboard, Schedule, Invoices, and Booking components to use Server Components for reads, API routes for mutations, and the realtime wrapper service.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Refactor Frontend Pages and Components to DAL"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "oxmnnl",
+      "version": 2,
+      "timestamp": "2026-05-25T10:10:07.7004532Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Refactor Page files to Server Components"
+          },
+          {
+            "completed": false,
+            "text": "Refactor Dialogs/Forms to use API routes"
+          },
+          {
+            "completed": false,
+            "text": "Remove direct supabase.from usage in client components"
+          },
+          {
+            "completed": false,
+            "text": "Update unit tests and verify all green"
+          }
+        ],
+        "description": "Refactor Dashboard, Schedule, Invoices, and Booking components to use Server Components for reads, API routes for mutations, and the realtime wrapper service.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Refactor Frontend Pages and Components to DAL"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "oxmnnl",
+      "version": 3,
+      "timestamp": "2026-05-25T10:15:39.0573328Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Successfully refactored all remaining invoice components (receivables-ledger, transaction-history, invoice-detail-dialog) to DAL API endpoints and verified all unit tests pass."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Refactor Page files to Server Components",
+            "completed": true
+          },
+          {
+            "text": "Refactor Dialogs/Forms to use API routes",
+            "completed": true
+          },
+          {
+            "text": "Remove direct supabase.from usage in client components",
+            "completed": true
+          },
+          {
+            "text": "Update unit tests and verify all green",
+            "completed": true
+          }
+        ],
+        "description": "Refactor Dashboard, Schedule, Invoices, and Booking components to use Server Components for reads, API routes for mutations, and the realtime wrapper service.",
+        "implementationNotes": "Successfully refactored all remaining invoice components (receivables-ledger, transaction-history, invoice-detail-dialog) to DAL API endpoints and verified all unit tests pass.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Refactor Frontend Pages and Components to DAL"
+      }
+    }
+  ]
+}

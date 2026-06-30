@@ -1,0 +1,175 @@
+{
+  "taskId": "ek038x",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "ek038x",
+      "version": 1,
+      "timestamp": "2026-06-20T08:49:32.4584523Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create src/lib/api-auth.ts for role verification"
+          },
+          {
+            "completed": false,
+            "text": "Update middleware to return 401 JSON for unauthenticated api/v1 routes"
+          },
+          {
+            "completed": false,
+            "text": "Ensure role is fetched from user_roles table using auth.uid()"
+          }
+        ],
+        "description": "Implement helper function or update middleware to authenticate requests and verify user roles for API Route Handlers.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Setup API Authentication \u0026 RBAC Helper"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "ek038x",
+      "version": 2,
+      "timestamp": "2026-06-20T08:52:42.9576911Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create src/lib/api-auth.ts for role verification"
+          },
+          {
+            "completed": false,
+            "text": "Update middleware to return 401 JSON for unauthenticated api/v1 routes"
+          },
+          {
+            "completed": false,
+            "text": "Ensure role is fetched from user_roles table using auth.uid()"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement helper function or update middleware to authenticate requests and verify user roles for API Route Handlers.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Setup API Authentication \u0026 RBAC Helper"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "ek038x",
+      "version": 3,
+      "timestamp": "2026-06-20T08:53:03.7797095Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create src/lib/api-auth.ts to check authentication and role. 2. Modify src/utils/supabase/middleware.ts to return JSON 401 for unauthorized /api/ routes. 3. Test locally."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create src/lib/api-auth.ts for role verification"
+          },
+          {
+            "completed": false,
+            "text": "Update middleware to return 401 JSON for unauthenticated api/v1 routes"
+          },
+          {
+            "completed": false,
+            "text": "Ensure role is fetched from user_roles table using auth.uid()"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement helper function or update middleware to authenticate requests and verify user roles for API Route Handlers.",
+        "implementationPlan": "1. Create src/lib/api-auth.ts to check authentication and role. 2. Modify src/utils/supabase/middleware.ts to return JSON 401 for unauthorized /api/ routes. 3. Test locally.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Setup API Authentication \u0026 RBAC Helper"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "ek038x",
+      "version": 4,
+      "timestamp": "2026-06-20T08:54:50.2245368Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented api-auth helper and modified middleware to return 401 JSON for unauthorized /api/ routes."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create src/lib/api-auth.ts for role verification",
+            "completed": true
+          },
+          {
+            "text": "Update middleware to return 401 JSON for unauthenticated api/v1 routes",
+            "completed": true
+          },
+          {
+            "text": "Ensure role is fetched from user_roles table using auth.uid()",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement helper function or update middleware to authenticate requests and verify user roles for API Route Handlers.",
+        "implementationNotes": "Implemented api-auth helper and modified middleware to return 401 JSON for unauthorized /api/ routes.",
+        "implementationPlan": "1. Create src/lib/api-auth.ts to check authentication and role. 2. Modify src/utils/supabase/middleware.ts to return JSON 401 for unauthorized /api/ routes. 3. Test locally.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Setup API Authentication \u0026 RBAC Helper"
+      }
+    }
+  ]
+}

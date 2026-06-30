@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PaymentSelector } from '@/components/invoices/payment-selector';
-import { supabase } from '@/lib/supabase';
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -46,19 +46,18 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
     useEffect(() => {
         const fetchData = async () => {
             // Fetch Customers
-            const { data: customersData } = await supabase.from('customers').select('*').order('name');
-            if (customersData) setCustomers(customersData);
+            const custRes = await fetch('/api/customers');
+            const custData = await custRes.json();
+            if (custRes.ok && custData.success) {
+                setCustomers(custData.data);
+            }
 
             // Fetch Products
-            const { data: prodData } = await supabase
-                .from('products')
-                .select('*')
-                .gt('stock_quantity', 0)
-                .order('product_name');
-
-            if (prodData) {
+            const prodRes = await fetch('/api/v1/products');
+            const prodData = await prodRes.json();
+            if (prodRes.ok && prodData.success) {
                 const processedProducts: ProductSelectorItem[] = [];
-                prodData.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+                prodData.data.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                     // Base Unit
                     processedProducts.push({
                         key: `${p.id}-base`,
@@ -126,68 +125,30 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
         setError(null);
 
         try {
-            // 1. Resolve Customer ID
-            let finalCustomerId = customerId;
-            if (!finalCustomerId) {
-                // Find or Create "Khách vãng lai"
-                const { data: guest } = await supabase
-                    .from('customers')
-                    .select('id')
-                    .eq('name', 'Khách vãng lai')
-                    .single();
-
-                if (guest) {
-                    finalCustomerId = guest.id;
-                } else {
-                    const { data: newGuest, error: createError } = await supabase
-                        .from('customers')
-                        .insert([{ name: 'Khách vãng lai', type: 'GUEST' }])
-                        .select()
-                        .single();
-
-                    if (createError || !newGuest) {
-                        throw new Error('Không thể tạo khách vãng lai mặc định');
-                    }
-                    finalCustomerId = newGuest.id;
-                }
-            }
-
-            // 2. Create Invoice
-            const { data: newInvoice, error: invoiceError } = await supabase
-                .from('invoices')
-                .insert([{
-                    booking_id: null,
-                    customer_id: finalCustomerId,
-                    total_amount: totalAmount,
-                    payment_method: paymentMethod,
-                    is_paid: true
-                }])
-                .select()
-                .single();
-
-            if (invoiceError || !newInvoice) {
-                throw new Error('Lỗi tạo hóa đơn: ' + invoiceError?.message);
-            }
-
-            // 3. Create Invoice Items
-            const itemsToInsert = cart.map(item => ({
-                invoice_id: newInvoice.id,
-                product_id: item.productItem.productId,
+            const formattedCartItems = cart.map(item => ({
+                productId: item.productItem.productId,
                 quantity: item.quantity,
-                sale_price: item.productItem.price,
-                is_pack_sold: item.productItem.isPack
+                price: item.productItem.price,
+                isPack: item.productItem.isPack
             }));
 
-            const { error: itemsError } = await supabase
-                .from('invoice_items')
-                .insert(itemsToInsert);
+            const response = await fetch('/api/quick-sale', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    customerId: customerId || null,
+                    totalAmount,
+                    paymentMethod,
+                    cartItems: formattedCartItems
+                })
+            });
 
-            if (itemsError) {
-                // Not ideal to fail halfway, but for quick sale it is mostly okay
-                throw new Error('Lỗi thêm chi tiết món hàng: ' + itemsError.message);
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Có lỗi xảy ra trong quá trình thanh toán.');
             }
-
-            // Note: Triggers in DB will handle the inventory deduction automatically.
 
             setSuccessMessage("Bán hàng thành công!");
 

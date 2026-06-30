@@ -1,0 +1,20 @@
+meta {
+  name: List Products - Search
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products?search=Aquafina
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+}

@@ -1,0 +1,81 @@
+import { createClient } from '@/utils/supabase/server';
+import { {{pascalCase name}} } from '@/types/{{kebabCase name}}';
+
+export async function create{{pascalCase name}}(
+  data: Omit<{{pascalCase name}}, 'id' | 'created_at' | 'updated_at'>
+): Promise<{ success: boolean; data?: {{pascalCase name}}; error?: string }> {
+  const supabase = createClient();
+  const { data: insertedData, error } = await supabase
+    .from('{{tableName}}')
+    .insert([data])
+    .select()
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  return { success: true, data: insertedData };
+}
+
+export async function get{{pascalCase name}}ById(
+  id: string
+): Promise<{{pascalCase name}} | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('{{tableName}}')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching {{camelCase name}} by ID:', error);
+    return null;
+  }
+  return data;
+}
+
+export async function getAll{{pascalCase name}}s(): Promise<{{pascalCase name}}[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('{{tableName}}')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching all {{camelCase name}}s:', error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function update{{pascalCase name}}(
+  id: string,
+  data: Partial<Omit<{{pascalCase name}}, 'id' | 'created_at' | 'updated_at'>>
+): Promise<{ success: boolean; data?: {{pascalCase name}}; error?: string }> {
+  const supabase = createClient();
+  const { data: updatedData, error } = await supabase
+    .from('{{tableName}}')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  return { success: true, data: updatedData };
+}
+
+export async function delete{{pascalCase name}}(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('{{tableName}}')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+}

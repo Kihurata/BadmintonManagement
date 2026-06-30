@@ -10,6 +10,7 @@ export interface Product {
     pack_unit: string | null;
     units_per_pack: number | null;
     pack_price: number | null;
+    status?: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface Customer {

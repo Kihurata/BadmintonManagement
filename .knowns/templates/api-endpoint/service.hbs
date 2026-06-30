@@ -1,0 +1,34 @@
+import * as repo from '@/server/repositories/{{kebabCase name}}-repo';
+import { {{pascalCase name}} } from '@/types/{{kebabCase name}}';
+
+/**
+ * Service handles business logic. If it is only simple CRUD,
+ * the controller can call the repository directly.
+ */
+export async function createNew{{pascalCase name}}(
+  data: Omit<{{pascalCase name}}, 'id' | 'created_at' | 'updated_at'>
+) {
+  // TODO: Add complex business rules, assertions, calculations, or integrations here
+  return await repo.create{{pascalCase name}}(data);
+}
+
+export async function get{{pascalCase name}}Details(id: string) {
+  return await repo.get{{pascalCase name}}ById(id);
+}
+
+export async function listAll{{pascalCase name}}s() {
+  return await repo.getAll{{pascalCase name}}s();
+}
+
+export async function update{{pascalCase name}}Details(
+  id: string,
+  data: Partial<Omit<{{pascalCase name}}, 'id' | 'created_at' | 'updated_at'>>
+) {
+  // TODO: Add validation or hooks before update
+  return await repo.update{{pascalCase name}}(id, data);
+}
+
+export async function remove{{pascalCase name}}(id: string) {
+  // TODO: Add check dependencies or cascade requirements before deletion
+  return await repo.delete{{pascalCase name}}(id);
+}

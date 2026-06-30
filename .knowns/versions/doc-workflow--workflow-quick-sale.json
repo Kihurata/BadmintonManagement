@@ -1,0 +1,24 @@
+{
+  "docPath": "workflow/workflow-quick-sale",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "workflow/workflow-quick-sale",
+      "version": 1,
+      "timestamp": "2026-05-24T09:04:19.7857396Z",
+      "changes": [
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Direct counter sales workflow for walk-in customers without reservations."
+        }
+      ],
+      "snapshot": {
+        "content": "# Quy trình Bán Hàng Lẻ / Bán Nhanh (Quick Sale Workflow)\n\nTài liệu này mô tả chi tiết nghiệp vụ bán lẻ hàng hóa, dịch vụ trực tiếp cho khách vãng lai hoặc khách thành viên mà không qua luồng đặt sân và nhận sân truyền thống.\n\n---\n\n## 1. Tổng quan Nghiệp vụ\n\nTính năng **Bán Nhanh (Quick Sale)** phục vụ nhu cầu mua nước uống, thuê bóng cầu lông trực tiếp tại quầy của khách hàng vãng lai không đặt sân.\n- **Giỏ hàng Cục bộ**: Nhân viên chọn sản phẩm và điều chỉnh số lượng tăng/giảm. Dữ liệu này được quản lý bằng React State cục bộ (`cartItems`) trước khi tạo bản ghi thực tế trên cơ sở dữ liệu.\n- **Xác định khách hàng**: Khách hàng có thể được tìm kiếm qua thanh chọn. Nếu không chọn, hệ thống tự động gán cho **\"Khách vãng lai\"** (tự động tạo bản ghi này nếu chưa tồn tại).\n- **Giao dịch Đồng thời**: Khi nhấn \"Thanh toán\", hệ thống tạo đồng thời hóa đơn `invoices` (với cờ `booking_id = null` và `is_paid = true`) và danh sách mặt hàng `invoice_items`.\n- **Trừ kho tự động**: Trigger cơ sở dữ liệu tự động trừ hàng trong kho ngay sau khi các bản ghi `invoice_items` được chèn vào DB.\n\n---\n\n## 2. Biểu đồ Luồng Xử lý (Workflow Diagram)\n\n```mermaid\nflowchart TD\n    A[Nhân viên click 'Bán Nhanh' tại Action Card] --\u003e B[Hiển thị Dialog QuickSaleForm]\n    B --\u003e C[Tìm kiếm/Chọn khách hàng hoặc mặc định Khách vãng lai]\n    B --\u003e D[Thêm sản phẩm từ lưới hàng hóa vào Giỏ hàng cục bộ]\n    \n    D --\u003e E[Cập nhật giỏ hàng cục bộ: cartItems state]\n    E --\u003e F[Tính tổng tiền và chọn Cash / Chuyển khoản]\n    \n    F --\u003e G{Bấm Hoàn tất Thanh toán}\n    G --\u003e H[Kiểm tra/Tạo tài khoản 'Khách vãng lai' nếu cần]\n    H --\u003e I[INSERT INTO invoices với booking_id=NULL và is_paid=true]\n    I --\u003e J[Lấy invoice_id mới sinh ra]\n    J --\u003e K[INSERT INTO invoice_items hàng loạt danh sách cartItems]\n    \n    K --\u003e L[Kích hoạt trg_sync_inv trừ kho sản phẩm tự động]\n    L --\u003e M[Hiển thị thông báo Bán hàng thành công và đóng Dialog]\n```\n\n---\n\n## 3. Các Tập tin Mã nguồn Liên quan\n\n### A. Giao diện Giỏ hàng \u0026 Thanh toán\n- **[quick-actions.tsx](file:///d:/BadmintonManagement/src/components/home/quick-actions.tsx)**:\n  - Nút **\"Bán nhanh\"** trên bảng điều khiển trang chủ điều khiển trạng thái mở `isQuickSaleOpen` của Dialog.\n- **[quick-sale-form.tsx](file:///d:/BadmintonManagement/src/components/booking/quick-sale-form.tsx)**:\n  - Quản lý trạng thái giỏ hàng cục bộ `cart` chứa danh sách mặt hàng và số lượng đã chọn.\n  - Sử dụng Combobox tìm kiếm khách hàng nhanh (hỗ trợ nhập số điện thoại hoặc tên).\n  - Tích hợp biểu mẫu chọn hình thức thanh toán (Tiền mặt/Chuyển khoản) và liên kết mã QR VietQR giống như màn hình Checkout trả sân.\n  - Chạy quy trình chèn cơ sở dữ liệu tuần tự:\n    1. Kiểm tra/Tạo \"Khách vãng lai\" trong bảng `customers`.\n    2. Chèn hóa đơn đã thanh toán vào bảng `invoices` (`booking_id = null`, `is_paid = true`).\n    3. Lấy `id` hóa đơn vừa tạo để chèn hàng loạt (Bulk Insert) chi tiết vào bảng `invoice_items`.\n  - Hiển thị màn hình thành công ngắn gọn trước khi tự động đóng popup và cập nhật lại doanh thu trang chủ.\n\n### B. Đồng bộ Dữ liệu Cấp Thấp\n- **Bảng `products` \u0026 Bảng `invoice_items`**:\n  - Dựa hoàn toàn vào trigger `trg_sync_inv` được định nghĩa trong [20240101000000_initial_schema.sql](file:///d:/BadmintonManagement/supabase/migrations/20240101000000_initial_schema.sql) để tự động trừ kho hàng hóa mà không cần viết lệnh SQL trừ kho thủ công trong mã nguồn TypeScript.\n\n---\n\n## 4. Chi tiết Dữ liệu Thay đổi (Database State)\n\n| Bảng dữ liệu | Thao tác | Thay đổi trạng thái / Giá trị cột |\n| :--- | :--- | :--- |\n| **customers** | INSERT | Tự tạo \"Khách vãng lai\" nếu cơ sở dữ liệu chưa có bản ghi này (thường chạy 1 lần duy nhất). |\n| **invoices** | INSERT | Tạo hóa đơn bán lẻ: `booking_id = NULL`, `total_amount = totalAmount`, `payment_method = 'CASH' \\| 'BANK_TRANSFER'`, `is_paid = true`. |\n| **invoice_items** | INSERT (Bulk) | Tạo chi tiết hàng lẻ: chèn danh sách các bản ghi tương ứng với giỏ hàng. |\n| **products** | UPDATE | DB tự động giảm kho dựa trên trigger đồng bộ. |",
+        "description": "Direct counter sales workflow for walk-in customers without reservations.",
+        "title": "workflow-quick-sale"
+      }
+    }
+  ]
+}

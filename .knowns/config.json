@@ -4,7 +4,14 @@
   "createdAt": "2026-05-24T08:10:40.9869739Z",
   "settings": {
     "defaultPriority": "medium",
-    "gitTrackingMode": "git-ignored",
+    "gitTrackingMode": "git-tracked",
+    "gitTracking": {
+      "tasks": true,
+      "docs": true,
+      "templates": true,
+      "memories": true,
+      "decisions": true
+    },
     "statuses": [
       "todo",
       "in-progress",
@@ -32,15 +39,32 @@
     ],
     "semanticSearch": {
       "enabled": true,
-      "model": "gte-base",
-      "huggingFaceId": "Xenova/gte-base",
-      "dimensions": 768,
+      "model": "multilingual-e5-small",
+      "huggingFaceId": "Xenova/multilingual-e5-small",
+      "dimensions": 384,
       "maxTokens": 512
     },
     "serverPort": 6420,
     "platforms": [
-      "antigravity"
+      "agents"
     ],
-    "enableChatUI": false
+    "enableChatUI": false,
+    "lsp": {
+      "enabled": true,
+      "languages": {
+        "javascript": {
+          "enabled": true
+        },
+        "scss": {
+          "enabled": true
+        },
+        "typescript": {
+          "enabled": true
+        },
+        "typescriptreact": {
+          "enabled": true
+        }
+      }
+    }
   }
 }

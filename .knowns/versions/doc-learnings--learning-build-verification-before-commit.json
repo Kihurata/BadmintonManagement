@@ -1,0 +1,40 @@
+{
+  "docPath": "learnings/learning-build-verification-before-commit",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "learnings/learning-build-verification-before-commit",
+      "version": 1,
+      "timestamp": "2026-05-25T10:02:52.9488691Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Learning: Build Verification Before Commit"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Learnings on build verification and Next.js Suspense boundary requirements"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "verification"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "Learnings on build verification and Next.js Suspense boundary requirements",
+        "tags": [
+          "learning",
+          "verification"
+        ],
+        "title": "Learning: Build Verification Before Commit"
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "docPath": "guides/e2e-booking-workflow-test",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "guides/e2e-booking-workflow-test",
+      "version": 1,
+      "timestamp": "2026-05-31T04:03:46.5935928Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "e2e-booking-workflow-test"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "E2E testing guide and scenario definitions for the booking-to-invoice workflow using Chrome DevTools MCP."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "e2e",
+            "testing",
+            "guide"
+          ]
+        }
+      ],
+      "snapshot": {
+        "content": "Initial",
+        "description": "E2E testing guide and scenario definitions for the booking-to-invoice workflow using Chrome DevTools MCP.",
+        "tags": [
+          "e2e",
+          "testing",
+          "guide"
+        ],
+        "title": "e2e-booking-workflow-test"
+      }
+    },
+    {
+      "id": "v2",
+      "docPath": "guides/e2e-booking-workflow-test",
+      "version": 2,
+      "timestamp": "2026-05-31T04:06:05.0567533Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "Initial",
+          "newValue": "Test content"
+        }
+      ],
+      "snapshot": {
+        "content": "Test content",
+        "description": "E2E testing guide and scenario definitions for the booking-to-invoice workflow using Chrome DevTools MCP.",
+        "tags": [
+          "e2e",
+          "testing",
+          "guide"
+        ],
+        "title": "e2e-booking-workflow-test"
+      }
+    },
+    {
+      "id": "v3",
+      "docPath": "guides/e2e-booking-workflow-test",
+      "version": 3,
+      "timestamp": "2026-05-31T04:06:24.7372222Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "Test content",
+          "newValue": "# E2E Test Plan - Booking to Invoice Workflow\n\nThis E2E test plan validates the critical path of the Badminton Management System, ensuring that all pieces of the refactored Data Access Layer (DAL) function correctly together in the browser.\n\n---\n\n## Scenario Overview: Booking to Invoice Lifecycle\n\n```mermaid\ngraph TD\n    A[Login] --\u003e B[Schedule Page]\n    B --\u003e C[Create Booking]\n    C --\u003e D[Check-In Booking]\n    D --\u003e E[Add Product to Invoice]\n    E --\u003e F[Checkout \u0026 Pay]\n    F --\u003e G[Verify in Transaction History]\n```\n\n---\n\n## Detailed Test Steps\n\n### Step 1: Authentication (Đăng nhập)\n- **Action**: Navigate to `http://localhost:3000/login`.\n- **Inputs**:\n  - Email: `admin@horizonbadminton.com`\n  - Password: `123456`\n- **Verification**: User is redirected to `/` (Home Dashboard) and Sidebar navigation displays the owner/admin menu.\n\n### Step 2: Navigate to Schedule (Lịch Đặt Sân)\n- **Action**: Click the \"Lịch Đặt Sân\" link on the Sidebar or navigate directly to `http://localhost:3000/schedule`.\n- **Verification**: The court timeline shows the list of courts (\"Sân 1\", \"Sân 2\") and time slots.\n\n### Step 3: Create a Court Booking (Đặt Sân Mới)\n- **Action**: \n  - Click the floating Action Button `(+)` to open the booking dialog.\n  - Select Court: \"Sân 1\".\n  - Select Customer: \"Khách hàng Test 1\" (or select from the dropdown list).\n  - Set Start Time: current hour (e.g. `14:00`).\n  - Set Duration: `1` hour.\n  - Click \"Đặt sân\" to submit.\n- **Verification**: The booking form closes, and the new booking slot is rendered on the timeline under \"Sân 1\".\n\n### Step 4: Check-In (Nhận Sân)\n- **Action**:\n  - Click on the newly created booking slot in the timeline to open \"Chi tiết đặt sân\".\n  - Click the \"Check In (Nhận Sân)\" button.\n- **Verification**: The dialog reloads, status changes to \"ĐANG SỬ DỤNG\" (CHECKED_IN), and the service order menu (Dịch vụ / Menu) becomes active.\n\n### Step 5: Add Service Item to Invoice (Thêm Dịch Vụ)\n- **Action**:\n  - In the \"Dịch vụ / Menu\" section, select \"Nước khoáng Lavie 500ml\" (10.000 ₫) from the select list.\n  - Click the `(+)` button to add the item.\n- **Verification**: The item is appended to the invoice summary, and the total amount increases by 10.000 ₫.\n\n### Step 6: Checkout and Payment (Thanh toán \u0026 Trả sân)\n- **Action**:\n  - Click the \"Thanh toán \u0026 Trả sân\" button to load the Checkout Form.\n  - Select Payment Method: \"Chuyển khoản\" (BANK_TRANSFER).\n  - Click the \"Thanh toán\" button to complete.\n- **Verification**: The checkout succeeds, dialog closes, the court status updates to available (ready for next bookings), and local state synchronizes.\n\n### Step 7: Verification in Transaction History (Sổ Thu Chi)\n- **Action**: Navigate to `http://localhost:3000/invoices`.\n- **Verification**: \n  - Toggle to the \"Lịch Sử Giao Dịch\" tab.\n  - Locate the latest transaction. It must show:\n    - Customer Name: \"Khách hàng Test 1\"\n    - Status: \"Đã thanh toán\"\n    - Details: \"Sân 1 • 1.0 giờ\"\n    - Correct total amount reflecting both the court rent and the added water bottle.\n"
+        }
+      ],
+      "snapshot": {
+        "content": "# E2E Test Plan - Booking to Invoice Workflow\n\nThis E2E test plan validates the critical path of the Badminton Management System, ensuring that all pieces of the refactored Data Access Layer (DAL) function correctly together in the browser.\n\n---\n\n## Scenario Overview: Booking to Invoice Lifecycle\n\n```mermaid\ngraph TD\n    A[Login] --\u003e B[Schedule Page]\n    B --\u003e C[Create Booking]\n    C --\u003e D[Check-In Booking]\n    D --\u003e E[Add Product to Invoice]\n    E --\u003e F[Checkout \u0026 Pay]\n    F --\u003e G[Verify in Transaction History]\n```\n\n---\n\n## Detailed Test Steps\n\n### Step 1: Authentication (Đăng nhập)\n- **Action**: Navigate to `http://localhost:3000/login`.\n- **Inputs**:\n  - Email: `admin@horizonbadminton.com`\n  - Password: `123456`\n- **Verification**: User is redirected to `/` (Home Dashboard) and Sidebar navigation displays the owner/admin menu.\n\n### Step 2: Navigate to Schedule (Lịch Đặt Sân)\n- **Action**: Click the \"Lịch Đặt Sân\" link on the Sidebar or navigate directly to `http://localhost:3000/schedule`.\n- **Verification**: The court timeline shows the list of courts (\"Sân 1\", \"Sân 2\") and time slots.\n\n### Step 3: Create a Court Booking (Đặt Sân Mới)\n- **Action**: \n  - Click the floating Action Button `(+)` to open the booking dialog.\n  - Select Court: \"Sân 1\".\n  - Select Customer: \"Khách hàng Test 1\" (or select from the dropdown list).\n  - Set Start Time: current hour (e.g. `14:00`).\n  - Set Duration: `1` hour.\n  - Click \"Đặt sân\" to submit.\n- **Verification**: The booking form closes, and the new booking slot is rendered on the timeline under \"Sân 1\".\n\n### Step 4: Check-In (Nhận Sân)\n- **Action**:\n  - Click on the newly created booking slot in the timeline to open \"Chi tiết đặt sân\".\n  - Click the \"Check In (Nhận Sân)\" button.\n- **Verification**: The dialog reloads, status changes to \"ĐANG SỬ DỤNG\" (CHECKED_IN), and the service order menu (Dịch vụ / Menu) becomes active.\n\n### Step 5: Add Service Item to Invoice (Thêm Dịch Vụ)\n- **Action**:\n  - In the \"Dịch vụ / Menu\" section, select \"Nước khoáng Lavie 500ml\" (10.000 ₫) from the select list.\n  - Click the `(+)` button to add the item.\n- **Verification**: The item is appended to the invoice summary, and the total amount increases by 10.000 ₫.\n\n### Step 6: Checkout and Payment (Thanh toán \u0026 Trả sân)\n- **Action**:\n  - Click the \"Thanh toán \u0026 Trả sân\" button to load the Checkout Form.\n  - Select Payment Method: \"Chuyển khoản\" (BANK_TRANSFER).\n  - Click the \"Thanh toán\" button to complete.\n- **Verification**: The checkout succeeds, dialog closes, the court status updates to available (ready for next bookings), and local state synchronizes.\n\n### Step 7: Verification in Transaction History (Sổ Thu Chi)\n- **Action**: Navigate to `http://localhost:3000/invoices`.\n- **Verification**: \n  - Toggle to the \"Lịch Sử Giao Dịch\" tab.\n  - Locate the latest transaction. It must show:\n    - Customer Name: \"Khách hàng Test 1\"\n    - Status: \"Đã thanh toán\"\n    - Details: \"Sân 1 • 1.0 giờ\"\n    - Correct total amount reflecting both the court rent and the added water bottle.\n",
+        "description": "E2E testing guide and scenario definitions for the booking-to-invoice workflow using Chrome DevTools MCP.",
+        "tags": [
+          "e2e",
+          "testing",
+          "guide"
+        ],
+        "title": "e2e-booking-workflow-test"
+      }
+    }
+  ]
+}

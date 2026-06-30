@@ -1,0 +1,155 @@
+{
+  "taskId": "tywroe",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "tywroe",
+      "version": 1,
+      "timestamp": "2026-05-24T09:30:45.6845629Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Create src/lib/invoice-utils.ts to implement helper functions for generating VietQR URLs and formatting sharing text.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Create central invoice helpers in invoice-utils.ts"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "tywroe",
+      "version": 2,
+      "timestamp": "2026-05-24T09:30:53.8043747Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Create src/lib/invoice-utils.ts to implement helper functions for generating VietQR URLs and formatting sharing text.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Create central invoice helpers in invoice-utils.ts"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "tywroe",
+      "version": 3,
+      "timestamp": "2026-05-24T09:30:57.7544068Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create src/lib/invoice-utils.ts\n2. Implement generateVietQrUrl and formatInvoiceShareText\n3. Export helpers"
+        }
+      ],
+      "snapshot": {
+        "description": "Create src/lib/invoice-utils.ts to implement helper functions for generating VietQR URLs and formatting sharing text.",
+        "implementationPlan": "1. Create src/lib/invoice-utils.ts\n2. Implement generateVietQrUrl and formatInvoiceShareText\n3. Export helpers",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Create central invoice helpers in invoice-utils.ts"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "tywroe",
+      "version": 4,
+      "timestamp": "2026-05-24T09:32:16.2690079Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Created src/lib/invoice-utils.ts containing VietQR and sharing formatter helpers."
+        }
+      ],
+      "snapshot": {
+        "description": "Create src/lib/invoice-utils.ts to implement helper functions for generating VietQR URLs and formatting sharing text.",
+        "implementationNotes": "Created src/lib/invoice-utils.ts containing VietQR and sharing formatter helpers.",
+        "implementationPlan": "1. Create src/lib/invoice-utils.ts\n2. Implement generateVietQrUrl and formatInvoiceShareText\n3. Export helpers",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Create central invoice helpers in invoice-utils.ts"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "tywroe",
+      "version": 5,
+      "timestamp": "2026-05-24T09:41:00.8139701Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "text": "Implement generateVietQrUrl helper",
+              "completed": false
+            },
+            {
+              "text": "Implement formatInvoiceShareText helper",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement generateVietQrUrl helper",
+            "completed": false
+          },
+          {
+            "text": "Implement formatInvoiceShareText helper",
+            "completed": false
+          }
+        ],
+        "description": "Create src/lib/invoice-utils.ts to implement helper functions for generating VietQR URLs and formatting sharing text.",
+        "implementationNotes": "Created src/lib/invoice-utils.ts containing VietQR and sharing formatter helpers.",
+        "implementationPlan": "1. Create src/lib/invoice-utils.ts\n2. Implement generateVietQrUrl and formatInvoiceShareText\n3. Export helpers",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Create central invoice helpers in invoice-utils.ts"
+      }
+    }
+  ]
+}

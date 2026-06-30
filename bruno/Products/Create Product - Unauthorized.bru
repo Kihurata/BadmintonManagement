@@ -1,0 +1,28 @@
+meta {
+  name: Create Product - Unauthorized
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_name": "Nước Suối Aquafina Unauthorized Test",
+    "unit_price": 10000,
+    "stock_quantity": 50,
+    "base_unit": "Chai",
+    "is_packable": false,
+    "status": "ACTIVE"
+  }
+}
+
+assert {
+  res.status: eq 401
+  res.body.success: eq false
+  res.body.error.code: eq UNAUTHORIZED
+}

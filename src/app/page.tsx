@@ -1,324 +1,51 @@
-"use client";
+import { startOfToday, format } from 'date-fns';
+import { createClient } from '@/utils/supabase/server';
+import HomeClient from '@/components/home/home-client';
 
-import { useState, useEffect, Suspense } from "react";
-import { startOfToday, format, isAfter, isBefore } from "date-fns";
-import { useSearchParams, useRouter } from "next/navigation";
+export const dynamic = 'force-dynamic';
 
-import { supabase } from "@/lib/supabase";
+export default async function HomePage() {
+  const supabase = createClient();
+  const todayStartStr = format(startOfToday(), "yyyy-MM-dd'T'HH:mm:ssXXX");
 
-import { StickyHeader } from "@/components/home/sticky-header";
-import { CourtStatusSection, CourtStatus } from "@/components/home/court-status";
-import { QuickActionsSection } from "@/components/home/quick-actions";
-import { OverviewMetricsSection } from "@/components/home/overview-metrics";
-import { Sidebar } from "@/components/layout/sidebar";
-import { BottomNav } from "@/components/layout/bottom-nav";
+  // 1. Fetch Courts
+  const { data: courtsData } = await supabase
+    .from('courts')
+    .select('id, court_name')
+    .order('court_name');
 
-// Existing Dialogs to reuse
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { BookingForm } from "@/components/booking/booking-form";
-import { BookingDetails } from "@/components/booking/booking-details";
-import { CheckoutForm } from "@/components/booking/checkout-form";
-import { QuickSaleForm } from "@/components/booking/quick-sale-form";
-import { ExpenseForm } from "@/components/home/expense-form";
+  // 2. Fetch Today's Bookings
+  const { data: bookingsData } = await supabase
+    .from('bookings')
+    .select(`
+      id, 
+      court_id, 
+      start_time, 
+      end_time, 
+      status
+    `)
+    .in('status', ['CONFIRMED', 'CHECKED_IN']);
 
-function HomePageContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  // 3. Fetch Today's Invoices (for revenue)
+  const { data: todayInvoices } = await supabase
+    .from("invoices")
+    .select("total_amount")
+    .eq("is_paid", true)
+    .gte("created_at", todayStartStr);
 
-  useEffect(() => {
-    const errorParam = searchParams.get('error');
-    if (errorParam) {
-      alert(errorParam);
-      router.replace('/');
-    }
-  }, [searchParams, router]);
-
-  const [loading, setLoading] = useState(true);
-
-  // Data States
-  const [courts, setCourts] = useState<{ id: string; court_name: string }[]>([]);
-  const [courtStatuses, setCourtStatuses] = useState<CourtStatus[]>([]);
-  const [metrics, setMetrics] = useState({
-    totalRevenue: 0,
-    revenueStatus: "neutral" as "up" | "down" | "neutral",
-    revenueChangePercent: 0,
-    occupancyRate: 0,
-  });
-
-  // Dialog States
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isBookingDetailsOpen, setIsBookingDetailsOpen] = useState(false);
-  const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false);
-  const [isExpenseOpen, setIsExpenseOpen] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchHomeData();
-    // Optional: Setup real-time listener or interval here if needed
-  }, []);
-
-  const fetchHomeData = async () => {
-    setLoading(true);
-    try {
-      const todayStartStr = format(startOfToday(), "yyyy-MM-dd'T'HH:mm:ssXXX");
-
-      // 1. Fetch Courts
-      const { data: courtsData } = await supabase
-        .from('courts')
-        .select('id, court_name')
-        .order('court_name');
-
-      if (courtsData) setCourts(courtsData);
-
-      // 2. Fetch Today's Bookings
-      // We need to know which courts are CURRENTLY active
-      const { data: bookingsData } = await supabase
-        .from('bookings')
-        .select(`
-          id, 
-          court_id, 
-          start_time, 
-          end_time, 
-          status
-        `)
-        .in('status', ['CONFIRMED', 'CHECKED_IN']); // Only care about currently active bookings for the "In Use" status
-
-      // Map Courts to Statuses
-      const mappedStatuses: CourtStatus[] = (courtsData || []).map(court => {
-        const now = new Date();
-
-        // Find if this court has an active booking RIGHT NOW
-        const activeBooking = bookingsData?.find(b =>
-          b.court_id === court.id &&
-          isAfter(now, new Date(b.start_time)) &&
-          isBefore(now, new Date(b.end_time))
-        );
-
-        // Find the next upcoming booking (sorted by soonest start_time)
-        const upcomingBookings = bookingsData?.filter(b =>
-          b.court_id === court.id &&
-          isBefore(now, new Date(b.start_time))
-        ).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-        const nextBooking = upcomingBookings?.[0];
-
-        return {
-          id: court.id,
-          name: court.court_name,
-          isAvailable: !activeBooking,
-          currentBookingId: activeBooking?.id,
-          bookingEndTime: activeBooking?.end_time,
-          nextBookingTime: nextBooking?.start_time,
-        };
-      });
-      setCourtStatuses(mappedStatuses);
-
-      // 3. Fetch Overview Metrics (Today's Revenue & Occupancy Heuristic)
-      // Note: This is an approximation for the demo. In a real app, you'd aggregate this securely.
-      const { data: todayInvoices } = await supabase
-        .from("invoices")
-        .select("total_amount")
-        .eq("is_paid", true)
-        .gte("created_at", todayStartStr);
-
-      const todayRevenue = todayInvoices?.reduce((sum, inv) => sum + inv.total_amount, 0) || 0;
-
-      // Occupancy heuristic: (Active Courts / Total Courts) * 100
-      const activeCount = mappedStatuses.filter(s => !s.isAvailable).length;
-      const totalCourts = mappedStatuses.length || 1; // prevent div by zero
-      const occupancy = Math.round((activeCount / totalCourts) * 100);
-
-      // Simple mock for revenue change% 
-      setMetrics({
-        totalRevenue: todayRevenue,
-        revenueStatus: "up",
-        revenueChangePercent: 12, // Placeholder
-        occupancyRate: occupancy,
-      });
-
-    } catch (err) {
-      console.error("Error fetching home data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleBookingClick = (/* courtId: string */) => {
-    // Open the new booking modal with the specific court selected
-    // Note: The BookingForm might need adjustments to pre-select a court effectively if it doesn't already
-    setIsBookingOpen(true);
-  };
-
-  const handleViewBookingClick = (bookingId: string) => {
-    setSelectedBookingId(bookingId);
-    setIsBookingDetailsOpen(true);
-  };
-
-  const handleRefresh = () => {
-    fetchHomeData();
-    window.dispatchEvent(new Event('booking_updated'));
-  };
-
-  // Add listener for external updates (like if someone completes a checkout in another tab/component)
-  useEffect(() => {
-    const handleUpdate = () => fetchHomeData();
-    window.addEventListener('booking_updated', handleUpdate);
-    return () => window.removeEventListener('booking_updated', handleUpdate);
-  }, []);
+  // 4. Fetch Customers
+  const { data: customersData } = await supabase
+    .from('customers')
+    .select('id, name, phone')
+    .order('name');
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col overflow-hidden selection:bg-emerald-500 selection:text-white">
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative">
-        {/* Sticky App Header */}
-        <div className="md:hidden">
-          <StickyHeader notificationCount={1} />
-        </div>
-        <div className="hidden md:block">
-          {/* On desktop, we can show a simpler header or adjust StickyHeader */}
-          <div className="p-8 pb-0">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Tổng quan Hoạt động</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">Theo dõi tình trạng sân và quản lý nhanh trong ngày hôm nay.</p>
-          </div>
-        </div>
-
-        {/* Main Scrollable Content */}
-        <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-32 md:pb-8 no-scrollbar">
-          <div className="max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
-            {loading ? (
-              <div className="flex items-center justify-center p-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-              </div>
-            ) : (
-              <>
-                {/* Court Status */}
-                <CourtStatusSection
-                  courts={courtStatuses}
-                  onBookClick={handleBookingClick}
-                  onViewBookingClick={handleViewBookingClick}
-                />
-
-                {/* Split layout for actions and metrics on desktop */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                  {/* Quick Actions */}
-                  <QuickActionsSection
-                    onNewBookingClick={() => setIsBookingOpen(true)}
-                    onQuickSaleClick={() => setIsQuickSaleOpen(true)}
-                    onAddExpenseClick={() => setIsExpenseOpen(true)}
-                  />
-
-                  {/* Overview Metrics */}
-                  <OverviewMetricsSection {...metrics} />
-                </div>
-              </>
-            )}
-          </div>
-        </main>
-
-        {/* Reusing existing Dialogs from the old page */}
-        <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-            <BookingForm
-              selectedDate={new Date()}
-              selectedCourtId={courts[0]?.id || null}
-              courts={courts}
-              onSuccess={() => {
-                setIsBookingOpen(false);
-                handleRefresh();
-              }}
-              onCancel={() => setIsBookingOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isQuickSaleOpen} onOpenChange={setIsQuickSaleOpen}>
-          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-            <QuickSaleForm
-              onSuccess={() => {
-                setIsQuickSaleOpen(false);
-                handleRefresh();
-              }}
-              onCancel={() => setIsQuickSaleOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isExpenseOpen} onOpenChange={setIsExpenseOpen}>
-          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-            <ExpenseForm
-              onSuccess={() => setIsExpenseOpen(false)}
-              onCancel={() => setIsExpenseOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isBookingDetailsOpen} onOpenChange={setIsBookingDetailsOpen}>
-          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-            {selectedBookingId && (
-              <BookingDetails
-                bookingId={selectedBookingId}
-                onClose={() => setIsBookingDetailsOpen(false)}
-                onCheckInSuccess={() => {
-                  setIsBookingDetailsOpen(false);
-                  handleRefresh();
-                }}
-                onCheckOutClick={() => {
-                  setIsBookingDetailsOpen(false);
-                  setIsCheckoutOpen(true);
-                }}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
-          <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-            {selectedBookingId && (
-              <CheckoutForm
-                bookingId={selectedBookingId}
-                onSuccess={() => {
-                  setIsCheckoutOpen(false);
-                  handleRefresh();
-                }}
-                onCancel={() => setIsCheckoutOpen(false)}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Global Bottom Nav (Desktop Sidebar nav handles desktop views) */}
-        <div className="md:hidden flex-none z-50">
-          <BottomNav />
-        </div>
-
-        {/* Specific styles for the mobile app feel */}
-        <style jsx global>{`
-          .no-scrollbar::-webkit-scrollbar {
-              display: none;
-          }
-          .no-scrollbar {
-              -ms-overflow-style: none; /* IE and Edge */
-              scrollbar-width: none; /* Firefox */
-          }
-        `}</style>
-      </div>
-    </div>
+    <HomeClient
+      initialCourts={courtsData || []}
+      initialBookings={bookingsData || []}
+      initialTodayInvoices={todayInvoices || []}
+      initialCustomers={customersData || []}
+    />
   );
 }
 
-export default function HomePage() {
-  return (
-    <Suspense fallback={
-      <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-      </div>
-    }>
-      <HomePageContent />
-    </Suspense>
-  );
-}

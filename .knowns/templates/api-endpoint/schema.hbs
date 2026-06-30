@@ -1,0 +1,8 @@
+import z from 'zod';
+
+export const {{camelCase name}}CreateSchema = z.object({
+  // TODO: Define attributes for creation validation
+  // example: name: z.string().trim().min(1, "Name is required"),
+});
+
+export const {{camelCase name}}UpdateSchema = {{camelCase name}}CreateSchema.partial();
