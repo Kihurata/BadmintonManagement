@@ -43,7 +43,7 @@ interface RecurringBookingFormProps {
 export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }: RecurringBookingFormProps) {
   const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [courtId, setCourtId] = useState('');
-  
+
   // Customer combobox
   const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [customerId, setCustomerId] = useState('');
@@ -64,6 +64,7 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }
   const [conflicts, setConflicts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // We fetch courts and customers
+  // Fetch courts and customers once on mount
   useEffect(() => {
     const fetchData = async () => {
       if (!propCourts || propCourts.length === 0) {
@@ -75,8 +76,6 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }
             setCourtId(courtsData.data[0].id);
           }
         }
-      } else if (propCourts.length > 0 && !courtId) {
-        setCourtId(propCourts[0].id);
       }
 
       const customersRes = await fetch('/api/customers');
@@ -86,10 +85,18 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }
       }
     };
     fetchData();
-  }, [propCourts, courtId]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync courtId and courts if propCourts is provided and changes
+  useEffect(() => {
+    if (propCourts && propCourts.length > 0) {
+      setCourts(propCourts);
+      setCourtId(prev => prev || propCourts[0].id);
+    }
+  }, [propCourts]);
 
   const toggleDayOfWeek = (day: number) => {
-    setDaysOfWeek(prev => 
+    setDaysOfWeek(prev =>
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
     );
   };

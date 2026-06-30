@@ -1,5 +1,7 @@
 {
   "paths": {
+    "learnings/critical-patterns": "legacy-fd52d7d9bd671cc4",
+    "learnings/learning-nextjs-hybrid-data-loading": "doc-10a465097a31eaaecfe2f1791a509730",
     "learnings/learning-typescript-strict-compilation": "doc-9e1c8b8a44b0c532ffb451e6b0e2a913"
   }
 }

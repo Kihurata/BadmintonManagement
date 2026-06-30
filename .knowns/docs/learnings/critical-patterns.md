@@ -2,7 +2,7 @@
 title: Critical Patterns
 description: Promoted learnings that save the most time. Read at session start.
 createdAt: '2026-05-25T10:03:03.692Z'
-updatedAt: '2026-06-23T17:32:01.106Z'
+updatedAt: '2026-06-30T03:51:27.547Z'
 tags:
   - learning
   - critical
@@ -79,3 +79,12 @@ When querying join tables (e.g. `customers(name)`) under strict typescript confi
 
 **Full entry:** @doc/learnings/learning-typescript-strict-compilation
 
+
+## 2026-06-30 Next.js Hybrid Data Loading Pattern
+**Category:** convention
+**Source:** Architectural Alignment
+**Tags:** [nextjs, architecture, api]
+
+Fetch initial read-only data directly via repositories in Server Components to eliminate loopback API latency and layout shifts, then execute mutations/writes via relative requests to versioned `/api/v1/` Route Handlers, using `router.refresh()` to trigger prop synchronization.
+
+**Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading
