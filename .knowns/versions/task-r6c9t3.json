@@ -1,0 +1,90 @@
+{
+  "taskId": "r6c9t3",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "r6c9t3",
+      "version": 1,
+      "timestamp": "2026-06-30T06:12:15.963998Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor booking-form.tsx to accept customers as a prop (similar to courts) instead of fetching them client-side in useEffect, aligning with the project's Next.js Hybrid Data Loading Pattern. Update callers to pre-fetch and pass customers down.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Refactor Customer Selector in BookingForm to use Props"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "r6c9t3",
+      "version": 2,
+      "timestamp": "2026-06-30T06:12:29.870385Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor booking-form.tsx to accept customers as a prop (similar to courts) instead of fetching them client-side in useEffect, aligning with the project's Next.js Hybrid Data Loading Pattern. Update callers to pre-fetch and pass customers down.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Customer Selector in BookingForm to use Props"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "r6c9t3",
+      "version": 3,
+      "timestamp": "2026-06-30T06:15:40.632521Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor booking-form.tsx to accept customers as a prop (similar to courts) instead of fetching them client-side in useEffect, aligning with the project's Next.js Hybrid Data Loading Pattern. Update callers to pre-fetch and pass customers down.",
+        "implementationNotes": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Refactor Customer Selector in BookingForm to use Props"
+      }
+    }
+  ]
+}

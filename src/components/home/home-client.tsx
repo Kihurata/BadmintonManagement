@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { isAfter, isBefore } from "date-fns";
+import { isAfter, isBefore, isSameDay } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { StickyHeader } from "@/components/home/sticky-header";
 import { CourtStatusSection, CourtStatus } from "@/components/home/court-status";
@@ -21,9 +21,10 @@ interface HomeClientProps {
   initialCourts: { id: string; court_name: string }[];
   initialBookings: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   initialTodayInvoices: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  initialCustomers: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export default function HomeClient({ initialCourts, initialBookings, initialTodayInvoices }: HomeClientProps) {
+export default function HomeClient({ initialCourts, initialBookings, initialTodayInvoices, initialCustomers }: HomeClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -54,6 +55,11 @@ export default function HomeClient({ initialCourts, initialBookings, initialToda
     return () => unsubscribe();
   }, [router]);
 
+  // Refresh page data on mount to invalidate Next.js router cache
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isBookingDetailsOpen, setIsBookingDetailsOpen] = useState(false);
@@ -73,6 +79,7 @@ export default function HomeClient({ initialCourts, initialBookings, initialToda
     const upcomingBookings = bookings.filter(b =>
       b.court_id === court.id &&
       isBefore(now, new Date(b.start_time)) &&
+      isSameDay(now, new Date(b.start_time)) &&
       b.status !== 'CANCELLED'
     ).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 
@@ -154,6 +161,7 @@ export default function HomeClient({ initialCourts, initialBookings, initialToda
               selectedDate={new Date()}
               selectedCourtId={initialCourts[0]?.id || null}
               courts={initialCourts}
+              customers={initialCustomers}
               onSuccess={() => {
                 setIsBookingOpen(false);
                 handleRefresh();

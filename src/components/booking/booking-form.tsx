@@ -32,9 +32,10 @@ interface BookingFormProps {
     selectedDate?: Date;
     selectedCourtId?: string | null;
     courts?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    customers?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts }: BookingFormProps) {
+export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts, customers: propCustomers }: BookingFormProps) {
     const [date, setDate] = useState<Date | undefined>(selectedDate || new Date());
     const [courtId, setCourtId] = useState(selectedCourtId || '');
     const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -42,7 +43,7 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
     const [duration, setDuration] = useState('1');
 
     // Customer Selection State
-    const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [customers, setCustomers] = useState<any[]>(propCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [customerId, setCustomerId] = useState('');
     const [customerOpen, setCustomerOpen] = useState(false);
     // If selecting "Guest" manually or not selecting anyone (default), we handle logic on submit
@@ -68,14 +69,22 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
             }
 
             // Fetch Customers
-            const customersRes = await fetch('/api/customers');
-            const customersData = await customersRes.json();
-            if (customersRes.ok && customersData.success) {
-                setCustomers(customersData.data);
+            if (!propCustomers || propCustomers.length === 0) {
+                const customersRes = await fetch('/api/customers');
+                const customersData = await customersRes.json();
+                if (customersRes.ok && customersData.success) {
+                    setCustomers(customersData.data);
+                }
             }
         };
         fetchData();
-    }, [propCourts, courtId]);
+    }, [propCourts, courtId, propCustomers]);
+
+    useEffect(() => {
+        if (propCustomers && propCustomers.length > 0) {
+            setCustomers(propCustomers);
+        }
+    }, [propCustomers]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

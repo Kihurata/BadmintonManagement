@@ -21,11 +21,16 @@ interface RecurringRule {
   customers: { name: string; phone: string } | null;
 }
 
-export function RecurringBookingsTab() {
+interface RecurringBookingsTabProps {
+  courts: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  customers: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTabProps) {
   const [rules, setRules] = useState<RecurringRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Dialog states
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -168,7 +173,7 @@ export function RecurringBookingsTab() {
                       {getDayNames(rule.days_of_week)}
                     </span>
                   </div>
-                  
+
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                     <span className="flex items-center gap-1">
                       <User className="size-3.5" />
@@ -212,7 +217,8 @@ export function RecurringBookingsTab() {
         <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
           <DialogTitle className="sr-only">Đăng ký lịch cố định</DialogTitle>
           <RecurringBookingForm
-            courts={[]}
+            courts={courts}
+            customers={customers}
             onSuccess={() => {
               setIsFormOpen(false);
               fetchRules();

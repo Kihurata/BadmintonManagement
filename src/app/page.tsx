@@ -33,11 +33,18 @@ export default async function HomePage() {
     .eq("is_paid", true)
     .gte("created_at", todayStartStr);
 
+  // 4. Fetch Customers
+  const { data: customersData } = await supabase
+    .from('customers')
+    .select('id, name, phone')
+    .order('name');
+
   return (
     <HomeClient
       initialCourts={courtsData || []}
       initialBookings={bookingsData || []}
       initialTodayInvoices={todayInvoices || []}
+      initialCustomers={customersData || []}
     />
   );
 }

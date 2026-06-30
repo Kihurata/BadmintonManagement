@@ -20,9 +20,10 @@ import { RecurringBookingsTab } from '@/components/booking/recurring/recurring-b
 
 interface ScheduleClientProps {
   initialCourts: { id: string; court_name: string }[];
+  initialCustomers: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export default function ScheduleClient({ initialCourts }: ScheduleClientProps) {
+export default function ScheduleClient({ initialCourts, initialCustomers }: ScheduleClientProps) {
   const [activeTab, setActiveTab] = useState<'timeline' | 'recurring'>('timeline');
   const [selectedDate, setSelectedDate] = useState(startOfToday());
   const [courts] = useState(initialCourts);
@@ -44,8 +45,8 @@ export default function ScheduleClient({ initialCourts }: ScheduleClientProps) {
       <div className="flex-1 flex flex-col md:pl-64 transition-all overflow-hidden relative h-screen">
         {/* Header (Mobile) */}
         <div className="md:hidden">
-          <StickyHeader 
-            title="Lịch Đặt Sân" 
+          <StickyHeader
+            title="Lịch Đặt Sân"
             rightContent={
               <div className="flex p-0.5 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200/50 dark:border-white/5">
                 <button
@@ -147,7 +148,7 @@ export default function ScheduleClient({ initialCourts }: ScheduleClientProps) {
             </div>
           </>
         ) : (
-          <RecurringBookingsTab />
+          <RecurringBookingsTab courts={initialCourts} customers={initialCustomers} />
         )}
 
         {/* Booking Dialog */}
@@ -158,6 +159,7 @@ export default function ScheduleClient({ initialCourts }: ScheduleClientProps) {
               selectedDate={selectedDate}
               selectedCourtId={courts[0]?.id || null}
               courts={courts}
+              customers={initialCustomers}
               onSuccess={() => {
                 setIsBookingOpen(false);
                 window.dispatchEvent(new Event('booking_updated'));

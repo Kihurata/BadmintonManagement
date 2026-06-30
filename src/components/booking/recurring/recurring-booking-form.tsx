@@ -38,14 +38,15 @@ interface RecurringBookingFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   courts: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  customers?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }: RecurringBookingFormProps) {
+export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, customers: propCustomers }: RecurringBookingFormProps) {
   const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [courtId, setCourtId] = useState('');
 
   // Customer combobox
-  const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [customers, setCustomers] = useState<any[]>(propCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [customerId, setCustomerId] = useState('');
   const [customerOpen, setCustomerOpen] = useState(false);
 
@@ -78,14 +79,23 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts }
         }
       }
 
-      const customersRes = await fetch('/api/customers');
-      const customersData = await customersRes.json();
-      if (customersRes.ok && customersData.success) {
-        setCustomers(customersData.data);
+      if (!propCustomers || propCustomers.length === 0) {
+        const customersRes = await fetch('/api/customers');
+        const customersData = await customersRes.json();
+        if (customersRes.ok && customersData.success) {
+          setCustomers(customersData.data);
+        }
       }
     };
     fetchData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [propCourts, propCustomers]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync customers if propCustomers changes
+  useEffect(() => {
+    if (propCustomers && propCustomers.length > 0) {
+      setCustomers(propCustomers);
+    }
+  }, [propCustomers]);
 
   // Sync courtId and courts if propCourts is provided and changes
   useEffect(() => {
