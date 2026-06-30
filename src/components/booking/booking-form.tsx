@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,9 +32,10 @@ interface BookingFormProps {
     selectedDate?: Date;
     selectedCourtId?: string | null;
     courts?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    customers?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts }: BookingFormProps) {
+export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId, courts: propCourts, customers: propCustomers }: BookingFormProps) {
     const [date, setDate] = useState<Date | undefined>(selectedDate || new Date());
     const [courtId, setCourtId] = useState(selectedCourtId || '');
     const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -42,7 +43,7 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
     const [duration, setDuration] = useState('1');
 
     // Customer Selection State
-    const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [customers, setCustomers] = useState<any[]>(propCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [customerId, setCustomerId] = useState('');
     const [customerOpen, setCustomerOpen] = useState(false);
     // If selecting "Guest" manually or not selecting anyone (default), we handle logic on submit
@@ -56,15 +57,34 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
     useEffect(() => {
         const fetchData = async () => {
             // Fetch Courts
-            const { data: courtsData } = await supabase.from('courts').select('*').eq('is_active', true);
-            if (courtsData) setCourts(courtsData);
+            if (!propCourts || propCourts.length === 0) {
+                const courtsRes = await fetch('/api/courts');
+                const courtsData = await courtsRes.json();
+                if (courtsRes.ok && courtsData.success) {
+                    setCourts(courtsData.data);
+                    if (!courtId && courtsData.data.length > 0) {
+                        setCourtId(courtsData.data[0].id);
+                    }
+                }
+            }
 
             // Fetch Customers
-            const { data: customersData } = await supabase.from('customers').select('*').order('name');
-            if (customersData) setCustomers(customersData);
+            if (!propCustomers || propCustomers.length === 0) {
+                const customersRes = await fetch('/api/customers');
+                const customersData = await customersRes.json();
+                if (customersRes.ok && customersData.success) {
+                    setCustomers(customersData.data);
+                }
+            }
         };
         fetchData();
-    }, []);
+    }, [propCourts, courtId, propCustomers]);
+
+    useEffect(() => {
+        if (propCustomers && propCustomers.length > 0) {
+            setCustomers(propCustomers);
+        }
+    }, [propCustomers]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -83,68 +103,32 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
         start.setHours(hours, minutes, 0, 0);
 
         const end = new Date(start);
-        // Fix: setHours truncates decimals, so 1.5 becomes 1. We need to add milliseconds.
         end.setTime(start.getTime() + parseFloat(duration) * 60 * 60 * 1000);
 
-        // Check conflicts (Simple check)
-        const { data: conflicts } = await supabase
-            .from('bookings')
-            .select('id')
-            .eq('court_id', courtId)
-            .neq('status', 'CANCELLED')
-            .or(`and(start_time.lte.${start.toISOString()},end_time.gt.${start.toISOString()}),and(start_time.lt.${end.toISOString()},end_time.gte.${end.toISOString()})`);
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    courtId,
+                    customerId: customerId || null,
+                    startTime: start.toISOString(),
+                    endTime: end.toISOString()
+                })
+            });
 
-        if (conflicts && conflicts.length > 0) {
-            setError('Giờ này đã có người đặt');
-            setLoading(false);
-            return;
-        }
-
-        // Handle Customer ID
-        let finalCustomerId = customerId;
-        if (!finalCustomerId) {
-            // Find or Create "Khách vãng lai"
-            const { data: guest } = await supabase
-                .from('customers')
-                .select('id')
-                .eq('name', 'Khách vãng lai')
-                .single();
-
-            if (guest) {
-                finalCustomerId = guest.id;
-            } else {
-                // Creates guest if not exists
-                const { data: newGuest, error: createError } = await supabase
-                    .from('customers')
-                    .insert([{ name: 'Khách vãng lai', type: 'GUEST' }])
-                    .select()
-                    .single();
-
-                if (createError || !newGuest) {
-                    setError('Không thể tạo khách vãng lai mặc định');
-                    setLoading(false);
-                    return;
-                }
-                finalCustomerId = newGuest.id;
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Đặt sân thất bại');
             }
-        }
 
-        const { error: submitError } = await supabase
-            .from('bookings')
-            .insert([{
-                court_id: courtId,
-                customer_id: finalCustomerId,
-                start_time: start.toISOString(),
-                end_time: end.toISOString(),
-                status: 'CONFIRMED' // Default confirmed for now
-            }]);
-
-        setLoading(false);
-
-        if (submitError) {
-            setError(submitError.message);
-        } else {
             onSuccess();
+        } catch (err) {
+            setError((err as Error).message);
+        } finally {
+            setLoading(false);
         }
     };
 

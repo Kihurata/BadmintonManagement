@@ -1,6 +1,5 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -35,75 +34,56 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
     const fetchInvoiceDetails = useCallback(async () => {
         if (!invoiceId) return;
         setLoading(true);
-        // 1. Fetch Invoice + Booking + Customer
-        const { data: inv } = await supabase
-            .from('invoices')
-            .select(`
-                *,
-                customers ( name, phone, type ),
-                bookings (
-                    start_time, end_time,
-                    total_court_fee, overtime_fee, deposit_amount,
-                    courts ( court_name )
-                )
-            `)
-            .eq('id', invoiceId)
-            .single();
-
-        if (inv) {
-            setInvoice(inv);
-            setPaymentMethod(inv.payment_method as 'CASH' | 'BANK_TRANSFER' || 'CASH');
-
-            // 2. Fetch Invoice Items
-            const { data: invItems } = await supabase
-                .from('invoice_items')
-                .select(`
-                    *,
-                    products ( product_name, base_unit, pack_unit )
-                `)
-                .eq('invoice_id', invoiceId);
-
-            setItems((invItems as unknown as InvoiceItem[]) || []);
+        try {
+            const res = await fetch(`/api/invoices?invoiceId=${invoiceId}`);
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setInvoice(data.invoice);
+                setPaymentMethod(data.invoice.payment_method as 'CASH' | 'BANK_TRANSFER' || 'CASH');
+                setItems(data.items || []);
+            }
+        } catch (err) {
+            console.error("Error fetching invoice details:", err);
         }
         setLoading(false);
     }, [invoiceId]);
 
     const fetchProducts = useCallback(async () => {
-        const { data } = await supabase
-            .from('products')
-            .select('*')
-            .gt('stock_quantity', 0)
-            .order('product_name');
-
-        if (data) {
-            const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
-            data.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-                // Option 1: Base Unit
-                processedProducts.push({
-                    key: `${p.id}-base`,
-                    productId: p.id,
-                    name: p.product_name,
-                    unit: p.base_unit,
-                    price: p.unit_price,
-                    isPack: false,
-                    deduct: 1
-                });
-
-                // Option 2: Pack Unit (if available)
-                if (p.is_packable && p.pack_unit) {
-                    const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
+        try {
+            const res = await fetch('/api/v1/products');
+            const resData = await res.json();
+            if (res.ok && resData.success) {
+                const processedProducts: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+                resData.data.forEach((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+                    // Option 1: Base Unit
                     processedProducts.push({
-                        key: `${p.id}-pack`,
+                        key: `${p.id}-base`,
                         productId: p.id,
-                        name: `${p.product_name} (${p.pack_unit})`,
-                        unit: p.pack_unit,
-                        price: packPrice,
-                        isPack: true,
-                        deduct: p.units_per_pack
+                        name: p.product_name,
+                        unit: p.base_unit,
+                        price: p.unit_price,
+                        isPack: false,
+                        deduct: 1
                     });
-                }
-            });
-            setProducts(processedProducts);
+
+                    // Option 2: Pack Unit (if available)
+                    if (p.is_packable && p.pack_unit) {
+                        const packPrice = p.pack_price || (p.unit_price * p.units_per_pack);
+                        processedProducts.push({
+                            key: `${p.id}-pack`,
+                            productId: p.id,
+                            name: `${p.product_name} (${p.pack_unit})`,
+                            unit: p.pack_unit,
+                            price: packPrice,
+                            isPack: true,
+                            deduct: p.units_per_pack
+                        });
+                    }
+                });
+                setProducts(processedProducts);
+            }
+        } catch (err) {
+            console.error("Error fetching products:", err);
         }
     }, []);
 
@@ -119,19 +99,23 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
         setLoading(true);
 
         try {
-            const { error } = await supabase
-                .from('invoices')
-                .update({
-                    is_paid: true,
-                    payment_method: paymentMethod
+            const res = await fetch('/api/invoices', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    invoiceId: invoice.id,
+                    paymentMethod,
+                    totalAmount: invoice.total_amount
                 })
-                .eq('id', invoice.id);
-
-            if (error) throw error;
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Thanh toán thất bại');
+            }
             onSuccess();
             onOpenChange(false);
         } catch (err: unknown) {
-            alert('Lỗi: ' + (err instanceof Error ? err.message : String(err)));
+            alert('Lỗi: ' + (err instanceof Error ? (err as Error).message : String(err)));
         } finally {
             setLoading(false);
         }
@@ -145,70 +129,39 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
             const productOption = products.find(p => p.key === currentProductKey);
             if (!productOption) return;
 
-            // Add directly to invoice_items (one by one or merge? simple append for now)
-            // Check if item exists with same price/pack? 
-            // Ideally we should group, but DB handles separate lines fine. 
-            // For UX, let's just insert a new line for simplicity as it matches standard "Add" behavior in this context.
-            // Or update existing line if same product & price. 
-
-            // Simplest consistent with POS: Just Insert. 
-            // Merging is nicer but complexity. CheckoutForm merges locallly. here we deal with DB rows.
-            // Let's Check if exists in `items` with same product_id and price.
-
             const existingItem = items.find(i => i.product_id === productOption.productId && i.sale_price === productOption.price);
 
-            let itemError;
-
             if (existingItem) {
-                // Update quantity
-                const { error } = await supabase.from('invoice_items')
-                    .update({ quantity: existingItem.quantity + 1 })
-                    .eq('id', existingItem.id);
-                itemError = error;
-
-                // Manual sync for UPDATE is still needed as trigger is INSERT only
-                // Inv Log
-                await supabase.from('inventory_logs').insert([{
-                    product_id: productOption.productId,
-                    type: 'SALE',
-                    quantity: -productOption.deduct,
-                    reason: `Cập nhật HĐ #${invoice.id.slice(0, 6)}`
-                }]);
-
-                // Update Stock
-                const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', productOption.productId).single();
-                if (prod) {
-                    await supabase.from('products')
-                        .update({ stock_quantity: prod.stock_quantity - productOption.deduct })
-                        .eq('id', productOption.productId);
-                }
+                // Update quantity using the existing update helper
+                await handleUpdateQuantity(existingItem, 1);
             } else {
-                // Insert new - Sync handled by DB Trigger
-                const { error } = await supabase.from('invoice_items')
-                    .insert([{
-                        invoice_id: invoice.id,
-                        product_id: productOption.productId,
+                // Insert new via API
+                const response = await fetch('/api/invoices/items', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        invoiceId: invoice.id,
+                        productId: productOption.productId,
                         quantity: 1,
-                        sale_price: productOption.price,
-                        is_pack_sold: productOption.isPack
-                    }]);
-                itemError = error;
+                        salePrice: productOption.price,
+                        isPackSold: productOption.isPack,
+                        invoiceTotalAmount: invoice.total_amount
+                    })
+                });
+
+                const resData = await response.json();
+                if (!response.ok || !resData.success) {
+                    throw new Error(resData.error || 'Lỗi thêm món hàng');
+                }
             }
-
-            if (itemError) throw itemError;
-
-            // Update Total
-            const newTotal = invoice.total_amount + productOption.price;
-            await supabase
-                .from('invoices')
-                .update({ total_amount: newTotal })
-                .eq('id', invoice.id);
 
             await fetchInvoiceDetails();
             setCurrentProductKey('');
 
         } catch (err: unknown) {
-            alert('Lỗi thêm món: ' + (err instanceof Error ? err.message : String(err)));
+            alert('Lỗi thêm món: ' + (err instanceof Error ? (err as Error).message : String(err)));
         } finally {
             setLoading(false);
         }
@@ -218,50 +171,30 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
         if (!invoice) return;
         setLoading(true);
         try {
-            // Find product option to know deduct amount?
-            // Existing item doesn't explicitly store "isPack" or "deduct".
-            // We have to infer or fallback.
-            // But we know sale_price.
-            // If delta is negative and qty is 1, call remove.
             if (delta < 0 && item.quantity <= 1) {
                 await handleRemoveItem(item);
                 return;
             }
 
-            // Need to find the product definition to know deduct quantity
-            // This is tricky if price changed, but assuming current match:
-            // We'll search `products` for matching productId and price.
-            // If not found, assume base unit (deduct 1).
+            const response = await fetch('/api/invoices/items', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    itemId: item.id,
+                    invoiceId: invoice.id,
+                    newQty: item.quantity + delta,
+                    delta,
+                    salePrice: item.sale_price,
+                    invoiceTotalAmount: invoice.total_amount
+                })
+            });
 
-            // Wait, `products` state has available products.
-            // Let's try to match by productId and price.
-            const productMatch = products.find(p => p.productId === item.product_id && Math.abs(p.price - item.sale_price) < 1);
-            const deduct = productMatch ? productMatch.deduct : 1;
-
-            // Update Item
-            await supabase.from('invoice_items')
-                .update({ quantity: item.quantity + delta })
-                .eq('id', item.id);
-
-            // Inv Log
-            await supabase.from('inventory_logs').insert([{
-                product_id: item.product_id,
-                type: delta > 0 ? 'SALE' : 'RETURN',
-                quantity: delta > 0 ? -deduct : deduct,
-                reason: `Cập nhật HĐ #${invoice.id.slice(0, 6)}`
-            }]);
-
-            // Update Stock
-            const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.product_id).single();
-            if (prod) {
-                await supabase.from('products')
-                    .update({ stock_quantity: prod.stock_quantity + (delta > 0 ? -deduct : deduct) })
-                    .eq('id', item.product_id);
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Lỗi cập nhật số lượng');
             }
-
-            // Update Invoice Total
-            const newTotal = invoice.total_amount + (delta * item.sale_price);
-            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
 
             await fetchInvoiceDetails();
 
@@ -277,30 +210,29 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
         try {
             const productMatch = products.find(p => p.productId === item.product_id && Math.abs(p.price - item.sale_price) < 1);
             const deductPerUnit = productMatch ? productMatch.deduct : 1;
-            const totalReturn = deductPerUnit * item.quantity;
+            const deduct = item.is_pack_sold ? deductPerUnit : 1;
 
-            // Delete Item
-            await supabase.from('invoice_items').delete().eq('id', item.id);
+            const response = await fetch('/api/invoices/items', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    itemId: item.id,
+                    invoiceId: invoice.id,
+                    productId: item.product_id,
+                    quantity: item.quantity,
+                    salePrice: item.sale_price,
+                    isPackSold: item.is_pack_sold,
+                    deduct,
+                    invoiceTotalAmount: invoice.total_amount
+                })
+            });
 
-            // Inv Log
-            await supabase.from('inventory_logs').insert([{
-                product_id: item.product_id,
-                type: 'RETURN',
-                quantity: totalReturn,
-                reason: `Xóa khỏi HĐ #${invoice.id.slice(0, 6)}`
-            }]);
-
-            // Stock
-            const { data: prod } = await supabase.from('products').select('stock_quantity').eq('id', item.product_id).single();
-            if (prod) {
-                await supabase.from('products')
-                    .update({ stock_quantity: prod.stock_quantity + totalReturn })
-                    .eq('id', item.product_id);
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.error || 'Lỗi xóa món hàng');
             }
-
-            // Update Total
-            const newTotal = invoice.total_amount - (item.sale_price * item.quantity);
-            await supabase.from('invoices').update({ total_amount: newTotal }).eq('id', invoice.id);
 
             await fetchInvoiceDetails();
 

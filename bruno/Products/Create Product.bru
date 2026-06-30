@@ -1,0 +1,36 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "product_name": "Nước Suối Aquafina Bruno Test",
+    "unit_price": 10000,
+    "stock_quantity": 50,
+    "base_unit": "Chai",
+    "is_packable": true,
+    "pack_unit": "Thùng",
+    "units_per_pack": 24,
+    "pack_price": 220000,
+    "status": "ACTIVE"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+  if (res.status === 201 && data && data.success && data.data && data.data.id) {
+    bru.setVar('createdProductId', data.data.id);
+  }
+}

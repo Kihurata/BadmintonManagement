@@ -1,0 +1,167 @@
+{
+  "taskId": "tlqg6i",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "tlqg6i",
+      "version": 1,
+      "timestamp": "2026-05-24T09:34:44.2967268Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Integrate hook in Sidebar and BottomNav"
+          },
+          {
+            "completed": false,
+            "text": "Hide Báo cáo tab for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Display email and translated role (Nhân viên/Quản lý) in Sidebar"
+          }
+        ],
+        "description": "Integrate useUserRole in sidebar.tsx and bottom-nav.tsx. Hide Báo cáo for STAFF. Show actual email/role in Sidebar.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Protect Navigation Menus (Sidebar \u0026 BottomNav)"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "tlqg6i",
+      "version": 2,
+      "timestamp": "2026-05-24T09:35:41.9007793Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Integrate hook in Sidebar and BottomNav"
+          },
+          {
+            "completed": false,
+            "text": "Hide Báo cáo tab for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Display email and translated role (Nhân viên/Quản lý) in Sidebar"
+          }
+        ],
+        "description": "Integrate useUserRole in sidebar.tsx and bottom-nav.tsx. Hide Báo cáo for STAFF. Show actual email/role in Sidebar.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Protect Navigation Menus (Sidebar \u0026 BottomNav)"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "tlqg6i",
+      "version": 3,
+      "timestamp": "2026-05-24T09:35:44.1149002Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Edit sidebar.tsx: integrate useUserRole hook, filter Báo cáo menu, display dynamic profile email and role label\n2. Edit bottom-nav.tsx: integrate useUserRole hook, filter Báo cáo menu\n3. Verify UI renders correctly without issues."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Integrate hook in Sidebar and BottomNav"
+          },
+          {
+            "completed": false,
+            "text": "Hide Báo cáo tab for STAFF"
+          },
+          {
+            "completed": false,
+            "text": "Display email and translated role (Nhân viên/Quản lý) in Sidebar"
+          }
+        ],
+        "description": "Integrate useUserRole in sidebar.tsx and bottom-nav.tsx. Hide Báo cáo for STAFF. Show actual email/role in Sidebar.",
+        "implementationPlan": "1. Edit sidebar.tsx: integrate useUserRole hook, filter Báo cáo menu, display dynamic profile email and role label\n2. Edit bottom-nav.tsx: integrate useUserRole hook, filter Báo cáo menu\n3. Verify UI renders correctly without issues.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Protect Navigation Menus (Sidebar \u0026 BottomNav)"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "tlqg6i",
+      "version": 4,
+      "timestamp": "2026-05-24T09:35:57.1596234Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Integrated useUserRole in Sidebar and BottomNav components. Hidden Dashboard page link for STAFF users. Displays user email and translated role name in Sidebar footer."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Integrate hook in Sidebar and BottomNav",
+            "completed": true
+          },
+          {
+            "text": "Hide Báo cáo tab for STAFF",
+            "completed": true
+          },
+          {
+            "text": "Display email and translated role (Nhân viên/Quản lý) in Sidebar",
+            "completed": true
+          }
+        ],
+        "description": "Integrate useUserRole in sidebar.tsx and bottom-nav.tsx. Hide Báo cáo for STAFF. Show actual email/role in Sidebar.",
+        "implementationNotes": "Integrated useUserRole in Sidebar and BottomNav components. Hidden Dashboard page link for STAFF users. Displays user email and translated role name in Sidebar footer.",
+        "implementationPlan": "1. Edit sidebar.tsx: integrate useUserRole hook, filter Báo cáo menu, display dynamic profile email and role label\n2. Edit bottom-nav.tsx: integrate useUserRole hook, filter Báo cáo menu\n3. Verify UI renders correctly without issues.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Protect Navigation Menus (Sidebar \u0026 BottomNav)"
+      }
+    }
+  ]
+}

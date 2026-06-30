@@ -1,0 +1,142 @@
+{
+  "taskId": "jnm8r7",
+  "currentVersion": 6,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "jnm8r7",
+      "version": 1,
+      "timestamp": "2026-06-27T08:44:47.4645604Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "priority": "medium",
+        "status": "todo",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "jnm8r7",
+      "version": 2,
+      "timestamp": "2026-06-27T08:44:49.9709545Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "jnm8r7",
+      "version": 3,
+      "timestamp": "2026-06-27T08:45:39.9323358Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create Bruno collection folder and config. 2. Define Local environment variables (Supabase and Base URL). 3. Create Login request with post-response script for base64url cookie generation. 4. Implement requests for all v1 product endpoints (GET, POST, GET details, PUT, PATCH, DELETE). 5. Verify using Bruno CLI runner."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "implementationPlan": "1. Create Bruno collection folder and config. 2. Define Local environment variables (Supabase and Base URL). 3. Create Login request with post-response script for base64url cookie generation. 4. Implement requests for all v1 product endpoints (GET, POST, GET details, PUT, PATCH, DELETE). 5. Verify using Bruno CLI runner.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "jnm8r7",
+      "version": 4,
+      "timestamp": "2026-06-27T08:48:39.8371837Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "implementationNotes": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests.",
+        "implementationPlan": "1. Create Bruno collection folder and config. 2. Define Local environment variables (Supabase and Base URL). 3. Create Login request with post-response script for base64url cookie generation. 4. Implement requests for all v1 product endpoints (GET, POST, GET details, PUT, PATCH, DELETE). 5. Verify using Bruno CLI runner.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "jnm8r7",
+      "version": 5,
+      "timestamp": "2026-06-27T08:48:44.0008966Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "implementationNotes": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests.",
+        "implementationPlan": "1. Create Bruno collection folder and config. 2. Define Local environment variables (Supabase and Base URL). 3. Create Login request with post-response script for base64url cookie generation. 4. Implement requests for all v1 product endpoints (GET, POST, GET details, PUT, PATCH, DELETE). 5. Verify using Bruno CLI runner.",
+        "priority": "medium",
+        "status": "done",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "jnm8r7",
+      "version": 6,
+      "timestamp": "2026-06-27T08:52:56.8280346Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests.",
+          "newValue": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests.\n📚 Extracted to @doc/learnings/learning-bruno-api-testing"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Create Bruno collection, environment configurations, and requests to test and document all v1 product API endpoints.",
+        "implementationNotes": "Initialized Bruno collection with bruno.json, Local.bru environment vars, Login.bru Auth request with session-to-cookie mapping post-response script, and all v1 product CRUD endpoints (.bru files) fully configured. Verified via project unit tests.\n📚 Extracted to @doc/learnings/learning-bruno-api-testing",
+        "implementationPlan": "1. Create Bruno collection folder and config. 2. Define Local environment variables (Supabase and Base URL). 3. Create Login request with post-response script for base64url cookie generation. 4. Implement requests for all v1 product endpoints (GET, POST, GET details, PUT, PATCH, DELETE). 5. Verify using Bruno CLI runner.",
+        "priority": "medium",
+        "status": "done",
+        "title": "Setup Bruno API Collection for Products v1"
+      }
+    }
+  ]
+}

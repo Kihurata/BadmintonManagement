@@ -1,0 +1,44 @@
+# Template: api-endpoint
+name: api-endpoint
+description: Create a full Next.js Clean Architecture API endpoint (Controller, Schema, Service, Repository, Types)
+version: 1.0.0
+doc: conventions
+destination: src
+prompts:
+  - name: name
+    type: text
+    message: "Resource Name (e.g. Court, Booking, Product)?"
+    validate: required
+  - name: tableName
+    type: text
+    message: "Database Table Name (e.g. courts, bookings, products)?"
+    validate: required
+actions:
+  - type: add
+    template: "types.hbs"
+    path: "types/{{kebabCase name}}.ts"
+    skipIfExists: true
+  - type: add
+    template: "schema.hbs"
+    path: "server/schemas/{{kebabCase name}}-schema.ts"
+    skipIfExists: true
+  - type: add
+    template: "repo.hbs"
+    path: "server/repositories/{{kebabCase name}}-repo.ts"
+    skipIfExists: true
+  - type: add
+    template: "service.hbs"
+    path: "server/services/{{kebabCase name}}-service.ts"
+    skipIfExists: true
+  - type: add
+    template: "route.hbs"
+    path: "app/api/v1/{{kebabCase name}}/route.ts"
+    skipIfExists: true
+messages:
+  success: |
+    Successfully generated Clean Architecture API files for: {{name}}
+    - Types: src/types/{{kebabCase name}}.ts
+    - Validation Schema: src/server/schemas/{{kebabCase name}}-schema.ts
+    - Repository: src/server/repositories/{{kebabCase name}}-repo.ts
+    - Service: src/server/services/{{kebabCase name}}-service.ts
+    - API Route (Controller): src/app/api/v1/{{kebabCase name}}/route.ts

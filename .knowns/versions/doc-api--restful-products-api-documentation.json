@@ -1,0 +1,42 @@
+{
+  "docPath": "api/restful-products-api-documentation",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "api/restful-products-api-documentation",
+      "version": 1,
+      "timestamp": "2026-06-27T06:04:50.9716744Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "RESTful Products API Documentation"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "API reference and integration guide for the versioned RESTful Products API (v1)."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "api",
+            "products",
+            "reference"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "API reference and integration guide for the versioned RESTful Products API (v1).",
+        "tags": [
+          "api",
+          "products",
+          "reference"
+        ],
+        "title": "RESTful Products API Documentation"
+      }
+    }
+  ]
+}

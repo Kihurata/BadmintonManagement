@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { InvoiceList, Invoice } from '@/components/invoices/invoice-list';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 
@@ -25,48 +24,37 @@ export function TransactionHistory() {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
-        const { data } = await supabase
-            .from('invoices')
-            .select(`
-                id,
-                total_amount,
-                created_at,
-                is_paid,
-                customers ( name ),
-                bookings (
-                    courts ( court_name ),
-                    start_time,
-                    end_time
-                ),
-                invoice_items ( sale_price, quantity )
-            `)
-            .gte('created_at', start.toISOString())
-            .lte('created_at', end.toISOString())
-            .order('created_at', { ascending: false });
+        try {
+            const res = await fetch(`/api/invoices?startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
+            const resData = await res.json();
 
-        if (data) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const formattedInvoices: Invoice[] = data.map((inv: any) => {
-                const startTime = inv.bookings?.start_time ? new Date(inv.bookings.start_time) : null;
-                const endTime = inv.bookings?.end_time ? new Date(inv.bookings.end_time) : null;
-                const duration = startTime && endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) : 0;
+            if (res.ok && resData.success && resData.data) {
+                const data = resData.data;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const formattedInvoices: Invoice[] = data.map((inv: any) => {
+                    const startTime = inv.bookings?.start_time ? new Date(inv.bookings.start_time) : null;
+                    const endTime = inv.bookings?.end_time ? new Date(inv.bookings.end_time) : null;
+                    const duration = startTime && endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) : 0;
 
-                const displayDate = startTime || new Date(inv.created_at);
+                    const displayDate = startTime || new Date(inv.created_at);
 
-                return {
-                    id: inv.id,
-                    customer_name: inv.customers?.name || 'Khách vãng lai',
-                    date: displayDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
-                    time: displayDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                    status: inv.is_paid ? 'PAID' : 'PENDING',
-                    summary: inv.bookings?.courts?.court_name
-                        ? `${inv.bookings.courts.court_name} • ${duration.toFixed(1)} giờ`
-                        : 'Mua hàng',
-                    total: inv.total_amount,
-                    rawDate: displayDate.toISOString()
-                };
-            });
-            setInvoices(formattedInvoices);
+                    return {
+                        id: inv.id,
+                        customer_name: inv.customers?.name || 'Khách vãng lai',
+                        date: displayDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
+                        time: displayDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                        status: inv.is_paid ? 'PAID' : 'PENDING',
+                        summary: inv.bookings?.courts?.court_name
+                            ? `${inv.bookings.courts.court_name} • ${duration.toFixed(1)} giờ`
+                            : 'Mua hàng',
+                        total: inv.total_amount,
+                        rawDate: displayDate.toISOString()
+                    };
+                });
+                setInvoices(formattedInvoices);
+            }
+        } catch (err) {
+            console.error("Error fetching invoices:", err);
         }
         setLoading(false);
     };

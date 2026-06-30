@@ -1,0 +1,191 @@
+{
+  "taskId": "fas7ec",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "fas7ec",
+      "version": 1,
+      "timestamp": "2026-06-20T08:49:34.7114631Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products fetching all products"
+          },
+          {
+            "completed": false,
+            "text": "Support onlyAvailable=true query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Support search=... query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products/[productId] fetching single product detail"
+          }
+        ],
+        "description": "Create GET handlers for listing and retrieving products under /api/v1/products.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Implement RESTful GET Endpoints for Products"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "fas7ec",
+      "version": 2,
+      "timestamp": "2026-06-20T09:03:32.4536618Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products fetching all products"
+          },
+          {
+            "completed": false,
+            "text": "Support onlyAvailable=true query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Support search=... query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products/[productId] fetching single product detail"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create GET handlers for listing and retrieving products under /api/v1/products.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful GET Endpoints for Products"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "fas7ec",
+      "version": 3,
+      "timestamp": "2026-06-20T09:03:43.576169Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Add getProducts and getProductById to product-repo.ts. 2. Create GET /api/v1/products route handler. 3. Create GET /api/v1/products/[productId] route handler. 4. Verify with npm test."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products fetching all products"
+          },
+          {
+            "completed": false,
+            "text": "Support onlyAvailable=true query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Support search=... query param filter"
+          },
+          {
+            "completed": false,
+            "text": "Implement GET /api/v1/products/[productId] fetching single product detail"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create GET handlers for listing and retrieving products under /api/v1/products.",
+        "implementationPlan": "1. Add getProducts and getProductById to product-repo.ts. 2. Create GET /api/v1/products route handler. 3. Create GET /api/v1/products/[productId] route handler. 4. Verify with npm test.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Implement RESTful GET Endpoints for Products"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "fas7ec",
+      "version": 4,
+      "timestamp": "2026-06-20T14:23:28.5792832Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented GET /api/v1/products and GET /api/v1/products/[productId] handlers, integrated with updated product-repo.ts."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement GET /api/v1/products fetching all products",
+            "completed": true
+          },
+          {
+            "text": "Support onlyAvailable=true query param filter",
+            "completed": true
+          },
+          {
+            "text": "Support search=... query param filter",
+            "completed": true
+          },
+          {
+            "text": "Implement GET /api/v1/products/[productId] fetching single product detail",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create GET handlers for listing and retrieving products under /api/v1/products.",
+        "implementationNotes": "Implemented GET /api/v1/products and GET /api/v1/products/[productId] handlers, integrated with updated product-repo.ts.",
+        "implementationPlan": "1. Add getProducts and getProductById to product-repo.ts. 2. Create GET /api/v1/products route handler. 3. Create GET /api/v1/products/[productId] route handler. 4. Verify with npm test.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Implement RESTful GET Endpoints for Products"
+      }
+    }
+  ]
+}

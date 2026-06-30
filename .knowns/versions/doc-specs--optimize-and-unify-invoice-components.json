@@ -1,0 +1,90 @@
+{
+  "docPath": "specs/optimize-and-unify-invoice-components",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "specs/optimize-and-unify-invoice-components",
+      "version": 1,
+      "timestamp": "2026-05-24T09:27:13.008207Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Optimize and unify invoice components"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Specification for unifying invoice breakdowns, payment selectors, and optimizing product displays."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "spec",
+            "draft"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "Specification for unifying invoice breakdowns, payment selectors, and optimizing product displays.",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "Optimize and unify invoice components"
+      }
+    },
+    {
+      "id": "v2",
+      "docPath": "specs/optimize-and-unify-invoice-components",
+      "version": 2,
+      "timestamp": "2026-05-24T09:28:20.0476232Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": null,
+          "newValue": "# Đặc tả: Tối ưu hóa và Đồng bộ hóa Hợp phần Hóa đơn (Optimize and Unify Invoice Components)\n\nTài liệu này đặc tả yêu cầu nghiệp vụ, tiêu chí nghiệm thu và kế hoạch triển khai để tái cấu trúc luồng tính toán, hiển thị hóa đơn và phương thức thanh toán trong hệ thống Quản lý Sân Cầu lông.\n\n## Overview\n\nHệ thống hiện tại đang gặp tình trạng lặp lại mã nguồn (code duplication) và bất đồng bộ giao diện trong việc hiển thị chi tiết hóa đơn, chọn phương thức thanh toán và tạo mã VietQR trên nhiều màn hình (`CheckoutForm`, `InvoiceDetailDialog`, `QuickSaleForm`). Yêu cầu đặt ra là gom nhóm các khối hiển thị này thành các Component dùng chung để dễ bảo trì, đồng thời tối ưu hóa giao diện chọn sản phẩm trong biểu mẫu bán lẻ để nâng cao trải nghiệm của nhân viên quầy.\n\n## Locked Decisions\n\nCác quyết định đã được thống nhất với người dùng:\n- **D1**: Trong màn hình Bán lẻ (`QuickSaleForm`), thẻ tóm tắt hóa đơn chỉ hiển thị Tổng tiền (không hiển thị lại danh sách sản phẩm) để tránh lặp lại thông tin với lưới chọn đồ ở trên. Các màn hình khác vẫn liệt kê đầy đủ.\n- **D2**: Các sản phẩm bán chạy nhất gồm nước uống và trái cầu (ví dụ: nước suối, Revive, Sting, quả cầu lông lẻ hoặc ống cầu lông) sẽ được cấu hình bằng danh sách tên/ID cứng ở frontend để hiển thị lên đầu. Các sản phẩm còn lại sẽ bị thu gọn dưới nút mở rộng.\n- **D3**: Nút chia sẻ hóa đơn (Share/Copy Bill text) sẽ chỉ xuất hiện ở màn hình Xem chi tiết hóa đơn (`InvoiceDetailDialog`), không tích hợp vào biểu mẫu Trả sân (`CheckoutForm`).\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1 [Unified Card]**: Xây dựng Component `InvoiceSummaryCard` nhận các tham số đầu vào (tiền sân, phụ phí, tiền cọc, tiền dịch vụ, tổng tiền, danh sách dịch vụ) để vẽ giao diện chi tiết hóa đơn đồng bộ.\n- **FR-2 [Payment Selector]**: Xây dựng Component `PaymentSelector` tích hợp chọn Tiền mặt/Chuyển khoản và tự động tạo/hiển thị ảnh QR Code VietQR động.\n- **FR-3 [Centralized Helpers]**: Xây dựng file tiện ích `src/lib/invoice-utils.ts` chứa hàm tạo URL VietQR và định dạng nội dung chia sẻ hóa đơn qua Zalo.\n- **FR-4 [Collapsed POS List]**: Trong giao diện chọn sản phẩm bán lẻ (`QuickSaleForm` và `BookingDetails`), chia danh sách thành 2 phần: phần ưu tiên hiển thị (nước \u0026 cầu) và phần phụ bị thu gọn mặc định. Nhân viên có thể nhấn nút \"Xem thêm sản phẩm khác\" để hiển thị danh sách đầy đủ.\n\n### Non-Functional Requirements\n\n- **NFR-1 [Performance]**: Không làm thay đổi tốc độ phản hồi hoặc gây trễ khi nhân viên quầy thao tác tăng giảm số lượng sản phẩm.\n- **NFR-2 [Responsiveness]**: Giao diện các card hóa đơn và lưới sản phẩm phải hiển thị tốt trên thiết bị di động (mobile-friendly).\n\n## Acceptance Criteria\n\n- [ ] **AC-1**: Giao diện chi tiết hóa đơn (Breakdown Card) ở màn hình Trả Sân (`CheckoutForm`) và Xem Lịch Sử (`InvoiceDetailDialog`) giống nhau 100%.\n- [ ] **AC-2**: Chỉ hiển thị Tổng tiền ở màn hình Bán lẻ (`QuickSaleForm`) khi giỏ hàng có đồ, không hiển thị trùng lặp lại danh sách sản phẩm.\n- [ ] **AC-3**: Mặc định khi mở màn hình Bán lẻ hoặc POS đặt sân, các sản phẩm ít bán (như vợt thuê, phụ kiện) sẽ bị thu gọn và hiển thị nút \"Xem thêm sản phẩm khác\". Khi bấm nút này, danh sách mới mở rộng ra đầy đủ.\n- [ ] **AC-4**: Tất cả các mã QR thanh toán trên hệ thống đều sinh ra từ hàm tiện ích dùng chung trong `invoice-utils.ts`.\n- [ ] **AC-5**: Chạy `knowns validate` không phát hiện lỗi liên kết hay cấu trúc tài liệu.\n\n## Scenarios\n\n### Scenario 1: Thanh toán Trả Sân (Checkout) có Dịch vụ đi kèm\n- **Given**: Khách hàng ở sân 1 chơi quá giờ và có gọi 2 chai nước Revive.\n- **When**: Nhân viên bấm \"Thanh toán \u0026 Trả Sân\".\n- **Then**: Màn hình hiển thị chi tiết hóa đơn gồm: Tiền sân thực tế, Tiền dịch vụ (2 Revive - 30.000đ), Tổng tiền. Mã VietQR hiển thị đúng số tiền tổng khi chọn Chuyển khoản.\n\n### Scenario 2: Thu gọn sản phẩm ít bán trong Quick Sale\n- **Given**: Biểu mẫu Bán Nhanh (`QuickSaleForm`) được kích hoạt.\n- **When**: Giao diện tải danh sách sản phẩm.\n- **Then**: Chỉ các sản phẩm thường dùng (Nước ngọt, Trái cầu) hiện ra ở lưới trên cùng kèm nút chọn số lượng. Các sản phẩm như Dịch vụ thuê vợt ẩn đi và có nút \"Xem thêm sản phẩm khác\" nằm dưới cùng.\n- **When**: Người dùng bấm nút \"Xem thêm sản phẩm khác\".\n- **Then**: Danh sách mở rộng hiển thị toàn bộ sản phẩm đang có trong kho.\n\n## Technical Notes\n\n- Danh sách sản phẩm ưu tiên hiển thị (cấu hình cứng theo tên) bao gồm các từ khóa: `\"Nước suối\"`, `\"Revive\"`, `\"Sting\"`, `\"Cầu lông\"`, `\"Quả cầu\"`, `\"Ống cầu\"`.\n- Hàm helper tạo VietQR sẽ gọi API của `img.vietqr.io` với các tham số: số tiền, nội dung thanh toán và thông tin tài khoản được định nghĩa tập trung.\n\n## Open Questions\n\nKhông còn câu hỏi mở nào sau khi đã chốt các quyết định D1, D2, D3.\n"
+        }
+      ],
+      "snapshot": {
+        "content": "# Đặc tả: Tối ưu hóa và Đồng bộ hóa Hợp phần Hóa đơn (Optimize and Unify Invoice Components)\n\nTài liệu này đặc tả yêu cầu nghiệp vụ, tiêu chí nghiệm thu và kế hoạch triển khai để tái cấu trúc luồng tính toán, hiển thị hóa đơn và phương thức thanh toán trong hệ thống Quản lý Sân Cầu lông.\n\n## Overview\n\nHệ thống hiện tại đang gặp tình trạng lặp lại mã nguồn (code duplication) và bất đồng bộ giao diện trong việc hiển thị chi tiết hóa đơn, chọn phương thức thanh toán và tạo mã VietQR trên nhiều màn hình (`CheckoutForm`, `InvoiceDetailDialog`, `QuickSaleForm`). Yêu cầu đặt ra là gom nhóm các khối hiển thị này thành các Component dùng chung để dễ bảo trì, đồng thời tối ưu hóa giao diện chọn sản phẩm trong biểu mẫu bán lẻ để nâng cao trải nghiệm của nhân viên quầy.\n\n## Locked Decisions\n\nCác quyết định đã được thống nhất với người dùng:\n- **D1**: Trong màn hình Bán lẻ (`QuickSaleForm`), thẻ tóm tắt hóa đơn chỉ hiển thị Tổng tiền (không hiển thị lại danh sách sản phẩm) để tránh lặp lại thông tin với lưới chọn đồ ở trên. Các màn hình khác vẫn liệt kê đầy đủ.\n- **D2**: Các sản phẩm bán chạy nhất gồm nước uống và trái cầu (ví dụ: nước suối, Revive, Sting, quả cầu lông lẻ hoặc ống cầu lông) sẽ được cấu hình bằng danh sách tên/ID cứng ở frontend để hiển thị lên đầu. Các sản phẩm còn lại sẽ bị thu gọn dưới nút mở rộng.\n- **D3**: Nút chia sẻ hóa đơn (Share/Copy Bill text) sẽ chỉ xuất hiện ở màn hình Xem chi tiết hóa đơn (`InvoiceDetailDialog`), không tích hợp vào biểu mẫu Trả sân (`CheckoutForm`).\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1 [Unified Card]**: Xây dựng Component `InvoiceSummaryCard` nhận các tham số đầu vào (tiền sân, phụ phí, tiền cọc, tiền dịch vụ, tổng tiền, danh sách dịch vụ) để vẽ giao diện chi tiết hóa đơn đồng bộ.\n- **FR-2 [Payment Selector]**: Xây dựng Component `PaymentSelector` tích hợp chọn Tiền mặt/Chuyển khoản và tự động tạo/hiển thị ảnh QR Code VietQR động.\n- **FR-3 [Centralized Helpers]**: Xây dựng file tiện ích `src/lib/invoice-utils.ts` chứa hàm tạo URL VietQR và định dạng nội dung chia sẻ hóa đơn qua Zalo.\n- **FR-4 [Collapsed POS List]**: Trong giao diện chọn sản phẩm bán lẻ (`QuickSaleForm` và `BookingDetails`), chia danh sách thành 2 phần: phần ưu tiên hiển thị (nước \u0026 cầu) và phần phụ bị thu gọn mặc định. Nhân viên có thể nhấn nút \"Xem thêm sản phẩm khác\" để hiển thị danh sách đầy đủ.\n\n### Non-Functional Requirements\n\n- **NFR-1 [Performance]**: Không làm thay đổi tốc độ phản hồi hoặc gây trễ khi nhân viên quầy thao tác tăng giảm số lượng sản phẩm.\n- **NFR-2 [Responsiveness]**: Giao diện các card hóa đơn và lưới sản phẩm phải hiển thị tốt trên thiết bị di động (mobile-friendly).\n\n## Acceptance Criteria\n\n- [ ] **AC-1**: Giao diện chi tiết hóa đơn (Breakdown Card) ở màn hình Trả Sân (`CheckoutForm`) và Xem Lịch Sử (`InvoiceDetailDialog`) giống nhau 100%.\n- [ ] **AC-2**: Chỉ hiển thị Tổng tiền ở màn hình Bán lẻ (`QuickSaleForm`) khi giỏ hàng có đồ, không hiển thị trùng lặp lại danh sách sản phẩm.\n- [ ] **AC-3**: Mặc định khi mở màn hình Bán lẻ hoặc POS đặt sân, các sản phẩm ít bán (như vợt thuê, phụ kiện) sẽ bị thu gọn và hiển thị nút \"Xem thêm sản phẩm khác\". Khi bấm nút này, danh sách mới mở rộng ra đầy đủ.\n- [ ] **AC-4**: Tất cả các mã QR thanh toán trên hệ thống đều sinh ra từ hàm tiện ích dùng chung trong `invoice-utils.ts`.\n- [ ] **AC-5**: Chạy `knowns validate` không phát hiện lỗi liên kết hay cấu trúc tài liệu.\n\n## Scenarios\n\n### Scenario 1: Thanh toán Trả Sân (Checkout) có Dịch vụ đi kèm\n- **Given**: Khách hàng ở sân 1 chơi quá giờ và có gọi 2 chai nước Revive.\n- **When**: Nhân viên bấm \"Thanh toán \u0026 Trả Sân\".\n- **Then**: Màn hình hiển thị chi tiết hóa đơn gồm: Tiền sân thực tế, Tiền dịch vụ (2 Revive - 30.000đ), Tổng tiền. Mã VietQR hiển thị đúng số tiền tổng khi chọn Chuyển khoản.\n\n### Scenario 2: Thu gọn sản phẩm ít bán trong Quick Sale\n- **Given**: Biểu mẫu Bán Nhanh (`QuickSaleForm`) được kích hoạt.\n- **When**: Giao diện tải danh sách sản phẩm.\n- **Then**: Chỉ các sản phẩm thường dùng (Nước ngọt, Trái cầu) hiện ra ở lưới trên cùng kèm nút chọn số lượng. Các sản phẩm như Dịch vụ thuê vợt ẩn đi và có nút \"Xem thêm sản phẩm khác\" nằm dưới cùng.\n- **When**: Người dùng bấm nút \"Xem thêm sản phẩm khác\".\n- **Then**: Danh sách mở rộng hiển thị toàn bộ sản phẩm đang có trong kho.\n\n## Technical Notes\n\n- Danh sách sản phẩm ưu tiên hiển thị (cấu hình cứng theo tên) bao gồm các từ khóa: `\"Nước suối\"`, `\"Revive\"`, `\"Sting\"`, `\"Cầu lông\"`, `\"Quả cầu\"`, `\"Ống cầu\"`.\n- Hàm helper tạo VietQR sẽ gọi API của `img.vietqr.io` với các tham số: số tiền, nội dung thanh toán và thông tin tài khoản được định nghĩa tập trung.\n\n## Open Questions\n\nKhông còn câu hỏi mở nào sau khi đã chốt các quyết định D1, D2, D3.\n",
+        "description": "Specification for unifying invoice breakdowns, payment selectors, and optimizing product displays.",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "Optimize and unify invoice components"
+      }
+    },
+    {
+      "id": "v3",
+      "docPath": "specs/optimize-and-unify-invoice-components",
+      "version": 3,
+      "timestamp": "2026-05-24T09:30:36.3742995Z",
+      "changes": [
+        {
+          "field": "tags",
+          "oldValue": [
+            "spec",
+            "draft"
+          ],
+          "newValue": [
+            "spec",
+            "approved"
+          ]
+        }
+      ],
+      "snapshot": {
+        "content": "# Đặc tả: Tối ưu hóa và Đồng bộ hóa Hợp phần Hóa đơn (Optimize and Unify Invoice Components)\n\nTài liệu này đặc tả yêu cầu nghiệp vụ, tiêu chí nghiệm thu và kế hoạch triển khai để tái cấu trúc luồng tính toán, hiển thị hóa đơn và phương thức thanh toán trong hệ thống Quản lý Sân Cầu lông.\n\n## Overview\n\nHệ thống hiện tại đang gặp tình trạng lặp lại mã nguồn (code duplication) và bất đồng bộ giao diện trong việc hiển thị chi tiết hóa đơn, chọn phương thức thanh toán và tạo mã VietQR trên nhiều màn hình (`CheckoutForm`, `InvoiceDetailDialog`, `QuickSaleForm`). Yêu cầu đặt ra là gom nhóm các khối hiển thị này thành các Component dùng chung để dễ bảo trì, đồng thời tối ưu hóa giao diện chọn sản phẩm trong biểu mẫu bán lẻ để nâng cao trải nghiệm của nhân viên quầy.\n\n## Locked Decisions\n\nCác quyết định đã được thống nhất với người dùng:\n- **D1**: Trong màn hình Bán lẻ (`QuickSaleForm`), thẻ tóm tắt hóa đơn chỉ hiển thị Tổng tiền (không hiển thị lại danh sách sản phẩm) để tránh lặp lại thông tin với lưới chọn đồ ở trên. Các màn hình khác vẫn liệt kê đầy đủ.\n- **D2**: Các sản phẩm bán chạy nhất gồm nước uống và trái cầu (ví dụ: nước suối, Revive, Sting, quả cầu lông lẻ hoặc ống cầu lông) sẽ được cấu hình bằng danh sách tên/ID cứng ở frontend để hiển thị lên đầu. Các sản phẩm còn lại sẽ bị thu gọn dưới nút mở rộng.\n- **D3**: Nút chia sẻ hóa đơn (Share/Copy Bill text) sẽ chỉ xuất hiện ở màn hình Xem chi tiết hóa đơn (`InvoiceDetailDialog`), không tích hợp vào biểu mẫu Trả sân (`CheckoutForm`).\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1 [Unified Card]**: Xây dựng Component `InvoiceSummaryCard` nhận các tham số đầu vào (tiền sân, phụ phí, tiền cọc, tiền dịch vụ, tổng tiền, danh sách dịch vụ) để vẽ giao diện chi tiết hóa đơn đồng bộ.\n- **FR-2 [Payment Selector]**: Xây dựng Component `PaymentSelector` tích hợp chọn Tiền mặt/Chuyển khoản và tự động tạo/hiển thị ảnh QR Code VietQR động.\n- **FR-3 [Centralized Helpers]**: Xây dựng file tiện ích `src/lib/invoice-utils.ts` chứa hàm tạo URL VietQR và định dạng nội dung chia sẻ hóa đơn qua Zalo.\n- **FR-4 [Collapsed POS List]**: Trong giao diện chọn sản phẩm bán lẻ (`QuickSaleForm` và `BookingDetails`), chia danh sách thành 2 phần: phần ưu tiên hiển thị (nước \u0026 cầu) và phần phụ bị thu gọn mặc định. Nhân viên có thể nhấn nút \"Xem thêm sản phẩm khác\" để hiển thị danh sách đầy đủ.\n\n### Non-Functional Requirements\n\n- **NFR-1 [Performance]**: Không làm thay đổi tốc độ phản hồi hoặc gây trễ khi nhân viên quầy thao tác tăng giảm số lượng sản phẩm.\n- **NFR-2 [Responsiveness]**: Giao diện các card hóa đơn và lưới sản phẩm phải hiển thị tốt trên thiết bị di động (mobile-friendly).\n\n## Acceptance Criteria\n\n- [ ] **AC-1**: Giao diện chi tiết hóa đơn (Breakdown Card) ở màn hình Trả Sân (`CheckoutForm`) và Xem Lịch Sử (`InvoiceDetailDialog`) giống nhau 100%.\n- [ ] **AC-2**: Chỉ hiển thị Tổng tiền ở màn hình Bán lẻ (`QuickSaleForm`) khi giỏ hàng có đồ, không hiển thị trùng lặp lại danh sách sản phẩm.\n- [ ] **AC-3**: Mặc định khi mở màn hình Bán lẻ hoặc POS đặt sân, các sản phẩm ít bán (như vợt thuê, phụ kiện) sẽ bị thu gọn và hiển thị nút \"Xem thêm sản phẩm khác\". Khi bấm nút này, danh sách mới mở rộng ra đầy đủ.\n- [ ] **AC-4**: Tất cả các mã QR thanh toán trên hệ thống đều sinh ra từ hàm tiện ích dùng chung trong `invoice-utils.ts`.\n- [ ] **AC-5**: Chạy `knowns validate` không phát hiện lỗi liên kết hay cấu trúc tài liệu.\n\n## Scenarios\n\n### Scenario 1: Thanh toán Trả Sân (Checkout) có Dịch vụ đi kèm\n- **Given**: Khách hàng ở sân 1 chơi quá giờ và có gọi 2 chai nước Revive.\n- **When**: Nhân viên bấm \"Thanh toán \u0026 Trả Sân\".\n- **Then**: Màn hình hiển thị chi tiết hóa đơn gồm: Tiền sân thực tế, Tiền dịch vụ (2 Revive - 30.000đ), Tổng tiền. Mã VietQR hiển thị đúng số tiền tổng khi chọn Chuyển khoản.\n\n### Scenario 2: Thu gọn sản phẩm ít bán trong Quick Sale\n- **Given**: Biểu mẫu Bán Nhanh (`QuickSaleForm`) được kích hoạt.\n- **When**: Giao diện tải danh sách sản phẩm.\n- **Then**: Chỉ các sản phẩm thường dùng (Nước ngọt, Trái cầu) hiện ra ở lưới trên cùng kèm nút chọn số lượng. Các sản phẩm như Dịch vụ thuê vợt ẩn đi và có nút \"Xem thêm sản phẩm khác\" nằm dưới cùng.\n- **When**: Người dùng bấm nút \"Xem thêm sản phẩm khác\".\n- **Then**: Danh sách mở rộng hiển thị toàn bộ sản phẩm đang có trong kho.\n\n## Technical Notes\n\n- Danh sách sản phẩm ưu tiên hiển thị (cấu hình cứng theo tên) bao gồm các từ khóa: `\"Nước suối\"`, `\"Revive\"`, `\"Sting\"`, `\"Cầu lông\"`, `\"Quả cầu\"`, `\"Ống cầu\"`.\n- Hàm helper tạo VietQR sẽ gọi API của `img.vietqr.io` với các tham số: số tiền, nội dung thanh toán và thông tin tài khoản được định nghĩa tập trung.\n\n## Open Questions\n\nKhông còn câu hỏi mở nào sau khi đã chốt các quyết định D1, D2, D3.",
+        "description": "Specification for unifying invoice breakdowns, payment selectors, and optimizing product displays.",
+        "tags": [
+          "spec",
+          "approved"
+        ],
+        "title": "Optimize and unify invoice components"
+      }
+    }
+  ]
+}

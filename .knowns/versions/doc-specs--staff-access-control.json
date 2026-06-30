@@ -1,0 +1,68 @@
+{
+  "docPath": "specs/staff-access-control",
+  "currentVersion": 2,
+  "versions": [
+    {
+      "id": "v1",
+      "docPath": "specs/staff-access-control",
+      "version": 1,
+      "timestamp": "2026-05-24T09:29:30.2753017Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Staff Access Control"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Specification for staff access control"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "spec",
+            "draft"
+          ]
+        }
+      ],
+      "snapshot": {
+        "description": "Specification for staff access control",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "Staff Access Control"
+      }
+    },
+    {
+      "id": "v2",
+      "docPath": "specs/staff-access-control",
+      "version": 2,
+      "timestamp": "2026-05-24T09:34:33.6837882Z",
+      "changes": [
+        {
+          "field": "tags",
+          "oldValue": [
+            "spec",
+            "draft"
+          ],
+          "newValue": [
+            "spec",
+            "approved"
+          ]
+        }
+      ],
+      "snapshot": {
+        "content": "# Staff Access Control Specification\n\n## Overview\nThis specification defines the access control system for the Badminton Management System, establishing authorization boundaries between two user roles: **Manager** (roles `OWNER` or `MANAGER` in the database) and **Employee** (role `STAFF` in the database).\nThe goal is to prevent unauthorized access to sensitive financial figures, opex records, inventory adjustments, and billing management.\n\n## Locked Decisions\n- **D1**: Redirect unauthorized `STAFF` users from restricted routes (like `/dashboard`, `/onboarding`) to the home page `/` and show a Toast error notification.\n- **D2**: Show the logged-in user's email directly as their display name and their resolved role description (\"Quản lý\" or \"Nhân viên\") in the Sidebar profile widget.\n- **D3**: For the initial release, access restrictions are enforced client-side (hiding UI items/buttons, client-side route redirection). Server-side check specifications are documented in Technical Notes for future phases.\n\n## Requirements\n\n### Functional Requirements\n- **FR-1**: Retrieve the logged-in user's role and email from Supabase authentication and the `user_roles` table.\n- **FR-2**: Implement a React Context provider or a custom React hook (e.g. `useUserRole`) to fetch, store, and expose the user's role (`STAFF` | `MANAGER` | `OWNER`), email, and loading state to client components.\n- **FR-3**: Sidebar Navigation Filtering\n  - If user is `STAFF`, hide the \"Báo cáo\" (Dashboard) link from the sidebar menu.\n  - Show the user profile section at the bottom of the sidebar with their logged-in email and translated role name (\"Nhân viên\" for `STAFF`, \"Quản lý\" for `OWNER` or `MANAGER`).\n- **FR-4**: Bottom Navigation Filtering (Mobile UI)\n  - If user is `STAFF`, hide the \"Báo cáo\" (Dashboard) navigation icon.\n- **FR-5**: Home Page Quick Actions Gating\n  - If user is `STAFF`, hide the \"Nhập chi phí\" (Add expense) action card.\n- **FR-6**: Products Page Gating\n  - If user is `STAFF`, hide the \"Lịch sử kho\" (Inventory History) tab.\n  - If user is `STAFF`, hide the stock adjustment icon button (`swap_vert`).\n- **FR-7**: Invoices Page \u0026 Debt Management Gating\n  - If user is `STAFF`, block / hide any option to close day-end (`Kết thúc ngày` / chốt sổ) or adjust customer debt.\n- **FR-8**: Client-Side Route Protection\n  - Intercept direct page access to `/dashboard` and `/onboarding` for `STAFF` users. If visited, redirect to the home page `/` and trigger a Toast notification with the message \"Bạn không có quyền truy cập vào trang này\".\n\n### Non-Functional Requirements\n- **NFR-1**: Smooth UI transitions when checking role state (avoid content flashing or layout shifts). Show a loading spinner if the role state is still being determined.\n- **NFR-2**: Strict TypeScript typings for all role states.\n\n## Acceptance Criteria\n- [ ] **AC-1**: Exposes `useUserRole` hook providing `role`, `email`, and `loading`.\n- [ ] **AC-2**: Logged-in `STAFF` user has the \"Báo cáo\" navigation links removed from both the Sidebar and the Bottom Navigation.\n- [ ] **AC-3**: Direct navigation to `/dashboard` or `/onboarding` as `STAFF` redirects to `/` with a Toast error message: \"Bạn không có quyền truy cập vào trang này\".\n- [ ] **AC-4**: Logged-in `STAFF` user sees their email and \"Nhân viên\" in the Sidebar's profile widget.\n- [ ] **AC-5**: Logged-in `STAFF` user does not see the \"Nhập chi phí\" button on the Home page.\n- [ ] **AC-6**: Logged-in `STAFF` user only sees the \"Sản phẩm\" list on the `/products` page. The \"Lịch sử kho\" tab and stock adjustment icon are hidden.\n- [ ] **AC-7**: Logged-in `OWNER` or `MANAGER` user sees all tabs, actions, and reports without restrictions, showing \"Quản lý\" in the Sidebar.\n\n## Scenarios\n\n### Scenario 1: Staff Home \u0026 Navigation Gating\n- **Given** an authenticated user with the role `STAFF` is on the home page `/`\n- **When** the Sidebar and BottomNav load\n- **Then** the \"Báo cáo\" navigation option is completely hidden\n- **And** the \"Nhập chi phí\" quick action card is not displayed\n- **And** the user profile widget at the bottom displays the user's email and role as \"Nhân viên\"\n\n### Scenario 2: Direct URL Intrusion\n- **Given** an authenticated user with the role `STAFF`\n- **When** they manually type `http://localhost:3000/dashboard` in the browser address bar\n- **Then** the page redirects them to `/`\n- **And** a Toast message is displayed: \"Bạn không có quyền truy cập vào trang này\"\n\n### Scenario 3: Manager Access\n- **Given** an authenticated user with the role `MANAGER` or `OWNER`\n- **When** they navigate the application\n- **Then** all navigation options, pages (including `/dashboard` and `/onboarding`), tabs, and quick actions are fully visible and functional\n- **And** the user profile widget displays their email and role as \"Quản lý\"\n\n## Technical Notes\n- Role query from database:\n  ```ts\n  const { data } = await supabase\n    .from('user_roles')\n    .select('role')\n    .eq('user_id', userId)\n    .single();\n  ```\n- Protect client routes by wrapping `/dashboard/page.tsx` and `/onboarding/page.tsx` in a layout check or page-level check using the custom hook, showing a loading indicator before redirecting via `next/navigation`'s `useRouter()`.\n\n### Future Scope (Server-Side Protections)\nFor future development phases, check-ins, and database transactions:\n- Intercept and validate the user's role on Server Actions and API routes (e.g. `setupCourts` in onboarding actions, expense actions, stock adjustments, and day-end closing transactions).\n- Reject the request with a `403 Forbidden` error if the authenticated user's role is `STAFF`.\n\n## Open Questions\n- None.",
+        "description": "Specification for staff access control",
+        "tags": [
+          "spec",
+          "approved"
+        ],
+        "title": "Staff Access Control"
+      }
+    }
+  ]
+}

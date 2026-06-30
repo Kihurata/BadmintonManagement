@@ -1,0 +1,87 @@
+{
+  "docId": "doc-9e1c8b8a44b0c532ffb451e6b0e2a913",
+  "docPath": "learnings/learning-typescript-strict-compilation",
+  "currentPath": "learnings/learning-typescript-strict-compilation",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-9e1c8b8a44b0c532ffb451e6b0e2a913",
+      "docPath": "learnings/learning-typescript-strict-compilation",
+      "currentPath": "learnings/learning-typescript-strict-compilation",
+      "version": 1,
+      "timestamp": "2026-06-29T14:44:08.2605869Z",
+      "author": "cli",
+      "actor": "cli",
+      "source": "cli",
+      "newHash": "4abedc7c6d65df36d0729c5db2bf253292d91b4d685846a3eeabd031e1a1b18a",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "learnings/learning-typescript-strict-compilation"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Learning: TypeScript Strict Compilation"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Learnings from resolving build-blocking ESLint warnings and TypeScript compilation errors in Next.js and Supabase"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "typescript",
+            "eslint"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 50,
+          "deltaBytes": 50
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 41,
+          "deltaBytes": 41
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 115,
+          "deltaBytes": 115
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 34,
+          "deltaBytes": 34
+        }
+      ],
+      "snapshot": {
+        "description": "Learnings from resolving build-blocking ESLint warnings and TypeScript compilation errors in Next.js and Supabase",
+        "path": "learnings/learning-typescript-strict-compilation",
+        "tags": [
+          "learning",
+          "typescript",
+          "eslint"
+        ],
+        "title": "Learning: TypeScript Strict Compilation"
+      }
+    }
+  ]
+}

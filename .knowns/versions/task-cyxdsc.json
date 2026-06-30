@@ -1,0 +1,191 @@
+{
+  "taskId": "cyxdsc",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "cyxdsc",
+      "version": 1,
+      "timestamp": "2026-06-20T08:49:40.0062654Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Refactor quick-sale-form.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor booking-details.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor invoice-detail-dialog.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Verify Server Components bypass HTTP API calls"
+          }
+        ],
+        "description": "Update Client Components to call new RESTful products endpoints and ensure Server Components call repositories directly.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Refactor Frontend Components to call RESTful Products API"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "cyxdsc",
+      "version": 2,
+      "timestamp": "2026-06-23T17:34:36.1295614Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Refactor quick-sale-form.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor booking-details.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor invoice-detail-dialog.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Verify Server Components bypass HTTP API calls"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Update Client Components to call new RESTful products endpoints and ensure Server Components call repositories directly.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Frontend Components to call RESTful Products API"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "cyxdsc",
+      "version": 3,
+      "timestamp": "2026-06-23T17:35:46.1594142Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Cap nhat fetch trong quick-sale-form.tsx, booking-details.tsx, invoice-detail-dialog.tsx sang /api/v1/products. 2. Cap nhat test mock trong bookings.test.tsx. 3. Chay npm test va npm run build."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Refactor quick-sale-form.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor booking-details.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Refactor invoice-detail-dialog.tsx to use /api/v1/products"
+          },
+          {
+            "completed": false,
+            "text": "Verify Server Components bypass HTTP API calls"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Update Client Components to call new RESTful products endpoints and ensure Server Components call repositories directly.",
+        "implementationPlan": "1. Cap nhat fetch trong quick-sale-form.tsx, booking-details.tsx, invoice-detail-dialog.tsx sang /api/v1/products. 2. Cap nhat test mock trong bookings.test.tsx. 3. Chay npm test va npm run build.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Frontend Components to call RESTful Products API"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "cyxdsc",
+      "version": 4,
+      "timestamp": "2026-06-23T17:36:45.8801649Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Refactored Client Components (quick-sale-form.tsx, booking-details.tsx, invoice-detail-dialog.tsx) to query products from /api/v1/products REST API. Updated fetch mocks in bookings.test.tsx. Verified that all tests passed and Next.js builds successfully. Verified that Server Components query repositories directly."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Refactor quick-sale-form.tsx to use /api/v1/products",
+            "completed": true
+          },
+          {
+            "text": "Refactor booking-details.tsx to use /api/v1/products",
+            "completed": true
+          },
+          {
+            "text": "Refactor invoice-detail-dialog.tsx to use /api/v1/products",
+            "completed": true
+          },
+          {
+            "text": "Verify Server Components bypass HTTP API calls",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Update Client Components to call new RESTful products endpoints and ensure Server Components call repositories directly.",
+        "implementationNotes": "Refactored Client Components (quick-sale-form.tsx, booking-details.tsx, invoice-detail-dialog.tsx) to query products from /api/v1/products REST API. Updated fetch mocks in bookings.test.tsx. Verified that all tests passed and Next.js builds successfully. Verified that Server Components query repositories directly.",
+        "implementationPlan": "1. Cap nhat fetch trong quick-sale-form.tsx, booking-details.tsx, invoice-detail-dialog.tsx sang /api/v1/products. 2. Cap nhat test mock trong bookings.test.tsx. 3. Chay npm test va npm run build.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Refactor Frontend Components to call RESTful Products API"
+      }
+    }
+  ]
+}

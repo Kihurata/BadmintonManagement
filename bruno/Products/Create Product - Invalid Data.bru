@@ -1,0 +1,32 @@
+meta {
+  name: Create Product - Invalid Data
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "product_name": "",
+    "unit_price": -5000,
+    "stock_quantity": -10,
+    "base_unit": "Chai",
+    "is_packable": false,
+    "status": "ACTIVE"
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.success: eq false
+  res.body.error.code: eq BAD_REQUEST
+}

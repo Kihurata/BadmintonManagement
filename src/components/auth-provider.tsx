@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface UserRoleContextType {
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [tenantId, setTenantId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchRole = async (userId: string, userEmail: string) => {
+    const fetchRole = useCallback(async (userId: string, userEmail: string) => {
         try {
             const { data, error } = await supabase
                 .from('user_roles')
@@ -41,9 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const refreshRole = async () => {
+    const refreshRole = useCallback(async () => {
         setLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setTenantId(null);
             setLoading(false);
         }
-    };
+    }, [fetchRole]);
 
     useEffect(() => {
         // Fetch on mount
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, []);
+    }, [refreshRole, fetchRole]);
 
     return (
         <UserRoleContext.Provider value={{ role, email, loading, tenantId, refreshRole }}>

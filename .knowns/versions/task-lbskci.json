@@ -1,0 +1,134 @@
+{
+  "taskId": "lbskci",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "lbskci",
+      "version": 1,
+      "timestamp": "2026-05-25T10:07:36.0555235Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create invoice-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create product-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create test for server repositories"
+          }
+        ],
+        "description": "Implement server-side repositories for Booking, Invoice, and Product in src/server/repositories/",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Create Server-Side Repositories"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "lbskci",
+      "version": 2,
+      "timestamp": "2026-05-25T10:07:51.3522902Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create invoice-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create product-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Create test for server repositories"
+          }
+        ],
+        "description": "Implement server-side repositories for Booking, Invoice, and Product in src/server/repositories/",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Create Server-Side Repositories"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "lbskci",
+      "version": 3,
+      "timestamp": "2026-05-25T10:08:28.4776513Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create booking-repo.ts",
+            "completed": false
+          },
+          {
+            "text": "Create invoice-repo.ts",
+            "completed": false
+          },
+          {
+            "text": "Create product-repo.ts",
+            "completed": false
+          },
+          {
+            "text": "Create test for server repositories",
+            "completed": false
+          }
+        ],
+        "description": "Implement server-side repositories for Booking, Invoice, and Product in src/server/repositories/",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Create Server-Side Repositories"
+      }
+    }
+  ]
+}

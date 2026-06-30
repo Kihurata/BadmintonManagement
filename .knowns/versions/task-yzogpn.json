@@ -1,0 +1,167 @@
+{
+  "taskId": "yzogpn",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "yzogpn",
+      "version": 1,
+      "timestamp": "2026-05-24T09:34:41.4045855Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create useUserRole context/hook"
+          },
+          {
+            "completed": false,
+            "text": "Fetch role from user_roles"
+          },
+          {
+            "completed": false,
+            "text": "Expose role, email, and loading"
+          }
+        ],
+        "description": "Implements AuthProvider / useUserRole hook fetching user role from user_roles and user email from supabase auth.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Setup React Auth Context \u0026 Role Hook"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "yzogpn",
+      "version": 2,
+      "timestamp": "2026-05-24T09:34:53.0514666Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create useUserRole context/hook"
+          },
+          {
+            "completed": false,
+            "text": "Fetch role from user_roles"
+          },
+          {
+            "completed": false,
+            "text": "Expose role, email, and loading"
+          }
+        ],
+        "description": "Implements AuthProvider / useUserRole hook fetching user role from user_roles and user email from supabase auth.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Setup React Auth Context \u0026 Role Hook"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "yzogpn",
+      "version": 3,
+      "timestamp": "2026-05-24T09:34:56.798056Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create src/components/auth-provider.tsx containing AuthProvider and useUserRole context\n2. Modify src/app/layout.tsx to include AuthProvider wrapper\n3. Verify everything builds without compilation errors."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create useUserRole context/hook"
+          },
+          {
+            "completed": false,
+            "text": "Fetch role from user_roles"
+          },
+          {
+            "completed": false,
+            "text": "Expose role, email, and loading"
+          }
+        ],
+        "description": "Implements AuthProvider / useUserRole hook fetching user role from user_roles and user email from supabase auth.",
+        "implementationPlan": "1. Create src/components/auth-provider.tsx containing AuthProvider and useUserRole context\n2. Modify src/app/layout.tsx to include AuthProvider wrapper\n3. Verify everything builds without compilation errors.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Setup React Auth Context \u0026 Role Hook"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "yzogpn",
+      "version": 4,
+      "timestamp": "2026-05-24T09:35:28.2080377Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented AuthProvider and useUserRole hook. Successfully queries user_roles table in Supabase. Wrapped RootLayout in layout.tsx. Verified build compilation passes."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create useUserRole context/hook",
+            "completed": false
+          },
+          {
+            "text": "Fetch role from user_roles",
+            "completed": false
+          },
+          {
+            "text": "Expose role, email, and loading",
+            "completed": false
+          }
+        ],
+        "description": "Implements AuthProvider / useUserRole hook fetching user role from user_roles and user email from supabase auth.",
+        "implementationNotes": "Implemented AuthProvider and useUserRole hook. Successfully queries user_roles table in Supabase. Wrapped RootLayout in layout.tsx. Verified build compilation passes.",
+        "implementationPlan": "1. Create src/components/auth-provider.tsx containing AuthProvider and useUserRole context\n2. Modify src/app/layout.tsx to include AuthProvider wrapper\n3. Verify everything builds without compilation errors.",
+        "labels": [
+          "from-spec",
+          "go-mode"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Setup React Auth Context \u0026 Role Hook"
+      }
+    }
+  ]
+}

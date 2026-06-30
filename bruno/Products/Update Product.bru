@@ -1,0 +1,29 @@
+meta {
+  name: Update Product
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/products/{{createdProductId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "product_name": "Nước Suối Aquafina Bruno Test (Updated)",
+    "unit_price": 11000,
+    "stock_quantity": 45,
+    "base_unit": "Chai",
+    "is_packable": true,
+    "pack_unit": "Thùng",
+    "units_per_pack": 24,
+    "pack_price": 240000,
+    "status": "ACTIVE"
+  }
+}
