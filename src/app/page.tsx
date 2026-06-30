@@ -49,14 +49,3 @@ export default async function HomePage() {
   );
 }
 
-export default function HomePage() {
-  return (
-    <Suspense fallback={
-      <div className="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-      </div>
-    }>
-      <HomePageContent />
-    </Suspense>
-  );
-}
