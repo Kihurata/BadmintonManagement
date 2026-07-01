@@ -1,0 +1,416 @@
+{
+  "taskId": "uzd5o7",
+  "currentVersion": 9,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "uzd5o7",
+      "version": 1,
+      "timestamp": "2026-06-29T09:21:49.400609Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "priority": "medium",
+        "status": "todo",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "uzd5o7",
+      "version": 2,
+      "timestamp": "2026-06-29T09:21:53.492632Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "uzd5o7",
+      "version": 3,
+      "timestamp": "2026-06-29T09:22:05.475875Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "uzd5o7",
+      "version": 4,
+      "timestamp": "2026-06-29T09:22:22.133975Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+            },
+            {
+              "completed": false,
+              "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+            },
+            {
+              "completed": false,
+              "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+            },
+            {
+              "completed": false,
+              "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+            },
+            {
+              "completed": false,
+              "text": "Refactor recurring/route.ts handlers to use the repo functions"
+            },
+            {
+              "completed": false,
+              "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+            },
+            {
+              "completed": false,
+              "text": "Verification via Jest and Bruno integration tests passes"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Refactor recurring/route.ts handlers to use the repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Verification via Jest and Bruno integration tests passes"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "uzd5o7",
+      "version": 5,
+      "timestamp": "2026-06-29T09:23:50.860031Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Refactor recurring/route.ts handlers to use the repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Verification via Jest and Bruno integration tests passes"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationNotes": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "uzd5o7",
+      "version": 6,
+      "timestamp": "2026-06-29T09:24:10.983929Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.",
+          "newValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Refactor recurring/route.ts handlers to use the repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Verification via Jest and Bruno integration tests passes"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationNotes": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v7",
+      "taskId": "uzd5o7",
+      "version": 7,
+      "timestamp": "2026-06-29T09:24:24.916896Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.",
+          "newValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Refactor recurring/route.ts handlers to use the repo functions"
+          },
+          {
+            "completed": true,
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+          },
+          {
+            "completed": false,
+            "text": "Verification via Jest and Bruno integration tests passes"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationNotes": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v8",
+      "taskId": "uzd5o7",
+      "version": 8,
+      "timestamp": "2026-06-29T09:29:40.128823Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings.",
+          "newValue": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings.\nDone: Run Jest tests and Bruno integration tests, both pass. Dev server killed and environment cleaned up."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts"
+          },
+          {
+            "completed": true,
+            "text": "Refactor recurring/route.ts handlers to use the repo functions"
+          },
+          {
+            "completed": true,
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions"
+          },
+          {
+            "completed": true,
+            "text": "Verification via Jest and Bruno integration tests passes"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationNotes": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings.\nDone: Run Jest tests and Bruno integration tests, both pass. Dev server killed and environment cleaned up.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor recurring bookings repository"
+      }
+    },
+    {
+      "id": "v9",
+      "taskId": "uzd5o7",
+      "version": 9,
+      "timestamp": "2026-06-29T09:29:50.67622Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Extract conflict detection to checkRecurringConflicts in booking-repo.ts",
+            "completed": true
+          },
+          {
+            "text": "Extract creation series to createRecurringBookings in booking-repo.ts",
+            "completed": true
+          },
+          {
+            "text": "Extract deletion series to deleteRecurringBookings in booking-repo.ts",
+            "completed": true
+          },
+          {
+            "text": "Extract update series to updateRecurringBookings in booking-repo.ts",
+            "completed": true
+          },
+          {
+            "text": "Refactor recurring/route.ts handlers to use the repo functions",
+            "completed": true
+          },
+          {
+            "text": "Update recurring-bookings.test.ts unit tests to mock repo functions",
+            "completed": true
+          },
+          {
+            "text": "Verification via Jest and Bruno integration tests passes",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extract raw database access logic from `src/app/api/v1/bookings/recurring/route.ts` into `src/server/repositories/booking-repo.ts`. Updates unit tests to mock repository functions rather than raw database client.",
+        "implementationNotes": "Done: Extracted conflict checking, creation, deletion, and update helper methods to booking-repo.ts. Refactored createBooking to use resolveGuestCustomerId helper.\nDone: Refactored route.ts handlers (POST, PUT, DELETE) to use the new booking-repo.ts methods.\nDone: Refactored tests/api/recurring-bookings.test.ts to mock booking-repo.ts methods. Added a test covering successful creation of recurring bookings.\nDone: Run Jest tests and Bruno integration tests, both pass. Dev server killed and environment cleaned up.",
+        "implementationPlan": "1. Add conflict checking, creation, deletion, and update helper methods to booking-repo.ts\n2. Refactor POST, PUT, DELETE route handlers in recurring/route.ts to use booking-repo.ts functions\n3. Refactor recurring-bookings.test.ts to mock booking-repo.ts repository methods\n4. Validate and verify via Jest and Bruno",
+        "priority": "medium",
+        "status": "done",
+        "title": "Refactor recurring bookings repository"
+      }
+    }
+  ]
+}

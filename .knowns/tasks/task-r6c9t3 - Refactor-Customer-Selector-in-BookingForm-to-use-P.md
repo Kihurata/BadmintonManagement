@@ -6,7 +6,7 @@ priority: medium
 labels:
   - normal
 createdAt: '2026-06-30T06:12:15.962Z'
-updatedAt: '2026-06-30T06:15:40.631Z'
+updatedAt: '2026-06-30T06:55:18.067Z'
 timeSpent: 185
 assignee: '@me'
 ---
@@ -26,5 +26,6 @@ Refactor booking-form.tsx to accept customers as a prop (similar to courts) inst
 
 <!-- SECTION:NOTES:BEGIN -->
 Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.
+📚 Extracted to @doc/learnings/learning-nextjs-hybrid-data-loading
 <!-- SECTION:NOTES:END -->
 

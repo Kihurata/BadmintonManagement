@@ -1,0 +1,240 @@
+{
+  "taskId": "ybftx0",
+  "currentVersion": 6,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "ybftx0",
+      "version": 1,
+      "timestamp": "2026-06-29T06:12:27.881226Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "ybftx0",
+      "version": 2,
+      "timestamp": "2026-06-29T06:12:33.19888Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Create migration file for updating recurring_rules to days_of_week array"
+            },
+            {
+              "completed": false,
+              "text": "Ensure RLS policies and automatic tenant_id triggers are verified"
+            },
+            {
+              "completed": false,
+              "text": "Apply migration successfully to database"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create migration file for updating recurring_rules to days_of_week array"
+          },
+          {
+            "completed": false,
+            "text": "Ensure RLS policies and automatic tenant_id triggers are verified"
+          },
+          {
+            "completed": false,
+            "text": "Apply migration successfully to database"
+          }
+        ],
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "ybftx0",
+      "version": 3,
+      "timestamp": "2026-06-29T06:13:46.112466Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create migration file for updating recurring_rules to days_of_week array"
+          },
+          {
+            "completed": false,
+            "text": "Ensure RLS policies and automatic tenant_id triggers are verified"
+          },
+          {
+            "completed": false,
+            "text": "Apply migration successfully to database"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "ybftx0",
+      "version": 4,
+      "timestamp": "2026-06-29T06:13:49.252529Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Execute SQL to add days_of_week integer[] to recurring_rules, copy existing day_of_week values into array format, and drop day_of_week.\n2. Verify triggers and RLS policies.\n3. Generate the migration file using `supabase db pull`."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create migration file for updating recurring_rules to days_of_week array"
+          },
+          {
+            "completed": false,
+            "text": "Ensure RLS policies and automatic tenant_id triggers are verified"
+          },
+          {
+            "completed": false,
+            "text": "Apply migration successfully to database"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "implementationPlan": "1. Execute SQL to add days_of_week integer[] to recurring_rules, copy existing day_of_week values into array format, and drop day_of_week.\n2. Verify triggers and RLS policies.\n3. Generate the migration file using `supabase db pull`.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "ybftx0",
+      "version": 5,
+      "timestamp": "2026-06-29T06:24:30.708589Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Completed migration, applied DDL changes, and generated migration file."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Create migration file for updating recurring_rules to days_of_week array"
+          },
+          {
+            "completed": true,
+            "text": "Ensure RLS policies and automatic tenant_id triggers are verified"
+          },
+          {
+            "completed": false,
+            "text": "Apply migration successfully to database"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "implementationNotes": "Completed migration, applied DDL changes, and generated migration file.",
+        "implementationPlan": "1. Execute SQL to add days_of_week integer[] to recurring_rules, copy existing day_of_week values into array format, and drop day_of_week.\n2. Verify triggers and RLS policies.\n3. Generate the migration file using `supabase db pull`.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "ybftx0",
+      "version": 6,
+      "timestamp": "2026-06-29T06:24:31.468446Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create migration file for updating recurring_rules to days_of_week array",
+            "completed": true
+          },
+          {
+            "text": "Ensure RLS policies and automatic tenant_id triggers are verified",
+            "completed": true
+          },
+          {
+            "text": "Apply migration successfully to database",
+            "completed": false
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement SQL migration to replace day_of_week with days_of_week integer[] in recurring_rules. Ensure RLS policies and automatic tenant_id trigger are properly attached.",
+        "implementationNotes": "Completed migration, applied DDL changes, and generated migration file.",
+        "implementationPlan": "1. Execute SQL to add days_of_week integer[] to recurring_rules, copy existing day_of_week values into array format, and drop day_of_week.\n2. Verify triggers and RLS policies.\n3. Generate the migration file using `supabase db pull`.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Database Migration for Recurring Rules Days Array"
+      }
+    }
+  ]
+}

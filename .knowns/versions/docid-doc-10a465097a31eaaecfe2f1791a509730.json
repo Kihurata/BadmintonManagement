@@ -1,0 +1,144 @@
+{
+  "docId": "doc-10a465097a31eaaecfe2f1791a509730",
+  "docPath": "learnings/learning-nextjs-hybrid-data-loading",
+  "currentPath": "learnings/learning-nextjs-hybrid-data-loading",
+  "currentVersion": 2,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-10a465097a31eaaecfe2f1791a509730",
+      "docPath": "learnings/learning-nextjs-hybrid-data-loading",
+      "currentPath": "learnings/learning-nextjs-hybrid-data-loading",
+      "version": 1,
+      "timestamp": "2026-06-30T03:51:17.586267Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "newHash": "8ffa93459fc722294fba10a853472f2de3b2854b1733e36833402cf554e96d2e",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "learnings/learning-nextjs-hybrid-data-loading"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Learning: Next.js Hybrid Data Loading"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Learnings on Next.js hybrid data loading patterns, versioning, and client-side sync."
+        },
+        {
+          "field": "content",
+          "oldValue": null,
+          "newValue": "# Learning: Next.js Hybrid Data Loading\n\nLearnings and guidelines for data loading in Next.js App Router, combining Server Components and Route Handlers.\n\n## Patterns\n\n### Hybrid Server/Client Data Loading\n- **What:** Fetch initial read-only data (e.g. courts list) directly from database repositories inside a Server Component, pass it as a prop to a Client Component, and perform mutations (e.g. booking creation) via relative HTTP requests to a versioned REST API.\n- **When to use:** On pages requiring fast initial rendering combined with client-side interactivity and database mutations.\n- **Source:** Architectural Alignment\n\n### Client-Side Sync via Next.js Router Refresh\n- **What:** Invoke `router.refresh()` (from `next/navigation`) after a successful REST mutation in the Client Component to trigger server-side re-fetching and update props without losing client state.\n- **When to use:** To synchronize client-side components with database updates made via Route Handlers.\n- **Source:** Architectural Alignment\n\n## Decisions\n\n### Versioned APIs in Subfolders\n- **Chose:** Grouping Route Handlers in a `/api/v1/` subfolder structure.\n- **Over:** Putting handlers directly in `/api/` with no version prefix.\n- **Tag:** GOOD_CALL\n- **Outcome:** Retains compatibility with Bruno testing configurations, supports API versioning/backwards compatibility, and fulfills Spec Decision D1.\n- **Recommendation:** Keep `/api/v1/` folders for standard entities (e.g., bookings, products).\n\n### Direct DB Repository Queries in Server Components\n- **Chose:** Direct imports of repositories (e.g., in `src/server/repositories/`) within Server Components.\n- **Over:** Calling `fetch('/api/v1/...')` internally.\n- **Tag:** GOOD_CALL\n- **Outcome:** Eliminates double-fetching loopback latency, providing instant page load times and zero layout shifts.\n- **Recommendation:** Do not use internal HTTP calls in Server Components. Use database/repository queries directly.\n"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "nextjs",
+            "api",
+            "architecture"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 47,
+          "deltaBytes": 47
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 39,
+          "deltaBytes": 39
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 86,
+          "deltaBytes": 86
+        },
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "newBytes": 1961,
+          "deltaBytes": 1961
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 42,
+          "deltaBytes": 42
+        }
+      ],
+      "snapshot": {
+        "content": "# Learning: Next.js Hybrid Data Loading\n\nLearnings and guidelines for data loading in Next.js App Router, combining Server Components and Route Handlers.\n\n## Patterns\n\n### Hybrid Server/Client Data Loading\n- **What:** Fetch initial read-only data (e.g. courts list) directly from database repositories inside a Server Component, pass it as a prop to a Client Component, and perform mutations (e.g. booking creation) via relative HTTP requests to a versioned REST API.\n- **When to use:** On pages requiring fast initial rendering combined with client-side interactivity and database mutations.\n- **Source:** Architectural Alignment\n\n### Client-Side Sync via Next.js Router Refresh\n- **What:** Invoke `router.refresh()` (from `next/navigation`) after a successful REST mutation in the Client Component to trigger server-side re-fetching and update props without losing client state.\n- **When to use:** To synchronize client-side components with database updates made via Route Handlers.\n- **Source:** Architectural Alignment\n\n## Decisions\n\n### Versioned APIs in Subfolders\n- **Chose:** Grouping Route Handlers in a `/api/v1/` subfolder structure.\n- **Over:** Putting handlers directly in `/api/` with no version prefix.\n- **Tag:** GOOD_CALL\n- **Outcome:** Retains compatibility with Bruno testing configurations, supports API versioning/backwards compatibility, and fulfills Spec Decision D1.\n- **Recommendation:** Keep `/api/v1/` folders for standard entities (e.g., bookings, products).\n\n### Direct DB Repository Queries in Server Components\n- **Chose:** Direct imports of repositories (e.g., in `src/server/repositories/`) within Server Components.\n- **Over:** Calling `fetch('/api/v1/...')` internally.\n- **Tag:** GOOD_CALL\n- **Outcome:** Eliminates double-fetching loopback latency, providing instant page load times and zero layout shifts.\n- **Recommendation:** Do not use internal HTTP calls in Server Components. Use database/repository queries directly.\n",
+        "description": "Learnings on Next.js hybrid data loading patterns, versioning, and client-side sync.",
+        "path": "learnings/learning-nextjs-hybrid-data-loading",
+        "tags": [
+          "learning",
+          "nextjs",
+          "api",
+          "architecture"
+        ],
+        "title": "Learning: Next.js Hybrid Data Loading"
+      }
+    },
+    {
+      "id": "v2",
+      "docId": "doc-10a465097a31eaaecfe2f1791a509730",
+      "docPath": "learnings/learning-nextjs-hybrid-data-loading",
+      "currentPath": "learnings/learning-nextjs-hybrid-data-loading",
+      "version": 2,
+      "timestamp": "2026-06-30T06:54:20.926631Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "96223fb3cfb36701ffb3e08c3edf865242718e44747d930a9337e12dc5e6f20b",
+      "newHash": "6f5f18ffc5a47e988f283e737d239f00839f3f6e39464c30dab9649f6543475a",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "# Learning: Next.js Hybrid Data Loading\n\nLearnings and guidelines for data loading in Next.js App Router, combining Server Components and Route Handlers.\n\n## Patterns\n\n### Hybrid Server/Client Data Loading\n- **What:** Fetch initial read-only data (e.g. courts list) directly from database repositories inside a Server Component, pass it as a prop to a Client Component, and perform mutations (e.g. booking creation) via relative HTTP requests to a versioned REST API.\n- **When to use:** On pages requiring fast initial rendering combined with client-side interactivity and database mutations.\n- **Source:** Architectural Alignment\n\n### Client-Side Sync via Next.js Router Refresh\n- **What:** Invoke `router.refresh()` (from `next/navigation`) after a successful REST mutation in the Client Component to trigger server-side re-fetching and update props without losing client state.\n- **When to use:** To synchronize client-side components with database updates made via Route Handlers.\n- **Source:** Architectural Alignment\n\n## Decisions\n\n### Versioned APIs in Subfolders\n- **Chose:** Grouping Route Handlers in a `/api/v1/` subfolder structure.\n- **Over:** Putting handlers directly in `/api/` with no version prefix.\n- **Tag:** GOOD_CALL\n- **Outcome:** Retains compatibility with Bruno testing configurations, supports API versioning/backwards compatibility, and fulfills Spec Decision D1.\n- **Recommendation:** Keep `/api/v1/` folders for standard entities (e.g., bookings, products).\n\n### Direct DB Repository Queries in Server Components\n- **Chose:** Direct imports of repositories (e.g., in `src/server/repositories/`) within Server Components.\n- **Over:** Calling `fetch('/api/v1/...')` internally.\n- **Tag:** GOOD_CALL\n- **Outcome:** Eliminates double-fetching loopback latency, providing instant page load times and zero layout shifts.\n- **Recommendation:** Do not use internal HTTP calls in Server Components. Use database/repository queries directly.",
+          "newValue": "# Learning: Next.js Hybrid Data Loading\n\nLearnings and guidelines for data loading in Next.js App Router, combining Server Components and Route Handlers.\n\n## Patterns\n\n### Hybrid Server/Client Data Loading\n- **What:** Fetch initial read-only data (e.g. courts list) directly from database repositories inside a Server Component, pass it as a prop to a Client Component, and perform mutations (e.g. booking creation) via relative HTTP requests to a versioned REST API.\n- **When to use:** On pages requiring fast initial rendering combined with client-side interactivity and database mutations.\n- **Source:** Architectural Alignment\n\n### Client-Side Sync via Next.js Router Refresh\n- **What:** Invoke `router.refresh()` (from `next/navigation`) after a successful REST mutation in the Client Component to trigger server-side re-fetching and update props without losing client state.\n- **When to use:** To synchronize client-side components with database updates made via Route Handlers.\n- **Source:** Architectural Alignment\n\n### Optional Prop Component Bootstrapping\n- **What:** Pass pre-fetched data (e.g., `courts`, `customers`) as optional props to interactive client components, and fall back to client-side API fetches (`useEffect`) only if the props are empty or not provided.\n- **When to use:** On forms or dialogs that are rendered in multiple contexts (some where data is already preloaded by the parent, and others where it is rendered standalone).\n- **Source:** @task-r6c9t3\n\n## Decisions\n\n### Versioned APIs in Subfolders\n- **Chose:** Grouping Route Handlers in a `/api/v1/` subfolder structure.\n- **Over:** Putting handlers directly in `/api/` with no version prefix.\n- **Tag:** GOOD_CALL\n- **Outcome:** Retains compatibility with Bruno testing configurations, supports API versioning/backwards compatibility, and fulfills Spec Decision D1.\n- **Recommendation:** Keep `/api/v1/` folders for standard entities (e.g., bookings, products).\n\n### Direct DB Repository Queries in Server Components\n- **Chose:** Direct imports of repositories (e.g., in `src/server/repositories/`) within Server Components.\n- **Over:** Calling `fetch('/api/v1/...')` internally.\n- **Tag:** GOOD_CALL\n- **Outcome:** Eliminates double-fetching loopback latency, providing instant page load times and zero layout shifts.\n- **Recommendation:** Do not use internal HTTP calls in Server Components. Use database/repository queries directly.\n\n### Programmatic Cache Invalidation on Mount\n- **Chose:** Calling `router.refresh()` inside the mounting `useEffect` of layout/page client components.\n- **Over:** Relying solely on real-time database updates or expecting Next.js client router cache to refresh automatically on page transitions.\n- **Tag:** GOOD_CALL\n- **Outcome:** Programmatically invalidates the Next.js client-side prefetch/router cache upon route entry, ensuring the layout immediately displays the latest database state without a hard reload.\n- **Recommendation:** Add mounting `useEffect` refresh triggers to dashboards, schedule pages, and home views.\n\n## Failures\n\n### Next.js Client Router Caching\n- **What went wrong:** Real-time WebSocket events were missed on a route while it was unmounted. When the user navigated back to it using standard Next.js `\u003cLink\u003e` client routing, the route served stale data from the prefetch cache.\n- **Root cause:** Next.js client router cache is aggressive and does not re-fetch Server Component props on navigation by default.\n- **Prevention:** Run `router.refresh()` on page client component mount to force cache invalidation.\n- **Source:** @task-r6c9t3\n\n### Unbounded Date range in Real-Time Status Filters\n- **What went wrong:** Homepage court status cards showed incorrect booking statuses (e.g. \"Booked: 17:30\") even when there were no bookings for the current day.\n- **Root cause:** Filter logic only checked if the booking's `start_time` was after `now` without bounding by day (e.g. `isSameDay`). This let tomorrow's bookings leak into today's timeline.\n- **Prevention:** Enforce `isSameDay(now, new Date(b.start_time))` alongside future time comparisons.\n- **Source:** @task-r6c9t3"
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "oldBytes": 1960,
+          "newBytes": 4124,
+          "deltaBytes": 2164
+        }
+      ],
+      "snapshot": {
+        "content": "# Learning: Next.js Hybrid Data Loading\n\nLearnings and guidelines for data loading in Next.js App Router, combining Server Components and Route Handlers.\n\n## Patterns\n\n### Hybrid Server/Client Data Loading\n- **What:** Fetch initial read-only data (e.g. courts list) directly from database repositories inside a Server Component, pass it as a prop to a Client Component, and perform mutations (e.g. booking creation) via relative HTTP requests to a versioned REST API.\n- **When to use:** On pages requiring fast initial rendering combined with client-side interactivity and database mutations.\n- **Source:** Architectural Alignment\n\n### Client-Side Sync via Next.js Router Refresh\n- **What:** Invoke `router.refresh()` (from `next/navigation`) after a successful REST mutation in the Client Component to trigger server-side re-fetching and update props without losing client state.\n- **When to use:** To synchronize client-side components with database updates made via Route Handlers.\n- **Source:** Architectural Alignment\n\n### Optional Prop Component Bootstrapping\n- **What:** Pass pre-fetched data (e.g., `courts`, `customers`) as optional props to interactive client components, and fall back to client-side API fetches (`useEffect`) only if the props are empty or not provided.\n- **When to use:** On forms or dialogs that are rendered in multiple contexts (some where data is already preloaded by the parent, and others where it is rendered standalone).\n- **Source:** @task-r6c9t3\n\n## Decisions\n\n### Versioned APIs in Subfolders\n- **Chose:** Grouping Route Handlers in a `/api/v1/` subfolder structure.\n- **Over:** Putting handlers directly in `/api/` with no version prefix.\n- **Tag:** GOOD_CALL\n- **Outcome:** Retains compatibility with Bruno testing configurations, supports API versioning/backwards compatibility, and fulfills Spec Decision D1.\n- **Recommendation:** Keep `/api/v1/` folders for standard entities (e.g., bookings, products).\n\n### Direct DB Repository Queries in Server Components\n- **Chose:** Direct imports of repositories (e.g., in `src/server/repositories/`) within Server Components.\n- **Over:** Calling `fetch('/api/v1/...')` internally.\n- **Tag:** GOOD_CALL\n- **Outcome:** Eliminates double-fetching loopback latency, providing instant page load times and zero layout shifts.\n- **Recommendation:** Do not use internal HTTP calls in Server Components. Use database/repository queries directly.\n\n### Programmatic Cache Invalidation on Mount\n- **Chose:** Calling `router.refresh()` inside the mounting `useEffect` of layout/page client components.\n- **Over:** Relying solely on real-time database updates or expecting Next.js client router cache to refresh automatically on page transitions.\n- **Tag:** GOOD_CALL\n- **Outcome:** Programmatically invalidates the Next.js client-side prefetch/router cache upon route entry, ensuring the layout immediately displays the latest database state without a hard reload.\n- **Recommendation:** Add mounting `useEffect` refresh triggers to dashboards, schedule pages, and home views.\n\n## Failures\n\n### Next.js Client Router Caching\n- **What went wrong:** Real-time WebSocket events were missed on a route while it was unmounted. When the user navigated back to it using standard Next.js `\u003cLink\u003e` client routing, the route served stale data from the prefetch cache.\n- **Root cause:** Next.js client router cache is aggressive and does not re-fetch Server Component props on navigation by default.\n- **Prevention:** Run `router.refresh()` on page client component mount to force cache invalidation.\n- **Source:** @task-r6c9t3\n\n### Unbounded Date range in Real-Time Status Filters\n- **What went wrong:** Homepage court status cards showed incorrect booking statuses (e.g. \"Booked: 17:30\") even when there were no bookings for the current day.\n- **Root cause:** Filter logic only checked if the booking's `start_time` was after `now` without bounding by day (e.g. `isSameDay`). This let tomorrow's bookings leak into today's timeline.\n- **Prevention:** Enforce `isSameDay(now, new Date(b.start_time))` alongside future time comparisons.\n- **Source:** @task-r6c9t3",
+        "description": "Learnings on Next.js hybrid data loading patterns, versioning, and client-side sync.",
+        "path": "learnings/learning-nextjs-hybrid-data-loading",
+        "tags": [
+          "learning",
+          "nextjs",
+          "api",
+          "architecture"
+        ],
+        "title": "Learning: Next.js Hybrid Data Loading"
+      }
+    }
+  ]
+}

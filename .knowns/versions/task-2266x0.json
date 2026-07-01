@@ -1,0 +1,142 @@
+{
+  "taskId": "2266x0",
+  "currentVersion": 6,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "2266x0",
+      "version": 1,
+      "timestamp": "2026-06-29T03:54:47.977402Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "priority": "medium",
+        "status": "todo",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "2266x0",
+      "version": 2,
+      "timestamp": "2026-06-29T03:55:02.029452Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "2266x0",
+      "version": 3,
+      "timestamp": "2026-06-29T04:06:56.594149Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create a new migration file to fix missing multi-tenant coverage.\n2. Add `tenant_id` column to `inventory_logs` and `recurring_rules` allowing NULL.\n3. Backfill existing records with the default tenant (`00000000-0000-0000-0000-000000000000`).\n4. Alter `tenant_id` column to be `NOT NULL`.\n5. Add `trigger_auto_set_tenant_id` trigger to both tables.\n6. Enable RLS and create standard `tenant_id` policies for both tables."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "implementationPlan": "1. Create a new migration file to fix missing multi-tenant coverage.\n2. Add `tenant_id` column to `inventory_logs` and `recurring_rules` allowing NULL.\n3. Backfill existing records with the default tenant (`00000000-0000-0000-0000-000000000000`).\n4. Alter `tenant_id` column to be `NOT NULL`.\n5. Add `trigger_auto_set_tenant_id` trigger to both tables.\n6. Enable RLS and create standard `tenant_id` policies for both tables.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "2266x0",
+      "version": 4,
+      "timestamp": "2026-06-29T04:23:17.614655Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Reopened: implementing task."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "implementationNotes": "Reopened: implementing task.",
+        "implementationPlan": "1. Create a new migration file to fix missing multi-tenant coverage.\n2. Add `tenant_id` column to `inventory_logs` and `recurring_rules` allowing NULL.\n3. Backfill existing records with the default tenant (`00000000-0000-0000-0000-000000000000`).\n4. Alter `tenant_id` column to be `NOT NULL`.\n5. Add `trigger_auto_set_tenant_id` trigger to both tables.\n6. Enable RLS and create standard `tenant_id` policies for both tables.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "2266x0",
+      "version": 5,
+      "timestamp": "2026-06-29T04:29:56.391361Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Reopened: implementing task.",
+          "newValue": "Reopened: implementing task.\nDone: Applied migration to add tenant_id to inventory_logs and recurring_rules."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "implementationNotes": "Reopened: implementing task.\nDone: Applied migration to add tenant_id to inventory_logs and recurring_rules.",
+        "implementationPlan": "1. Create a new migration file to fix missing multi-tenant coverage.\n2. Add `tenant_id` column to `inventory_logs` and `recurring_rules` allowing NULL.\n3. Backfill existing records with the default tenant (`00000000-0000-0000-0000-000000000000`).\n4. Alter `tenant_id` column to be `NOT NULL`.\n5. Add `trigger_auto_set_tenant_id` trigger to both tables.\n6. Enable RLS and create standard `tenant_id` policies for both tables.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "2266x0",
+      "version": 6,
+      "timestamp": "2026-06-29T04:30:01.093449Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Add tenant_id and RLS to inventory_logs and recurring_rules to fix cross-tenant data leakage on the dashboard.",
+        "implementationNotes": "Reopened: implementing task.\nDone: Applied migration to add tenant_id to inventory_logs and recurring_rules.",
+        "implementationPlan": "1. Create a new migration file to fix missing multi-tenant coverage.\n2. Add `tenant_id` column to `inventory_logs` and `recurring_rules` allowing NULL.\n3. Backfill existing records with the default tenant (`00000000-0000-0000-0000-000000000000`).\n4. Alter `tenant_id` column to be `NOT NULL`.\n5. Add `trigger_auto_set_tenant_id` trigger to both tables.\n6. Enable RLS and create standard `tenant_id` policies for both tables.",
+        "priority": "medium",
+        "status": "done",
+        "title": "Fix dashboard multi-tenant data leakage"
+      }
+    }
+  ]
+}

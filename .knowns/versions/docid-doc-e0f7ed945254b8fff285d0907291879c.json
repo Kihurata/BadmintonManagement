@@ -1,0 +1,100 @@
+{
+  "docId": "doc-e0f7ed945254b8fff285d0907291879c",
+  "docPath": "learnings/learning-supabase-online-for-local-verification",
+  "currentPath": "learnings/learning-supabase-online-for-local-verification",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-e0f7ed945254b8fff285d0907291879c",
+      "docPath": "learnings/learning-supabase-online-for-local-verification",
+      "currentPath": "learnings/learning-supabase-online-for-local-verification",
+      "version": 1,
+      "timestamp": "2026-06-29T05:13:36.666958Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "newHash": "fff98604d1dfd8e66757f825fc2b18cba8d7bdbc45b1fed75867e0c66ce4bd7e",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "learnings/learning-supabase-online-for-local-verification"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Learning: Supabase Online for Local Verification"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Decision to use online Supabase instance instead of local Docker for local verification."
+        },
+        {
+          "field": "content",
+          "oldValue": null,
+          "newValue": "# Learning: Supabase Online for Local Verification\n\n## Decisions\n\n### Local Verification Environment\n- **Chose:** Online Supabase project instance (via `.env.local`)\n- **Over:** Local Supabase docker environment (`supabase start` / `http://127.0.0.1:54321`)\n- **Tag:** TRADEOFF\n- **Outcome:** Local development, API verification, and Bruno tests run against the live online Supabase staging/development instance instead of local Docker. This avoids local Docker resource usage but requires stable internet access and active remote credentials.\n- **Recommendation:** Keep `.env.local` updated with the online project credentials and avoid running `supabase start` if using the remote instance.\n"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "supabase",
+            "env"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 59,
+          "deltaBytes": 59
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 50,
+          "deltaBytes": 50
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 90,
+          "deltaBytes": 90
+        },
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "newBytes": 693,
+          "deltaBytes": 693
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 29,
+          "deltaBytes": 29
+        }
+      ],
+      "snapshot": {
+        "content": "# Learning: Supabase Online for Local Verification\n\n## Decisions\n\n### Local Verification Environment\n- **Chose:** Online Supabase project instance (via `.env.local`)\n- **Over:** Local Supabase docker environment (`supabase start` / `http://127.0.0.1:54321`)\n- **Tag:** TRADEOFF\n- **Outcome:** Local development, API verification, and Bruno tests run against the live online Supabase staging/development instance instead of local Docker. This avoids local Docker resource usage but requires stable internet access and active remote credentials.\n- **Recommendation:** Keep `.env.local` updated with the online project credentials and avoid running `supabase start` if using the remote instance.\n",
+        "description": "Decision to use online Supabase instance instead of local Docker for local verification.",
+        "path": "learnings/learning-supabase-online-for-local-verification",
+        "tags": [
+          "learning",
+          "supabase",
+          "env"
+        ],
+        "title": "Learning: Supabase Online for Local Verification"
+      }
+    }
+  ]
+}

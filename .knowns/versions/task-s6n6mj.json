@@ -1,0 +1,200 @@
+{
+  "taskId": "s6n6mj",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "s6n6mj",
+      "version": 1,
+      "timestamp": "2026-06-29T06:12:28.282089Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Implement the dedicated creation form inside the Recurring Bookings navigation tab and integrate it with the backend conflict detection and resolution flow.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Frontend UI for Recurring Booking Creation and Conflict Modal"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "s6n6mj",
+      "version": 2,
+      "timestamp": "2026-06-29T06:12:33.482177Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Create a dedicated creation form in the Recurring Bookings tab"
+            },
+            {
+              "completed": false,
+              "text": "Implement max 3 months date range limit on recurrence UI"
+            },
+            {
+              "completed": false,
+              "text": "Integrate conflict warning modal to prompt user for Skip or Overwrite"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create a dedicated creation form in the Recurring Bookings tab"
+          },
+          {
+            "completed": false,
+            "text": "Implement max 3 months date range limit on recurrence UI"
+          },
+          {
+            "completed": false,
+            "text": "Integrate conflict warning modal to prompt user for Skip or Overwrite"
+          }
+        ],
+        "description": "Implement the dedicated creation form inside the Recurring Bookings navigation tab and integrate it with the backend conflict detection and resolution flow.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Frontend UI for Recurring Booking Creation and Conflict Modal"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "s6n6mj",
+      "version": 3,
+      "timestamp": "2026-06-29T07:19:16.20848Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create a dedicated creation form in the Recurring Bookings tab"
+          },
+          {
+            "completed": false,
+            "text": "Implement max 3 months date range limit on recurrence UI"
+          },
+          {
+            "completed": false,
+            "text": "Integrate conflict warning modal to prompt user for Skip or Overwrite"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement the dedicated creation form inside the Recurring Bookings navigation tab and integrate it with the backend conflict detection and resolution flow.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Frontend UI for Recurring Booking Creation and Conflict Modal"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "s6n6mj",
+      "version": 4,
+      "timestamp": "2026-06-29T07:19:16.332741Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Created RecurringBookingForm with customer, court, time, dates inputs. Limited dates range to max 3 months. Integrated conflict warning dialog with Skip or Overwrite actions."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Create a dedicated creation form in the Recurring Bookings tab"
+          },
+          {
+            "completed": true,
+            "text": "Implement max 3 months date range limit on recurrence UI"
+          },
+          {
+            "completed": true,
+            "text": "Integrate conflict warning modal to prompt user for Skip or Overwrite"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement the dedicated creation form inside the Recurring Bookings navigation tab and integrate it with the backend conflict detection and resolution flow.",
+        "implementationNotes": "Created RecurringBookingForm with customer, court, time, dates inputs. Limited dates range to max 3 months. Integrated conflict warning dialog with Skip or Overwrite actions.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Frontend UI for Recurring Booking Creation and Conflict Modal"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "s6n6mj",
+      "version": 5,
+      "timestamp": "2026-06-29T07:19:16.468639Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create a dedicated creation form in the Recurring Bookings tab",
+            "completed": true
+          },
+          {
+            "text": "Implement max 3 months date range limit on recurrence UI",
+            "completed": true
+          },
+          {
+            "text": "Integrate conflict warning modal to prompt user for Skip or Overwrite",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement the dedicated creation form inside the Recurring Bookings navigation tab and integrate it with the backend conflict detection and resolution flow.",
+        "implementationNotes": "Created RecurringBookingForm with customer, court, time, dates inputs. Limited dates range to max 3 months. Integrated conflict warning dialog with Skip or Overwrite actions.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Frontend UI for Recurring Booking Creation and Conflict Modal"
+      }
+    }
+  ]
+}

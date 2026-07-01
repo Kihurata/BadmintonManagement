@@ -1,0 +1,139 @@
+{
+  "taskId": "ef7hni",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "ef7hni",
+      "version": 1,
+      "timestamp": "2026-06-29T08:51:32.540283Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Simplify conflict resolution behavior for recurring bookings. If conflicts exist, return a conflict warning list. Remove overwrite and skip options from both backend API and frontend conflict modal.",
+        "labels": [
+          "refactor"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Simplify recurring bookings conflict resolution flow"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "ef7hni",
+      "version": 2,
+      "timestamp": "2026-06-29T08:51:35.915215Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Simplify conflict resolution behavior for recurring bookings. If conflicts exist, return a conflict warning list. Remove overwrite and skip options from both backend API and frontend conflict modal.",
+        "labels": [
+          "refactor"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Simplify recurring bookings conflict resolution flow"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "ef7hni",
+      "version": 3,
+      "timestamp": "2026-06-29T08:51:45.277771Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Update src/app/api/v1/bookings/recurring/route.ts to return conflicts immediately.\n2. Update src/components/booking/recurring/recurring-booking-form.tsx conflict warning dialog to only show a Close button.\n3. Update tests/api/recurring-bookings.test.ts unit tests.\n4. Clean up Bruno .bru files and docs."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Simplify conflict resolution behavior for recurring bookings. If conflicts exist, return a conflict warning list. Remove overwrite and skip options from both backend API and frontend conflict modal.",
+        "implementationPlan": "1. Update src/app/api/v1/bookings/recurring/route.ts to return conflicts immediately.\n2. Update src/components/booking/recurring/recurring-booking-form.tsx conflict warning dialog to only show a Close button.\n3. Update tests/api/recurring-bookings.test.ts unit tests.\n4. Clean up Bruno .bru files and docs.",
+        "labels": [
+          "refactor"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Simplify recurring bookings conflict resolution flow"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "ef7hni",
+      "version": 4,
+      "timestamp": "2026-06-29T08:53:55.843001Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": "1. Update src/app/api/v1/bookings/recurring/route.ts to return conflicts immediately.\n2. Update src/components/booking/recurring/recurring-booking-form.tsx conflict warning dialog to only show a Close button.\n3. Update tests/api/recurring-bookings.test.ts unit tests.\n4. Clean up Bruno .bru files and docs.",
+          "newValue": "1. Create new migration for simplified Supabase RPC.\n2. Update Next.js route.ts to invoke new RPC and remove overwrite/skip logic.\n3. Remove overwrite/skip buttons from recurring-booking-form.tsx UI dialog.\n4. Adapt unit and integration tests, and update API docs."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Simplify conflict resolution behavior for recurring bookings. If conflicts exist, return a conflict warning list. Remove overwrite and skip options from both backend API and frontend conflict modal.",
+        "implementationPlan": "1. Create new migration for simplified Supabase RPC.\n2. Update Next.js route.ts to invoke new RPC and remove overwrite/skip logic.\n3. Remove overwrite/skip buttons from recurring-booking-form.tsx UI dialog.\n4. Adapt unit and integration tests, and update API docs.",
+        "labels": [
+          "refactor"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Simplify recurring bookings conflict resolution flow"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "ef7hni",
+      "version": 5,
+      "timestamp": "2026-06-29T09:02:35.294736Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Dropped p_overwrite_ids from create_recurring_bookings RPC. Simplified Next.js POST endpoint, frontend conflict modal UI, Jest unit tests, Bruno collections, and API specs to exit immediately with conflicts."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Simplify conflict resolution behavior for recurring bookings. If conflicts exist, return a conflict warning list. Remove overwrite and skip options from both backend API and frontend conflict modal.",
+        "implementationNotes": "Dropped p_overwrite_ids from create_recurring_bookings RPC. Simplified Next.js POST endpoint, frontend conflict modal UI, Jest unit tests, Bruno collections, and API specs to exit immediately with conflicts.",
+        "implementationPlan": "1. Create new migration for simplified Supabase RPC.\n2. Update Next.js route.ts to invoke new RPC and remove overwrite/skip logic.\n3. Remove overwrite/skip buttons from recurring-booking-form.tsx UI dialog.\n4. Adapt unit and integration tests, and update API docs.",
+        "labels": [
+          "refactor"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Simplify recurring bookings conflict resolution flow"
+      }
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "docId": "doc-bc04967462489003bc3a00f6b428202c",
+  "docPath": "api/recurring-bookings-api-v1",
+  "currentPath": "api/recurring-bookings-api-v1",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-bc04967462489003bc3a00f6b428202c",
+      "docPath": "api/recurring-bookings-api-v1",
+      "currentPath": "api/recurring-bookings-api-v1",
+      "version": 1,
+      "timestamp": "2026-06-29T08:35:04.99168Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "newHash": "f3d96e9c07ef2ffa8de4bed3c6d1d65c5daa9f477da5d311920890c9247d72ed",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "api/recurring-bookings-api-v1"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Recurring Bookings API (v1)"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Đặc tả chi tiết các endpoints của API đặt lịch cố định (recurring bookings) bao gồm tạo lịch, cập nhật, hủy và xử lý trùng lặp."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "api",
+            "recurring",
+            "booking"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 31,
+          "deltaBytes": 31
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 29,
+          "deltaBytes": 29
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 168,
+          "deltaBytes": 168
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 29,
+          "deltaBytes": 29
+        }
+      ],
+      "snapshot": {
+        "description": "Đặc tả chi tiết các endpoints của API đặt lịch cố định (recurring bookings) bao gồm tạo lịch, cập nhật, hủy và xử lý trùng lặp.",
+        "path": "api/recurring-bookings-api-v1",
+        "tags": [
+          "api",
+          "recurring",
+          "booking"
+        ],
+        "title": "Recurring Bookings API (v1)"
+      }
+    },
+    {
+      "id": "v2",
+      "docId": "doc-bc04967462489003bc3a00f6b428202c",
+      "docPath": "api/recurring-bookings-api-v1",
+      "currentPath": "api/recurring-bookings-api-v1",
+      "version": 2,
+      "timestamp": "2026-06-29T08:35:09.368641Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "f3d96e9c07ef2ffa8de4bed3c6d1d65c5daa9f477da5d311920890c9247d72ed",
+      "newHash": "e683d011d5d56474f9ef838014df765a4f419b034a8b9aad5585aebfd392179e",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "",
+          "newValue": "# Tài liệu Đặc tả Recurring Bookings API (v1)\n\nTài liệu này đặc tả chi tiết các endpoints của API Đặt lịch cố định (Recurring Bookings) tại đường dẫn `/api/v1/bookings/recurring`.\n\n---\n\n## 1. Cấu trúc Response chuẩn hóa\n\n### Phản hồi Thành công\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"ruleId\": \"33333333-3333-4333-a333-333333333333\",\n    \"bookingsCount\": 6\n  }\n}\n```\n\n### Phản hồi Thất bại (Lỗi Trùng lịch)\nKhi phát hiện có các ca đặt sân bị trùng giờ, API trả về mã lỗi `CONFLICT` (200 status với success: false) kèm theo thông tin chi tiết các ca bị trùng:\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONFLICT\",\n    \"message\": \"Scheduling conflicts detected.\",\n    \"conflicts\": [\n      {\n        \"id\": \"conflicted_booking_uuid\",\n        \"start_time\": \"2026-07-06T01:30:00Z\",\n        \"end_time\": \"2026-07-06T02:30:00Z\",\n        \"customerName\": \"Nguyễn Văn B\"\n      }\n    ]\n  }\n}\n```\n\n---\n\n## 2. Bảo mật \u0026 Phân quyền (RBAC)\n\n| Vai trò | POST (Tạo thông thường) | POST (Skip) | POST (Overwrite) | PUT (Cập nhật) | DELETE (Hủy) |\n|---|---|---|---|---|---|\n| **OWNER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **MANAGER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **STAFF** | Cho phép | Cho phép | **Bị từ chối** | Cho phép | Cho phép |\n\n---\n\n## 3. Đặc tả Chi tiết các Endpoints\n\n### 3.1. Đăng ký Lịch cố định mới (POST)\nTạo một chuỗi lịch lặp lại hàng tuần trên một sân cụ thể.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `POST`\n- **Body Schema (Zod):**\n  - `courtId` (UUID, bắt buộc): ID của sân đặt.\n  - `customerId` (UUID, tùy chọn): ID khách hàng (mặc định là Khách vãng lai).\n  - `startTime` (string HH:MM, bắt buộc): Giờ bắt đầu (theo múi giờ Việt Nam `+07:00`).\n  - `endTime` (string HH:MM, bắt buộc): Giờ kết thúc (theo múi giờ Việt Nam `+07:00`).\n  - `startDate` (string YYYY-MM-DD, bắt buộc): Ngày bắt đầu.\n  - `endDate` (string YYYY-MM-DD, bắt buộc): Ngày kết thúc (Giới hạn tối đa **3 tháng** kể từ ngày bắt đầu).\n  - `daysOfWeek` (array integer `0-6`, bắt buộc): Các ngày lặp lại trong tuần (0 = Chủ Nhật, 1 = Thứ 2, ...).\n  - `overwrite` (boolean, tùy chọn, mặc định `false`): Cho phép ghi đè các ca trùng lặp (chỉ áp dụng cho Owner/Manager).\n  - `skipConflicts` (boolean, tùy chọn, mặc định `false`): Cho phép bỏ qua các ngày bị trùng lịch và chỉ tạo lịch cho các ngày còn trống.\n\n#### Quy trình xử lý xung đột lịch đặt:\n```mermaid\ngraph TD\n    A[Nhận payload POST] --\u003e B{Kiểm tra trùng lịch?}\n    B --\u003e|Không trùng| C[Gọi RPC tạo lịch cố định \u0026 rules]\n    B --\u003e|Có trùng| D{overwrite === true?}\n    D --\u003e|Đúng + Role hợp lệ| E[RPC: hủy lịch cũ \u0026 tạo đè lịch mới]\n    D --\u003e|Sai/Không quyền| F{skipConflicts === true?}\n    F --\u003e|Đúng| G[Lọc bỏ các ngày trùng và tạo các ngày còn lại]\n    F --\u003e|Sai| H[Trả về lỗi CONFLICT kèm list ca trùng]\n```\n\n---\n\n### 3.2. Cập nhật Lịch cố định (PUT)\nCập nhật thông tin khách hàng hoặc ghi chú của chuỗi lịch cố định và các ca đặt sân thuộc chuỗi đó.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `PUT`\n- **Body Schema (Zod):**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định cần sửa.\n  - `customerId` (UUID, tùy chọn/nullable): ID khách hàng mới.\n  - `note` (string, tùy chọn): Ghi chú mới.\n  - `scope` (string `'FUTURE' | 'ALL'`, tùy chọn, mặc định `'FUTURE'`): Phạm vi áp dụng cập nhật.\n    - `FUTURE`: Chỉ áp dụng cho các ca đặt sân bắt đầu sau thời điểm hiện tại.\n    - `ALL`: Áp dụng cho toàn bộ các ca đặt sân trong chuỗi (bao gồm cả các ca đã qua).\n\n---\n\n### 3.3. Hủy/Xóa Lịch cố định (DELETE)\nHủy các ca đặt sân trong chuỗi lịch cố định.\n\n- **URL:** `/api/v1/bookings/recurring?ruleId=\u003cruleId\u003e\u0026scope=\u003cscope\u003e`\n- **Method:** `DELETE`\n- **Query Parameters:**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định.\n  - `scope` (string `'FUTURE' | 'ALL'`, bắt buộc): Phạm vi áp dụng hủy.\n    - `FUTURE`: Chuyển trạng thái các ca chưa bắt đầu thành `CANCELLED`.\n    - `ALL`: Chuyển trạng thái tất cả các ca trong chuỗi thành `CANCELLED` (ngoại trừ các ca đã `COMPLETED` hoặc `CHECKED_IN`).\n- **Quy tắc Truncate:**\n  - Nếu áp dụng `FUTURE`, API sẽ cập nhật ngày kết thúc của luật lặp lại (`end_date`) về ngày của ca đặt sân cuối cùng trước thời điểm hiện tại để lưu giữ lịch sử cấu hình.\n  - Nếu tất cả các ca đặt sân trong chuỗi đều bị hủy, luật lặp lại (`recurring_rules`) sẽ được xóa hoàn toàn khỏi cơ sở dữ liệu.\n"
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "newBytes": 5100,
+          "deltaBytes": 5100
+        }
+      ],
+      "snapshot": {
+        "content": "# Tài liệu Đặc tả Recurring Bookings API (v1)\n\nTài liệu này đặc tả chi tiết các endpoints của API Đặt lịch cố định (Recurring Bookings) tại đường dẫn `/api/v1/bookings/recurring`.\n\n---\n\n## 1. Cấu trúc Response chuẩn hóa\n\n### Phản hồi Thành công\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"ruleId\": \"33333333-3333-4333-a333-333333333333\",\n    \"bookingsCount\": 6\n  }\n}\n```\n\n### Phản hồi Thất bại (Lỗi Trùng lịch)\nKhi phát hiện có các ca đặt sân bị trùng giờ, API trả về mã lỗi `CONFLICT` (200 status với success: false) kèm theo thông tin chi tiết các ca bị trùng:\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONFLICT\",\n    \"message\": \"Scheduling conflicts detected.\",\n    \"conflicts\": [\n      {\n        \"id\": \"conflicted_booking_uuid\",\n        \"start_time\": \"2026-07-06T01:30:00Z\",\n        \"end_time\": \"2026-07-06T02:30:00Z\",\n        \"customerName\": \"Nguyễn Văn B\"\n      }\n    ]\n  }\n}\n```\n\n---\n\n## 2. Bảo mật \u0026 Phân quyền (RBAC)\n\n| Vai trò | POST (Tạo thông thường) | POST (Skip) | POST (Overwrite) | PUT (Cập nhật) | DELETE (Hủy) |\n|---|---|---|---|---|---|\n| **OWNER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **MANAGER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **STAFF** | Cho phép | Cho phép | **Bị từ chối** | Cho phép | Cho phép |\n\n---\n\n## 3. Đặc tả Chi tiết các Endpoints\n\n### 3.1. Đăng ký Lịch cố định mới (POST)\nTạo một chuỗi lịch lặp lại hàng tuần trên một sân cụ thể.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `POST`\n- **Body Schema (Zod):**\n  - `courtId` (UUID, bắt buộc): ID của sân đặt.\n  - `customerId` (UUID, tùy chọn): ID khách hàng (mặc định là Khách vãng lai).\n  - `startTime` (string HH:MM, bắt buộc): Giờ bắt đầu (theo múi giờ Việt Nam `+07:00`).\n  - `endTime` (string HH:MM, bắt buộc): Giờ kết thúc (theo múi giờ Việt Nam `+07:00`).\n  - `startDate` (string YYYY-MM-DD, bắt buộc): Ngày bắt đầu.\n  - `endDate` (string YYYY-MM-DD, bắt buộc): Ngày kết thúc (Giới hạn tối đa **3 tháng** kể từ ngày bắt đầu).\n  - `daysOfWeek` (array integer `0-6`, bắt buộc): Các ngày lặp lại trong tuần (0 = Chủ Nhật, 1 = Thứ 2, ...).\n  - `overwrite` (boolean, tùy chọn, mặc định `false`): Cho phép ghi đè các ca trùng lặp (chỉ áp dụng cho Owner/Manager).\n  - `skipConflicts` (boolean, tùy chọn, mặc định `false`): Cho phép bỏ qua các ngày bị trùng lịch và chỉ tạo lịch cho các ngày còn trống.\n\n#### Quy trình xử lý xung đột lịch đặt:\n```mermaid\ngraph TD\n    A[Nhận payload POST] --\u003e B{Kiểm tra trùng lịch?}\n    B --\u003e|Không trùng| C[Gọi RPC tạo lịch cố định \u0026 rules]\n    B --\u003e|Có trùng| D{overwrite === true?}\n    D --\u003e|Đúng + Role hợp lệ| E[RPC: hủy lịch cũ \u0026 tạo đè lịch mới]\n    D --\u003e|Sai/Không quyền| F{skipConflicts === true?}\n    F --\u003e|Đúng| G[Lọc bỏ các ngày trùng và tạo các ngày còn lại]\n    F --\u003e|Sai| H[Trả về lỗi CONFLICT kèm list ca trùng]\n```\n\n---\n\n### 3.2. Cập nhật Lịch cố định (PUT)\nCập nhật thông tin khách hàng hoặc ghi chú của chuỗi lịch cố định và các ca đặt sân thuộc chuỗi đó.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `PUT`\n- **Body Schema (Zod):**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định cần sửa.\n  - `customerId` (UUID, tùy chọn/nullable): ID khách hàng mới.\n  - `note` (string, tùy chọn): Ghi chú mới.\n  - `scope` (string `'FUTURE' | 'ALL'`, tùy chọn, mặc định `'FUTURE'`): Phạm vi áp dụng cập nhật.\n    - `FUTURE`: Chỉ áp dụng cho các ca đặt sân bắt đầu sau thời điểm hiện tại.\n    - `ALL`: Áp dụng cho toàn bộ các ca đặt sân trong chuỗi (bao gồm cả các ca đã qua).\n\n---\n\n### 3.3. Hủy/Xóa Lịch cố định (DELETE)\nHủy các ca đặt sân trong chuỗi lịch cố định.\n\n- **URL:** `/api/v1/bookings/recurring?ruleId=\u003cruleId\u003e\u0026scope=\u003cscope\u003e`\n- **Method:** `DELETE`\n- **Query Parameters:**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định.\n  - `scope` (string `'FUTURE' | 'ALL'`, bắt buộc): Phạm vi áp dụng hủy.\n    - `FUTURE`: Chuyển trạng thái các ca chưa bắt đầu thành `CANCELLED`.\n    - `ALL`: Chuyển trạng thái tất cả các ca trong chuỗi thành `CANCELLED` (ngoại trừ các ca đã `COMPLETED` hoặc `CHECKED_IN`).\n- **Quy tắc Truncate:**\n  - Nếu áp dụng `FUTURE`, API sẽ cập nhật ngày kết thúc của luật lặp lại (`end_date`) về ngày của ca đặt sân cuối cùng trước thời điểm hiện tại để lưu giữ lịch sử cấu hình.\n  - Nếu tất cả các ca đặt sân trong chuỗi đều bị hủy, luật lặp lại (`recurring_rules`) sẽ được xóa hoàn toàn khỏi cơ sở dữ liệu.\n",
+        "description": "Đặc tả chi tiết các endpoints của API đặt lịch cố định (recurring bookings) bao gồm tạo lịch, cập nhật, hủy và xử lý trùng lặp.",
+        "path": "api/recurring-bookings-api-v1",
+        "tags": [
+          "api",
+          "recurring",
+          "booking"
+        ],
+        "title": "Recurring Bookings API (v1)"
+      }
+    },
+    {
+      "id": "v3",
+      "docId": "doc-bc04967462489003bc3a00f6b428202c",
+      "docPath": "api/recurring-bookings-api-v1",
+      "currentPath": "api/recurring-bookings-api-v1",
+      "version": 3,
+      "timestamp": "2026-06-29T09:02:24.387224Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "ee4dce0d454989647776f0a4908237588abd42fead39259202379630af5ae1b3",
+      "newHash": "64dd685d2a6c6b7233d40f67b2b1c0b5d8cd91a2436dd01bd49ea461ccfca91d",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "# Tài liệu Đặc tả Recurring Bookings API (v1)\n\nTài liệu này đặc tả chi tiết các endpoints của API Đặt lịch cố định (Recurring Bookings) tại đường dẫn `/api/v1/bookings/recurring`.\n\n---\n\n## 1. Cấu trúc Response chuẩn hóa\n\n### Phản hồi Thành công\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"ruleId\": \"33333333-3333-4333-a333-333333333333\",\n    \"bookingsCount\": 6\n  }\n}\n```\n\n### Phản hồi Thất bại (Lỗi Trùng lịch)\nKhi phát hiện có các ca đặt sân bị trùng giờ, API trả về mã lỗi `CONFLICT` (200 status với success: false) kèm theo thông tin chi tiết các ca bị trùng:\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONFLICT\",\n    \"message\": \"Scheduling conflicts detected.\",\n    \"conflicts\": [\n      {\n        \"id\": \"conflicted_booking_uuid\",\n        \"start_time\": \"2026-07-06T01:30:00Z\",\n        \"end_time\": \"2026-07-06T02:30:00Z\",\n        \"customerName\": \"Nguyễn Văn B\"\n      }\n    ]\n  }\n}\n```\n\n---\n\n## 2. Bảo mật \u0026 Phân quyền (RBAC)\n\n| Vai trò | POST (Tạo thông thường) | POST (Skip) | POST (Overwrite) | PUT (Cập nhật) | DELETE (Hủy) |\n|---|---|---|---|---|---|\n| **OWNER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **MANAGER** | Cho phép | Cho phép | Cho phép | Cho phép | Cho phép |\n| **STAFF** | Cho phép | Cho phép | **Bị từ chối** | Cho phép | Cho phép |\n\n---\n\n## 3. Đặc tả Chi tiết các Endpoints\n\n### 3.1. Đăng ký Lịch cố định mới (POST)\nTạo một chuỗi lịch lặp lại hàng tuần trên một sân cụ thể.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `POST`\n- **Body Schema (Zod):**\n  - `courtId` (UUID, bắt buộc): ID của sân đặt.\n  - `customerId` (UUID, tùy chọn): ID khách hàng (mặc định là Khách vãng lai).\n  - `startTime` (string HH:MM, bắt buộc): Giờ bắt đầu (theo múi giờ Việt Nam `+07:00`).\n  - `endTime` (string HH:MM, bắt buộc): Giờ kết thúc (theo múi giờ Việt Nam `+07:00`).\n  - `startDate` (string YYYY-MM-DD, bắt buộc): Ngày bắt đầu.\n  - `endDate` (string YYYY-MM-DD, bắt buộc): Ngày kết thúc (Giới hạn tối đa **3 tháng** kể từ ngày bắt đầu).\n  - `daysOfWeek` (array integer `0-6`, bắt buộc): Các ngày lặp lại trong tuần (0 = Chủ Nhật, 1 = Thứ 2, ...).\n  - `overwrite` (boolean, tùy chọn, mặc định `false`): Cho phép ghi đè các ca trùng lặp (chỉ áp dụng cho Owner/Manager).\n  - `skipConflicts` (boolean, tùy chọn, mặc định `false`): Cho phép bỏ qua các ngày bị trùng lịch và chỉ tạo lịch cho các ngày còn trống.\n\n#### Quy trình xử lý xung đột lịch đặt:\n```mermaid\ngraph TD\n    A[Nhận payload POST] --\u003e B{Kiểm tra trùng lịch?}\n    B --\u003e|Không trùng| C[Gọi RPC tạo lịch cố định \u0026 rules]\n    B --\u003e|Có trùng| D{overwrite === true?}\n    D --\u003e|Đúng + Role hợp lệ| E[RPC: hủy lịch cũ \u0026 tạo đè lịch mới]\n    D --\u003e|Sai/Không quyền| F{skipConflicts === true?}\n    F --\u003e|Đúng| G[Lọc bỏ các ngày trùng và tạo các ngày còn lại]\n    F --\u003e|Sai| H[Trả về lỗi CONFLICT kèm list ca trùng]\n```\n\n---\n\n### 3.2. Cập nhật Lịch cố định (PUT)\nCập nhật thông tin khách hàng hoặc ghi chú của chuỗi lịch cố định và các ca đặt sân thuộc chuỗi đó.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `PUT`\n- **Body Schema (Zod):**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định cần sửa.\n  - `customerId` (UUID, tùy chọn/nullable): ID khách hàng mới.\n  - `note` (string, tùy chọn): Ghi chú mới.\n  - `scope` (string `'FUTURE' | 'ALL'`, tùy chọn, mặc định `'FUTURE'`): Phạm vi áp dụng cập nhật.\n    - `FUTURE`: Chỉ áp dụng cho các ca đặt sân bắt đầu sau thời điểm hiện tại.\n    - `ALL`: Áp dụng cho toàn bộ các ca đặt sân trong chuỗi (bao gồm cả các ca đã qua).\n\n---\n\n### 3.3. Hủy/Xóa Lịch cố định (DELETE)\nHủy các ca đặt sân trong chuỗi lịch cố định.\n\n- **URL:** `/api/v1/bookings/recurring?ruleId=\u003cruleId\u003e\u0026scope=\u003cscope\u003e`\n- **Method:** `DELETE`\n- **Query Parameters:**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định.\n  - `scope` (string `'FUTURE' | 'ALL'`, bắt buộc): Phạm vi áp dụng hủy.\n    - `FUTURE`: Chuyển trạng thái các ca chưa bắt đầu thành `CANCELLED`.\n    - `ALL`: Chuyển trạng thái tất cả các ca trong chuỗi thành `CANCELLED` (ngoại trừ các ca đã `COMPLETED` hoặc `CHECKED_IN`).\n- **Quy tắc Truncate:**\n  - Nếu áp dụng `FUTURE`, API sẽ cập nhật ngày kết thúc của luật lặp lại (`end_date`) về ngày của ca đặt sân cuối cùng trước thời điểm hiện tại để lưu giữ lịch sử cấu hình.\n  - Nếu tất cả các ca đặt sân trong chuỗi đều bị hủy, luật lặp lại (`recurring_rules`) sẽ được xóa hoàn toàn khỏi cơ sở dữ liệu.",
+          "newValue": "# Tài liệu Đặc tả Recurring Bookings API (v1)\n\nTài liệu này đặc tả chi tiết các endpoints của API Đặt lịch cố định (Recurring Bookings) tại đường dẫn `/api/v1/bookings/recurring`.\n\n---\n\n## 1. Cấu trúc Response chuẩn hóa\n\n### Phản hồi Thành công\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"ruleId\": \"33333333-3333-4333-a333-333333333333\",\n    \"bookingsCount\": 6\n  }\n}\n```\n\n### Phản hồi Thất bại (Lỗi Trùng lịch)\nKhi phát hiện có các ca đặt sân bị trùng giờ, API trả về mã lỗi `CONFLICT` (200 status với success: false) kèm theo thông tin chi tiết các ca bị trùng và ngừng xử lý:\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONFLICT\",\n    \"message\": \"Scheduling conflicts detected.\",\n    \"conflicts\": [\n      {\n        \"id\": \"conflicted_booking_uuid\",\n        \"start_time\": \"2026-07-06T01:30:00Z\",\n        \"end_time\": \"2026-07-06T02:30:00Z\",\n        \"customerName\": \"Nguyễn Văn B\"\n      }\n    ]\n  }\n}\n```\n\n---\n\n## 2. Bảo mật \u0026 Phân quyền (RBAC)\n\n| Vai trò | POST (Tạo) | PUT (Cập nhật) | DELETE (Hủy) |\n|---|---|---|---|\n| **OWNER** | Cho phép | Cho phép | Cho phép |\n| **MANAGER** | Cho phép | Cho phép | Cho phép |\n| **STAFF** | Cho phép | Cho phép | Cho phép |\n\n---\n\n## 3. Đặc tả Chi tiết các Endpoints\n\n### 3.1. Đăng ký Lịch cố định mới (POST)\nTạo một chuỗi lịch lặp lại hàng tuần trên một sân cụ thể.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `POST`\n- **Body Schema (Zod):**\n  - `courtId` (UUID, bắt buộc): ID của sân đặt.\n  - `customerId` (UUID, tùy chọn): ID khách hàng (mặc định là Khách vãng lai).\n  - `startTime` (string HH:MM, bắt buộc): Giờ bắt đầu (theo múi giờ Việt Nam `+07:00`).\n  - `endTime` (string HH:MM, bắt buộc): Giờ kết thúc (theo múi giờ Việt Nam `+07:00`).\n  - `startDate` (string YYYY-MM-DD, bắt buộc): Ngày bắt đầu.\n  - `endDate` (string YYYY-MM-DD, bắt buộc): Ngày kết thúc (Giới hạn tối đa **3 tháng** kể từ ngày bắt đầu).\n  - `daysOfWeek` (array integer `0-6`, bắt buộc): Các ngày lặp lại trong tuần (0 = Chủ Nhật, 1 = Thứ 2, ...).\n\n#### Quy trình xử lý xung đột lịch đặt:\n```mermaid\ngraph TD\n    A[Nhận payload POST] --\u003e B{Kiểm tra trùng lịch?}\n    B --\u003e|Không trùng| C[Gọi RPC tạo lịch cố định \u0026 rules]\n    B --\u003e|Có trùng| D[Trả về lỗi CONFLICT kèm list ca trùng và dừng xử lý]\n```\n\n---\n\n### 3.2. Cập nhật Lịch cố định (PUT)\nCập nhật thông tin khách hàng hoặc ghi chú của chuỗi lịch cố định và các ca đặt sân thuộc chuỗi đó.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `PUT`\n- **Body Schema (Zod):**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định cần sửa.\n  - `customerId` (UUID, tùy chọn/nullable): ID khách hàng mới.\n  - `note` (string, tùy chọn): Ghi chú mới.\n  - `scope` (string `'FUTURE' | 'ALL'`, tùy chọn, mặc định `'FUTURE'`): Phạm vi áp dụng cập nhật.\n    - `FUTURE`: Chỉ áp dụng cho các ca đặt sân bắt đầu sau thời điểm hiện tại.\n    - `ALL`: Áp dụng cho toàn bộ các ca đặt sân trong chuỗi (bao gồm cả các ca đã qua).\n\n---\n\n### 3.3. Hủy/Xóa Lịch cố định (DELETE)\nHủy các ca đặt sân trong chuỗi lịch cố định.\n\n- **URL:** `/api/v1/bookings/recurring?ruleId=\u003cruleId\u003e\u0026scope=\u003cscope\u003e`\n- **Method:** `DELETE`\n- **Query Parameters:**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định.\n  - `scope` (string `'FUTURE' | 'ALL'`, bắt buộc): Phạm vi áp dụng hủy.\n    - `FUTURE`: Chuyển trạng thái các ca chưa bắt đầu thành `CANCELLED`.\n    - `ALL`: Chuyển trạng thái tất cả các ca trong chuỗi thành `CANCELLED` (ngoại trừ các ca đã `COMPLETED` hoặc `CHECKED_IN`).\n- **Quy tắc Truncate:**\n  - Nếu áp dụng `FUTURE`, API sẽ cập nhật ngày kết thúc của luật lặp lại (`end_date`) về ngày của ca đặt sân cuối cùng trước thời điểm hiện tại để lưu giữ lịch sử cấu hình.\n  - Nếu tất cả các ca đặt sân trong chuỗi đều bị hủy, luật lặp lại (`recurring_rules`) sẽ được xóa hoàn toàn khỏi cơ sở dữ liệu.\n"
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "oldBytes": 5099,
+          "newBytes": 4427,
+          "deltaBytes": -672
+        }
+      ],
+      "snapshot": {
+        "content": "# Tài liệu Đặc tả Recurring Bookings API (v1)\n\nTài liệu này đặc tả chi tiết các endpoints của API Đặt lịch cố định (Recurring Bookings) tại đường dẫn `/api/v1/bookings/recurring`.\n\n---\n\n## 1. Cấu trúc Response chuẩn hóa\n\n### Phản hồi Thành công\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"ruleId\": \"33333333-3333-4333-a333-333333333333\",\n    \"bookingsCount\": 6\n  }\n}\n```\n\n### Phản hồi Thất bại (Lỗi Trùng lịch)\nKhi phát hiện có các ca đặt sân bị trùng giờ, API trả về mã lỗi `CONFLICT` (200 status với success: false) kèm theo thông tin chi tiết các ca bị trùng và ngừng xử lý:\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONFLICT\",\n    \"message\": \"Scheduling conflicts detected.\",\n    \"conflicts\": [\n      {\n        \"id\": \"conflicted_booking_uuid\",\n        \"start_time\": \"2026-07-06T01:30:00Z\",\n        \"end_time\": \"2026-07-06T02:30:00Z\",\n        \"customerName\": \"Nguyễn Văn B\"\n      }\n    ]\n  }\n}\n```\n\n---\n\n## 2. Bảo mật \u0026 Phân quyền (RBAC)\n\n| Vai trò | POST (Tạo) | PUT (Cập nhật) | DELETE (Hủy) |\n|---|---|---|---|\n| **OWNER** | Cho phép | Cho phép | Cho phép |\n| **MANAGER** | Cho phép | Cho phép | Cho phép |\n| **STAFF** | Cho phép | Cho phép | Cho phép |\n\n---\n\n## 3. Đặc tả Chi tiết các Endpoints\n\n### 3.1. Đăng ký Lịch cố định mới (POST)\nTạo một chuỗi lịch lặp lại hàng tuần trên một sân cụ thể.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `POST`\n- **Body Schema (Zod):**\n  - `courtId` (UUID, bắt buộc): ID của sân đặt.\n  - `customerId` (UUID, tùy chọn): ID khách hàng (mặc định là Khách vãng lai).\n  - `startTime` (string HH:MM, bắt buộc): Giờ bắt đầu (theo múi giờ Việt Nam `+07:00`).\n  - `endTime` (string HH:MM, bắt buộc): Giờ kết thúc (theo múi giờ Việt Nam `+07:00`).\n  - `startDate` (string YYYY-MM-DD, bắt buộc): Ngày bắt đầu.\n  - `endDate` (string YYYY-MM-DD, bắt buộc): Ngày kết thúc (Giới hạn tối đa **3 tháng** kể từ ngày bắt đầu).\n  - `daysOfWeek` (array integer `0-6`, bắt buộc): Các ngày lặp lại trong tuần (0 = Chủ Nhật, 1 = Thứ 2, ...).\n\n#### Quy trình xử lý xung đột lịch đặt:\n```mermaid\ngraph TD\n    A[Nhận payload POST] --\u003e B{Kiểm tra trùng lịch?}\n    B --\u003e|Không trùng| C[Gọi RPC tạo lịch cố định \u0026 rules]\n    B --\u003e|Có trùng| D[Trả về lỗi CONFLICT kèm list ca trùng và dừng xử lý]\n```\n\n---\n\n### 3.2. Cập nhật Lịch cố định (PUT)\nCập nhật thông tin khách hàng hoặc ghi chú của chuỗi lịch cố định và các ca đặt sân thuộc chuỗi đó.\n\n- **URL:** `/api/v1/bookings/recurring`\n- **Method:** `PUT`\n- **Body Schema (Zod):**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định cần sửa.\n  - `customerId` (UUID, tùy chọn/nullable): ID khách hàng mới.\n  - `note` (string, tùy chọn): Ghi chú mới.\n  - `scope` (string `'FUTURE' | 'ALL'`, tùy chọn, mặc định `'FUTURE'`): Phạm vi áp dụng cập nhật.\n    - `FUTURE`: Chỉ áp dụng cho các ca đặt sân bắt đầu sau thời điểm hiện tại.\n    - `ALL`: Áp dụng cho toàn bộ các ca đặt sân trong chuỗi (bao gồm cả các ca đã qua).\n\n---\n\n### 3.3. Hủy/Xóa Lịch cố định (DELETE)\nHủy các ca đặt sân trong chuỗi lịch cố định.\n\n- **URL:** `/api/v1/bookings/recurring?ruleId=\u003cruleId\u003e\u0026scope=\u003cscope\u003e`\n- **Method:** `DELETE`\n- **Query Parameters:**\n  - `ruleId` (UUID, bắt buộc): ID của luật lịch cố định.\n  - `scope` (string `'FUTURE' | 'ALL'`, bắt buộc): Phạm vi áp dụng hủy.\n    - `FUTURE`: Chuyển trạng thái các ca chưa bắt đầu thành `CANCELLED`.\n    - `ALL`: Chuyển trạng thái tất cả các ca trong chuỗi thành `CANCELLED` (ngoại trừ các ca đã `COMPLETED` hoặc `CHECKED_IN`).\n- **Quy tắc Truncate:**\n  - Nếu áp dụng `FUTURE`, API sẽ cập nhật ngày kết thúc của luật lặp lại (`end_date`) về ngày của ca đặt sân cuối cùng trước thời điểm hiện tại để lưu giữ lịch sử cấu hình.\n  - Nếu tất cả các ca đặt sân trong chuỗi đều bị hủy, luật lặp lại (`recurring_rules`) sẽ được xóa hoàn toàn khỏi cơ sở dữ liệu.\n",
+        "description": "Đặc tả chi tiết các endpoints của API đặt lịch cố định (recurring bookings) bao gồm tạo lịch, cập nhật, hủy và xử lý trùng lặp.",
+        "path": "api/recurring-bookings-api-v1",
+        "tags": [
+          "api",
+          "recurring",
+          "booking"
+        ],
+        "title": "Recurring Bookings API (v1)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "taskId": "8r062m",
+  "currentVersion": 5,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "8r062m",
+      "version": 1,
+      "timestamp": "2026-06-29T06:12:28.286504Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Implement a list of active recurring rules in the Recurring Bookings tab for management, and update the calendar instance modification flow to warn when editing a recurring instance.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Frontend UI for Recurring Booking Listing and Management"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "8r062m",
+      "version": 2,
+      "timestamp": "2026-06-29T06:12:33.512974Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Implement listing of active recurring rules in the tab"
+            },
+            {
+              "completed": false,
+              "text": "Implement series deletion triggers from the tab list"
+            },
+            {
+              "completed": false,
+              "text": "Add warning dialog to calendar single booking instance modification"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement listing of active recurring rules in the tab"
+          },
+          {
+            "completed": false,
+            "text": "Implement series deletion triggers from the tab list"
+          },
+          {
+            "completed": false,
+            "text": "Add warning dialog to calendar single booking instance modification"
+          }
+        ],
+        "description": "Implement a list of active recurring rules in the Recurring Bookings tab for management, and update the calendar instance modification flow to warn when editing a recurring instance.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Frontend UI for Recurring Booking Listing and Management"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "8r062m",
+      "version": 3,
+      "timestamp": "2026-06-29T07:19:22.717245Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement listing of active recurring rules in the tab"
+          },
+          {
+            "completed": false,
+            "text": "Implement series deletion triggers from the tab list"
+          },
+          {
+            "completed": false,
+            "text": "Add warning dialog to calendar single booking instance modification"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement a list of active recurring rules in the Recurring Bookings tab for management, and update the calendar instance modification flow to warn when editing a recurring instance.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Frontend UI for Recurring Booking Listing and Management"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "8r062m",
+      "version": 4,
+      "timestamp": "2026-06-29T07:19:22.82959Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Created RecurringBookingsTab with rules list and delete confirmation options (FUTURE / ALL). Updated single booking details warning dialog on schedule timeline edits/cancellations."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Implement listing of active recurring rules in the tab"
+          },
+          {
+            "completed": true,
+            "text": "Implement series deletion triggers from the tab list"
+          },
+          {
+            "completed": true,
+            "text": "Add warning dialog to calendar single booking instance modification"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement a list of active recurring rules in the Recurring Bookings tab for management, and update the calendar instance modification flow to warn when editing a recurring instance.",
+        "implementationNotes": "Created RecurringBookingsTab with rules list and delete confirmation options (FUTURE / ALL). Updated single booking details warning dialog on schedule timeline edits/cancellations.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Frontend UI for Recurring Booking Listing and Management"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "8r062m",
+      "version": 5,
+      "timestamp": "2026-06-29T07:19:22.912022Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement listing of active recurring rules in the tab",
+            "completed": true
+          },
+          {
+            "text": "Implement series deletion triggers from the tab list",
+            "completed": true
+          },
+          {
+            "text": "Add warning dialog to calendar single booking instance modification",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement a list of active recurring rules in the Recurring Bookings tab for management, and update the calendar instance modification flow to warn when editing a recurring instance.",
+        "implementationNotes": "Created RecurringBookingsTab with rules list and delete confirmation options (FUTURE / ALL). Updated single booking details warning dialog on schedule timeline edits/cancellations.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Frontend UI for Recurring Booking Listing and Management"
+      }
+    }
+  ]
+}

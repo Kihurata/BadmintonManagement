@@ -1,0 +1,223 @@
+{
+  "docId": "doc-d2e091ee983f9f5ea1c50c3e173833e0",
+  "docPath": "specs/recurring-bookings",
+  "currentPath": "specs/recurring-bookings",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-d2e091ee983f9f5ea1c50c3e173833e0",
+      "docPath": "specs/recurring-bookings",
+      "currentPath": "specs/recurring-bookings",
+      "version": 1,
+      "timestamp": "2026-06-29T05:30:34.710742Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "newHash": "827ff98ff35b6369fe35d4757a70f43342ebbdcf62d4b7a1eb1a27bca8770d0e",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "specs/recurring-bookings"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Recurring Bookings"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Specification for recurring bookings feature"
+        },
+        {
+          "field": "content",
+          "oldValue": null,
+          "newValue": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Add Booking Dialog\" updated to include recurring options:\n  - Checkbox to toggle recurrence.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.\n"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "spec",
+            "draft"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 26,
+          "deltaBytes": 26
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 20,
+          "deltaBytes": 20
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 46,
+          "deltaBytes": 46
+        },
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "newBytes": 4597,
+          "deltaBytes": 4597
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 16,
+          "deltaBytes": 16
+        }
+      ],
+      "snapshot": {
+        "content": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Add Booking Dialog\" updated to include recurring options:\n  - Checkbox to toggle recurrence.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.\n",
+        "description": "Specification for recurring bookings feature",
+        "path": "specs/recurring-bookings",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "Recurring Bookings"
+      }
+    },
+    {
+      "id": "v2",
+      "docId": "doc-d2e091ee983f9f5ea1c50c3e173833e0",
+      "docPath": "specs/recurring-bookings",
+      "currentPath": "specs/recurring-bookings",
+      "version": 2,
+      "timestamp": "2026-06-29T05:38:08.66531Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "f2f8331c6c18a6a8634897f3d64435d5231e5975b3b12445bb9cb20a528e90d2",
+      "newHash": "bdc9224d32116b98d838c00dad5cd70280674b45982b0b7fff88b759cd38d2a5",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Add Booking Dialog\" updated to include recurring options:\n  - Checkbox to toggle recurrence.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.",
+          "newValue": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Recurring Bookings\" tab updated to include a dedicated form to create new recurring rules:\n  - Fields for selecting Customer, Court, Start/End times.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n  - *Note: Normal booking forms (like AddBookingDialog) will stay the same and will not support creating recurring rules.*\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged."
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "oldBytes": 4596,
+          "newBytes": 4776,
+          "deltaBytes": 180
+        }
+      ],
+      "snapshot": {
+        "content": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Recurring Bookings\" tab updated to include a dedicated form to create new recurring rules:\n  - Fields for selecting Customer, Court, Start/End times.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n  - *Note: Normal booking forms (like AddBookingDialog) will stay the same and will not support creating recurring rules.*\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.",
+        "description": "Specification for recurring bookings feature",
+        "path": "specs/recurring-bookings",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "Recurring Bookings"
+      }
+    },
+    {
+      "id": "v3",
+      "docId": "doc-d2e091ee983f9f5ea1c50c3e173833e0",
+      "docPath": "specs/recurring-bookings",
+      "currentPath": "specs/recurring-bookings",
+      "version": 3,
+      "timestamp": "2026-06-29T05:39:49.270546Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "bdc9224d32116b98d838c00dad5cd70280674b45982b0b7fff88b759cd38d2a5",
+      "newHash": "b296b62c6591e06c2e0ac75c985cf66949564d40c66bdf94d0d94c54fc874dae",
+      "changes": [
+        {
+          "field": "tags",
+          "oldValue": [
+            "spec",
+            "draft"
+          ],
+          "newValue": [
+            "spec",
+            "approved"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "oldBytes": 16,
+          "newBytes": 19,
+          "deltaBytes": 3
+        }
+      ],
+      "snapshot": {
+        "description": "Specification for recurring bookings feature",
+        "path": "specs/recurring-bookings",
+        "tags": [
+          "spec",
+          "approved"
+        ],
+        "title": "Recurring Bookings"
+      }
+    },
+    {
+      "id": "v4",
+      "docId": "doc-d2e091ee983f9f5ea1c50c3e173833e0",
+      "docPath": "specs/recurring-bookings",
+      "currentPath": "specs/recurring-bookings",
+      "version": 4,
+      "timestamp": "2026-06-29T06:12:01.87205Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "b296b62c6591e06c2e0ac75c985cf66949564d40c66bdf94d0d94c54fc874dae",
+      "newHash": "c3e9f657d365722e8707e73c9c2d74a3718b43319af1bf4408d36810fd281589",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Recurring Bookings\" tab updated to include a dedicated form to create new recurring rules:\n  - Fields for selecting Customer, Court, Start/End times.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n  - *Note: Normal booking forms (like AddBookingDialog) will stay the same and will not support creating recurring rules.*\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.",
+          "newValue": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/v1/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n  - `/api/v1/bookings/recurring` or `/api/v1/bookings/recurring/[ruleId]`\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Recurring Bookings\" tab updated to include a dedicated form to create new recurring rules:\n  - Fields for selecting Customer, Court, Start/End times.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n  - *Note: Normal booking forms (like AddBookingDialog) will stay the same and will not support creating recurring rules.*\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged."
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "oldBytes": 4776,
+          "newBytes": 4853,
+          "deltaBytes": 77
+        }
+      ],
+      "snapshot": {
+        "content": "## Overview\n\nImplement a recurring bookings feature allowing users to rent courts on multiple recurring days of the week (e.g., Monday, Wednesday, Friday) over a duration of time (up to 3 months).\n\n## Locked Decisions\n\n- **D1 (Conflict Resolution):** If there are scheduling conflicts during creation, the system will prompt the user with a list of conflicts, allowing them to choose whether to skip the conflicted slots or (if admin) overwrite them by canceling/deleting the existing bookings.\n- **D2 (Series Modification):** \n  - A new \"Recurring\" management tab in the navigation menu allows users to manage recurring rules. Modifying or deleting here will prompt: \"This and all future bookings\" or \"All bookings in the series\".\n  - Editing or deleting a single booking instance from the calendar/details page will show a warning: \"This booking belongs to a recurring rule. Are you sure you want to change it?\" and will only modify/delete that specific instance.\n- **D3 (Scheduling Limit):** A recurring rule can span a maximum of 3 months from the start date.\n- **D4 (DB Schema):** The database schema for `recurring_rules` will be modified to replace `day_of_week` (single integer) with `days_of_week` (integer array `integer[]`) to keep multiple days grouped under a single master rule.\n\n## Requirements\n\n### Functional Requirements\n\n- **FR-1:** Database migration to:\n  - Add `days_of_week integer[]` and drop `day_of_week` in `recurring_rules`.\n  - Ensure RLS policies and triggers are properly attached to `recurring_rules` (already configured in our multi-tenant fix, but verified).\n- **FR-2:** API endpoint (`/api/v1/bookings/recurring`) to handle creation of a recurring rule:\n  - Detect conflicts with existing bookings.\n  - Return a conflict list if any exist.\n  - Create the recurring rule and generate individual `bookings` rows in a transaction when confirmed.\n- **FR-3:** API endpoint to delete/update recurring rules and their associated bookings based on D2 choices.\n  - `/api/v1/bookings/recurring` or `/api/v1/bookings/recurring/[ruleId]`\n- **FR-4:** Front-end \"Recurring Bookings\" management page/tab to list all active recurring rules and allow updating/deleting them.\n- **FR-5:** Front-end \"Recurring Bookings\" tab updated to include a dedicated form to create new recurring rules:\n  - Fields for selecting Customer, Court, Start/End times.\n  - Checkboxes to select days of the week (Mon-Sun).\n  - Start date and End date fields (limited to max 3 months duration).\n  - *Note: Normal booking forms (like AddBookingDialog) will stay the same and will not support creating recurring rules.*\n- **FR-6:** Front-end Conflict Resolution modal/warning to display conflicts and allow the user to select \"Skip\" or \"Overwrite\" (admin only).\n\n### Non-Functional Requirements\n\n- **NFR-1:** Transaction integrity: Creation of a recurring rule and all of its individual bookings must run inside a database transaction to prevent partial states on error.\n- **NFR-2:** Tenant isolation: RLS policies on `recurring_rules` and `bookings` must isolate data per tenant.\n\n## Acceptance Criteria\n\n- [ ] **AC-1:** Database schema updated to store multiple days of the week (`days_of_week integer[]`).\n- [ ] **AC-2:** Booking a recurring court (e.g., Mon/Wed, 18:00 - 20:00 for 1 month) successfully generates all individual bookings.\n- [ ] **AC-3:** If scheduling conflicts occur, the UI displays a list of conflicted dates and prompts the user to skip them or overwrite them (admin only).\n- [ ] **AC-4:** Modifying a single booking instance from the main calendar shows a warning and only modifies that instance.\n- [ ] **AC-5:** Deleting a series from the \"Recurring\" tab prompts the user and deletes either all future bookings or the entire series.\n- [ ] **AC-6:** The UI restricts the end date of a recurrence to a maximum of 3 months from the start date.\n\n## Scenarios\n\n### Scenario 1: Happy Path (No conflicts)\n- **Given** Court 1 has no bookings in October.\n- **When** User creates a recurring booking for Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System creates a `recurring_rules` row and generates 9 individual booking instances.\n\n### Scenario 2: Overlap Conflict (User skips)\n- **Given** Court 1 is already booked on Wednesday, Oct 15th, 18:00 - 19:00.\n- **When** User tries to book Court 1 on Mon and Wed, 18:00 - 20:00, from Oct 1 to Oct 31.\n- **Then** System returns a conflict on Oct 15th. User selects \"Skip Conflict\".\n- **And** System creates all bookings except for Wednesday, Oct 15th.\n\n### Scenario 3: Single Booking Edit\n- **Given** A recurring series is created.\n- **When** User opens the booking details for Oct 13th (Monday) on the calendar and changes the time to 19:00 - 21:00.\n- **Then** System shows a warning, and only updates the booking for Oct 13th, leaving the rest of the series unchanged.",
+        "description": "Specification for recurring bookings feature",
+        "path": "specs/recurring-bookings",
+        "tags": [
+          "spec",
+          "approved"
+        ],
+        "title": "Recurring Bookings"
+      }
+    }
+  ]
+}

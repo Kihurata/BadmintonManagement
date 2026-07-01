@@ -1,0 +1,132 @@
+{
+  "docId": "legacy-fd52d7d9bd671cc4",
+  "docPath": "learnings/critical-patterns",
+  "currentPath": "learnings/critical-patterns",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "legacy-fd52d7d9bd671cc4",
+      "docPath": "learnings/critical-patterns",
+      "currentPath": "learnings/critical-patterns",
+      "version": 1,
+      "timestamp": "2026-05-25T10:03:03.8054752Z",
+      "changes": [
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Critical Patterns"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Promoted learnings that save the most time. Read at session start."
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "learning",
+            "critical"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title"
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description"
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags"
+        }
+      ],
+      "snapshot": {
+        "description": "Promoted learnings that save the most time. Read at session start.",
+        "tags": [
+          "learning",
+          "critical"
+        ],
+        "title": "Critical Patterns"
+      }
+    },
+    {
+      "id": "v2",
+      "docId": "legacy-fd52d7d9bd671cc4",
+      "docPath": "learnings/critical-patterns",
+      "currentPath": "learnings/critical-patterns",
+      "version": 2,
+      "timestamp": "2026-06-23T17:32:01.2286643Z",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit",
+          "newValue": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n"
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content"
+        }
+      ],
+      "snapshot": {
+        "content": "# Critical Patterns\r\n\r\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\r\n\r\n---\r\n\r\n## 2026-05-25 Always Run npm run build Before Commit\r\n**Category:** convention\r\n**Source:** User feedback / build debug\r\n**Tags:** [verification, build]\r\n\r\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\r\n\r\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n",
+        "description": "Promoted learnings that save the most time. Read at session start.",
+        "tags": [
+          "learning",
+          "critical"
+        ],
+        "title": "Critical Patterns"
+      }
+    },
+    {
+      "id": "v3",
+      "docId": "legacy-fd52d7d9bd671cc4",
+      "docPath": "learnings/critical-patterns",
+      "currentPath": "learnings/critical-patterns",
+      "version": 3,
+      "timestamp": "2026-06-30T03:51:27.556387Z",
+      "author": "mcp",
+      "actor": "mcp",
+      "source": "mcp",
+      "baseHash": "0f02220a9433fb1c001ca6d5d0e0778e08bf68c9bcf85cdd1f5842ce735833cb",
+      "newHash": "9c89aea93efbbe38d0a781bd0faec588b9b47613e973b636cd17811bb5bbc05d",
+      "changes": [
+        {
+          "field": "content",
+          "oldValue": "# Critical Patterns\n\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\n\n---\n\n## 2026-05-25 Always Run npm run build Before Commit\n**Category:** convention\n**Source:** User feedback / build debug\n**Tags:** [verification, build]\n\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\n\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Zod Schema Conditional Validation Logic\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation, security]\n\nDefining dependent fields (e.g. packaging price, packaging units) as independent optional attributes creates logic vulnerabilities (clients can send `is_packable: true` but omit details). Always use `.refine()` or `.superRefine()` on Zod schemas to enforce conditional validation where dependent fields become strictly required.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Soft Deactivation Status Design\n**Category:** decision\n**Source:** @task-0gih9b\n**Tags:** [database, api-design]\n\nRelying solely on physical `DELETE` endpoints creates data constraint violations (409 Conflict) when the entity is referenced by transactional history (e.g. invoice items). Always introduce a `status` field (`ACTIVE` | `INACTIVE`) to support soft deactivation, permitting the frontend to hide items without breaking database integrity.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n\n## 2026-06-27 Bruno API Test Automation\n**Category:** convention\n**Source:** @task-jnm8r7\n**Tags:** [testing, api, automation]\n\nEvery time you write or modify a Next.js API Route Handler, write a corresponding `.bru` request file inside the `bruno/` directory. Run the Bruno CLI runner (`npx @usebruno/cli run bruno/ --env Local`) to verify that all API endpoints function securely and successfully before committing code.\n\n**Full entry:** @doc/learnings/learning-bruno-api-testing\n\n## 2026-06-29 TypeScript Safe-Casting Supabase Join Relations\n**Category:** pattern\n**Source:** @task-rres6a\n**Tags:** [typescript, supabase]\n\nWhen querying join tables (e.g. `customers(name)`) under strict typescript config (`@typescript-eslint/no-explicit-any`), cast relation returns using `Array.isArray` check and `unknown` casting rather than bypassing checks with `as any`.\n\n**Full entry:** @doc/learnings/learning-typescript-strict-compilation",
+          "newValue": "# Critical Patterns\n\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\n\n---\n\n## 2026-05-25 Always Run npm run build Before Commit\n**Category:** convention\n**Source:** User feedback / build debug\n**Tags:** [verification, build]\n\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\n\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Zod Schema Conditional Validation Logic\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation, security]\n\nDefining dependent fields (e.g. packaging price, packaging units) as independent optional attributes creates logic vulnerabilities (clients can send `is_packable: true` but omit details). Always use `.refine()` or `.superRefine()` on Zod schemas to enforce conditional validation where dependent fields become strictly required.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Soft Deactivation Status Design\n**Category:** decision\n**Source:** @task-0gih9b\n**Tags:** [database, api-design]\n\nRelying solely on physical `DELETE` endpoints creates data constraint violations (409 Conflict) when the entity is referenced by transactional history (e.g. invoice items). Always introduce a `status` field (`ACTIVE` | `INACTIVE`) to support soft deactivation, permitting the frontend to hide items without breaking database integrity.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n\n## 2026-06-27 Bruno API Test Automation\n**Category:** convention\n**Source:** @task-jnm8r7\n**Tags:** [testing, api, automation]\n\nEvery time you write or modify a Next.js API Route Handler, write a corresponding `.bru` request file inside the `bruno/` directory. Run the Bruno CLI runner (`npx @usebruno/cli run bruno/ --env Local`) to verify that all API endpoints function securely and successfully before committing code.\n\n**Full entry:** @doc/learnings/learning-bruno-api-testing\n\n## 2026-06-29 TypeScript Safe-Casting Supabase Join Relations\n**Category:** pattern\n**Source:** @task-rres6a\n**Tags:** [typescript, supabase]\n\nWhen querying join tables (e.g. `customers(name)`) under strict typescript config (`@typescript-eslint/no-explicit-any`), cast relation returns using `Array.isArray` check and `unknown` casting rather than bypassing checks with `as any`.\n\n**Full entry:** @doc/learnings/learning-typescript-strict-compilation\n\n\n## 2026-06-30 Next.js Hybrid Data Loading Pattern\n**Category:** convention\n**Source:** Architectural Alignment\n**Tags:** [nextjs, architecture, api]\n\nFetch initial read-only data directly via repositories in Server Components to eliminate loopback API latency and layout shifts, then execute mutations/writes via relative requests to versioned `/api/v1/` Route Handlers, using `router.refresh()` to trigger prop synchronization.\n\n**Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading"
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "whole_doc",
+          "field": "content",
+          "summary": "Whole document content",
+          "oldBytes": 3721,
+          "newBytes": 4220,
+          "deltaBytes": 499
+        }
+      ],
+      "snapshot": {
+        "content": "# Critical Patterns\n\nPromoted learnings from completed work. Read this at the start of every session via `kn-init`. These are lessons that cost the most to learn and save the most by knowing.\n\n---\n\n## 2026-05-25 Always Run npm run build Before Commit\n**Category:** convention\n**Source:** User feedback / build debug\n**Tags:** [verification, build]\n\nRunning Next.js production build catches build-time static generation errors (like `useSearchParams()` without a `Suspense` boundary) that Jest unit tests or local dev servers do not catch. Always run `npm run build` locally before committing code to prevent CI/CD build failures.\n\n**Full entry:** @doc/learnings/learning-build-verification-before-commit\n\n\n## 2026-06-24 Next.js Route Handler Export Restriction\n**Category:** convention\n**Source:** @task-0gih9b\n**Tags:** [nextjs, compilation]\n\nNext.js App Router route handlers (`route.ts`) are extremely strict about exports. Exporting non-handler functions or validation schemas (like Zod objects) to sibling files breaks the static production compilation (`next build`). Always define validation schemas inline inside the route file or import them from external, non-route files.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-24 ZodEffects and Partial Limitation\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation]\n\nCalling `.partial()` on a Zod schema that has been refined using `.refine()` (which produces a `ZodEffects` wrapper) will fail at compilation time because `ZodEffects` does not support the `.partial()` modifier. Always call `.partial()` on the base object schema *before* applying `.refine()` refinements.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Zod Schema Conditional Validation Logic\n**Category:** failure\n**Source:** @task-0gih9b\n**Tags:** [zod, validation, security]\n\nDefining dependent fields (e.g. packaging price, packaging units) as independent optional attributes creates logic vulnerabilities (clients can send `is_packable: true` but omit details). Always use `.refine()` or `.superRefine()` on Zod schemas to enforce conditional validation where dependent fields become strictly required.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n## 2026-06-27 Soft Deactivation Status Design\n**Category:** decision\n**Source:** @task-0gih9b\n**Tags:** [database, api-design]\n\nRelying solely on physical `DELETE` endpoints creates data constraint violations (409 Conflict) when the entity is referenced by transactional history (e.g. invoice items). Always introduce a `status` field (`ACTIVE` | `INACTIVE`) to support soft deactivation, permitting the frontend to hide items without breaking database integrity.\n\n**Full entry:** @doc/learnings/learning-rest-products-api\n\n\n## 2026-06-27 Bruno API Test Automation\n**Category:** convention\n**Source:** @task-jnm8r7\n**Tags:** [testing, api, automation]\n\nEvery time you write or modify a Next.js API Route Handler, write a corresponding `.bru` request file inside the `bruno/` directory. Run the Bruno CLI runner (`npx @usebruno/cli run bruno/ --env Local`) to verify that all API endpoints function securely and successfully before committing code.\n\n**Full entry:** @doc/learnings/learning-bruno-api-testing\n\n## 2026-06-29 TypeScript Safe-Casting Supabase Join Relations\n**Category:** pattern\n**Source:** @task-rres6a\n**Tags:** [typescript, supabase]\n\nWhen querying join tables (e.g. `customers(name)`) under strict typescript config (`@typescript-eslint/no-explicit-any`), cast relation returns using `Array.isArray` check and `unknown` casting rather than bypassing checks with `as any`.\n\n**Full entry:** @doc/learnings/learning-typescript-strict-compilation\n\n\n## 2026-06-30 Next.js Hybrid Data Loading Pattern\n**Category:** convention\n**Source:** Architectural Alignment\n**Tags:** [nextjs, architecture, api]\n\nFetch initial read-only data directly via repositories in Server Components to eliminate loopback API latency and layout shifts, then execute mutations/writes via relative requests to versioned `/api/v1/` Route Handlers, using `router.refresh()` to trigger prop synchronization.\n\n**Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading",
+        "description": "Promoted learnings that save the most time. Read at session start.",
+        "path": "learnings/critical-patterns",
+        "tags": [
+          "learning",
+          "critical"
+        ],
+        "title": "Critical Patterns"
+      }
+    }
+  ]
+}

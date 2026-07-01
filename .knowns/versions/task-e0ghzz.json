@@ -1,0 +1,240 @@
+{
+  "taskId": "e0ghzz",
+  "currentVersion": 6,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "e0ghzz",
+      "version": 1,
+      "timestamp": "2026-06-29T06:12:28.27141Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "e0ghzz",
+      "version": 2,
+      "timestamp": "2026-06-29T06:12:33.410912Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes"
+            },
+            {
+              "completed": false,
+              "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes"
+            },
+            {
+              "completed": false,
+              "text": "Verify series deletion scopes remove appropriate records"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes"
+          },
+          {
+            "completed": false,
+            "text": "Verify series deletion scopes remove appropriate records"
+          }
+        ],
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "e0ghzz",
+      "version": 3,
+      "timestamp": "2026-06-29T07:15:03.375055Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes"
+          },
+          {
+            "completed": false,
+            "text": "Verify series deletion scopes remove appropriate records"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "e0ghzz",
+      "version": 4,
+      "timestamp": "2026-06-29T07:15:03.407521Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Refactor booking route /api/v1/bookings/recurring to support DELETE and PUT methods.\n2. DELETE endpoint will support:\n   - ruleId (URL or query parameter).\n   - scope parameter: \"FUTURE\" (cancels only future bookings of the series) or \"ALL\" (cancels all bookings of the series).\n3. PUT endpoint will update the recurring rule and future associated bookings (e.g. updating the customer or note, or propagating details).\n4. Implement standard series update/delete helper logic using Supabase client.\n5. Verify logic."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes"
+          },
+          {
+            "completed": false,
+            "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes"
+          },
+          {
+            "completed": false,
+            "text": "Verify series deletion scopes remove appropriate records"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "implementationPlan": "1. Refactor booking route /api/v1/bookings/recurring to support DELETE and PUT methods.\n2. DELETE endpoint will support:\n   - ruleId (URL or query parameter).\n   - scope parameter: \"FUTURE\" (cancels only future bookings of the series) or \"ALL\" (cancels all bookings of the series).\n3. PUT endpoint will update the recurring rule and future associated bookings (e.g. updating the customer or note, or propagating details).\n4. Implement standard series update/delete helper logic using Supabase client.\n5. Verify logic.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "e0ghzz",
+      "version": 5,
+      "timestamp": "2026-06-29T07:15:30.073955Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented PUT and DELETE /api/v1/bookings/recurring endpoints. Supports scopes ALL and FUTURE. Gracefully handles completed/checked_in bookings and cascading constraints."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": true,
+            "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes"
+          },
+          {
+            "completed": true,
+            "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes"
+          },
+          {
+            "completed": true,
+            "text": "Verify series deletion scopes remove appropriate records"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "implementationNotes": "Implemented PUT and DELETE /api/v1/bookings/recurring endpoints. Supports scopes ALL and FUTURE. Gracefully handles completed/checked_in bookings and cascading constraints.",
+        "implementationPlan": "1. Refactor booking route /api/v1/bookings/recurring to support DELETE and PUT methods.\n2. DELETE endpoint will support:\n   - ruleId (URL or query parameter).\n   - scope parameter: \"FUTURE\" (cancels only future bookings of the series) or \"ALL\" (cancels all bookings of the series).\n3. PUT endpoint will update the recurring rule and future associated bookings (e.g. updating the customer or note, or propagating details).\n4. Implement standard series update/delete helper logic using Supabase client.\n5. Verify logic.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "e0ghzz",
+      "version": 6,
+      "timestamp": "2026-06-29T07:15:30.09326Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Implement DELETE /api/v1/bookings/recurring endpoint supporting series scopes",
+            "completed": true
+          },
+          {
+            "text": "Implement PUT /api/v1/bookings/recurring endpoint propagating changes",
+            "completed": true
+          },
+          {
+            "text": "Verify series deletion scopes remove appropriate records",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Implement DELETE and PUT /api/v1/bookings/recurring endpoints to manage series deletion and updates, supporting All or Future only scopes.",
+        "implementationNotes": "Implemented PUT and DELETE /api/v1/bookings/recurring endpoints. Supports scopes ALL and FUTURE. Gracefully handles completed/checked_in bookings and cascading constraints.",
+        "implementationPlan": "1. Refactor booking route /api/v1/bookings/recurring to support DELETE and PUT methods.\n2. DELETE endpoint will support:\n   - ruleId (URL or query parameter).\n   - scope parameter: \"FUTURE\" (cancels only future bookings of the series) or \"ALL\" (cancels all bookings of the series).\n3. PUT endpoint will update the recurring rule and future associated bookings (e.g. updating the customer or note, or propagating details).\n4. Implement standard series update/delete helper logic using Supabase client.\n5. Verify logic.",
+        "labels": [
+          "from-spec"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Backend API for Recurring Booking Update and Deletion"
+      }
+    }
+  ]
+}

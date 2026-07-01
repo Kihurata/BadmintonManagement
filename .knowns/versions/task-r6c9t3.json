@@ -1,6 +1,6 @@
 {
   "taskId": "r6c9t3",
-  "currentVersion": 3,
+  "currentVersion": 4,
   "versions": [
     {
       "id": "v1",
@@ -78,6 +78,30 @@
         "assignee": "@me",
         "description": "Refactor booking-form.tsx to accept customers as a prop (similar to courts) instead of fetching them client-side in useEffect, aligning with the project's Next.js Hybrid Data Loading Pattern. Update callers to pre-fetch and pass customers down.",
         "implementationNotes": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Refactor Customer Selector in BookingForm to use Props"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "r6c9t3",
+      "version": 4,
+      "timestamp": "2026-06-30T06:55:18.070454Z",
+      "changes": [
+        {
+          "field": "implementationNotes",
+          "oldValue": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.",
+          "newValue": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.\n📚 Extracted to @doc/learnings/learning-nextjs-hybrid-data-loading"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor booking-form.tsx to accept customers as a prop (similar to courts) instead of fetching them client-side in useEffect, aligning with the project's Next.js Hybrid Data Loading Pattern. Update callers to pre-fetch and pass customers down.",
+        "implementationNotes": "Done: Refactored BookingForm and RecurringBookingForm to accept customers as a prop. Updated pages/containers (HomePage, SchedulePage, HomeClient, ScheduleClient, RecurringBookingsTab) to prefetch customers server-side and propagate them down. Passed validation and Next.js build.\n📚 Extracted to @doc/learnings/learning-nextjs-hybrid-data-loading",
         "labels": [
           "normal"
         ],

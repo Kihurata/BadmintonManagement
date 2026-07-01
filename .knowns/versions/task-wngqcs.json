@@ -1,0 +1,85 @@
+{
+  "taskId": "wngqcs",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "wngqcs",
+      "version": 1,
+      "timestamp": "2026-06-29T08:15:48.225625Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Create backend unit tests for route handlers and write Bruno integration tests under Bruno collection directory to cover creation, conflict scenarios (skip, overwrite), updates, and deletion scopes.",
+        "labels": [
+          "testing"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Create unit and Bruno integration tests for recurring bookings"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "wngqcs",
+      "version": 2,
+      "timestamp": "2026-06-29T08:16:14.916213Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create tests/api/recurring-bookings.test.ts unit test suite.\n2. Mock auth roles and Supabase client DB operations/RPCs.\n3. Write test cases for POST, PUT, DELETE endpoints including schema validation, conflict overlap checks, skip/overwrite flags, and deletion scopes.\n4. Create bruno/RecurringBookings/ collection files including Create, Conflict, Skip, Update, and Delete requests."
+        }
+      ],
+      "snapshot": {
+        "description": "Create backend unit tests for route handlers and write Bruno integration tests under Bruno collection directory to cover creation, conflict scenarios (skip, overwrite), updates, and deletion scopes.",
+        "implementationPlan": "1. Create tests/api/recurring-bookings.test.ts unit test suite.\n2. Mock auth roles and Supabase client DB operations/RPCs.\n3. Write test cases for POST, PUT, DELETE endpoints including schema validation, conflict overlap checks, skip/overwrite flags, and deletion scopes.\n4. Create bruno/RecurringBookings/ collection files including Create, Conflict, Skip, Update, and Delete requests.",
+        "labels": [
+          "testing"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Create unit and Bruno integration tests for recurring bookings"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "wngqcs",
+      "version": 3,
+      "timestamp": "2026-06-29T08:21:36.353055Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Created Jest unit tests in tests/api/recurring-bookings.test.ts and 5 Bruno integration requests under bruno/RecurringBookings/."
+        }
+      ],
+      "snapshot": {
+        "description": "Create backend unit tests for route handlers and write Bruno integration tests under Bruno collection directory to cover creation, conflict scenarios (skip, overwrite), updates, and deletion scopes.",
+        "implementationNotes": "Created Jest unit tests in tests/api/recurring-bookings.test.ts and 5 Bruno integration requests under bruno/RecurringBookings/.",
+        "implementationPlan": "1. Create tests/api/recurring-bookings.test.ts unit test suite.\n2. Mock auth roles and Supabase client DB operations/RPCs.\n3. Write test cases for POST, PUT, DELETE endpoints including schema validation, conflict overlap checks, skip/overwrite flags, and deletion scopes.\n4. Create bruno/RecurringBookings/ collection files including Create, Conflict, Skip, Update, and Delete requests.",
+        "labels": [
+          "testing"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Create unit and Bruno integration tests for recurring bookings"
+      }
+    }
+  ]
+}
