@@ -1,6 +1,5 @@
 
 import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 import { startOfDay, endOfDay } from 'date-fns';
 
 interface Court {
@@ -60,34 +59,28 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
         const start = startOfDay(selectedDate).toISOString();
         const end = endOfDay(selectedDate).toISOString();
 
-        // Get all court IDs
-        const courtIds = courts.map(c => c.id);
+        try {
+            const res = await fetch(`/api/bookings?start=${start}&end=${end}`);
+            const result = await res.json();
 
-        const { data } = await supabase
-            .from('bookings')
-            .select(`
-              id,
-              start_time,
-              end_time,
-              status,
-              court_id,
-              customers ( name, phone )
-            `)
-            .in('court_id', courtIds)
-            .gte('start_time', start)
-            .lte('start_time', end);
-
-        if (data) {
-            // Transform data to match Booking interface
-            const formattedBookings = data.map((item: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-                id: item.id,
-                start_time: item.start_time,
-                end_time: item.end_time,
-                status: item.status,
-                court_id: item.court_id,
-                customer: item.customers
-            }));
-            setBookings(formattedBookings);
+            if (res.ok && result.success && result.data) {
+                // Transform data to match Booking interface
+                const formattedBookings = result.data.map((item: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+                    id: item.id,
+                    start_time: item.start_time,
+                    end_time: item.end_time,
+                    status: item.status,
+                    court_id: item.court_id,
+                    customer: Array.isArray(item.customers) ? item.customers[0] : item.customers
+                }));
+                setBookings(formattedBookings);
+            } else {
+                console.error("Failed to fetch bookings:", result.error || "Unknown error");
+                setBookings([]);
+            }
+        } catch (err) {
+            console.error("Error fetching bookings:", err);
+            setBookings([]);
         }
     }, [courts, selectedDate]);
 
