@@ -88,3 +88,21 @@ When querying join tables (e.g. `customers(name)`) under strict typescript confi
 Fetch initial read-only data directly via repositories in Server Components to eliminate loopback API latency and layout shifts, then execute mutations/writes via relative requests to versioned `/api/v1/` Route Handlers, using `router.refresh()` to trigger prop synchronization.
 
 **Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading
+
+## 2026-07-05 Next.js Server-Side Route Migration for SDK Queries
+**Category:** decision
+**Source:** Triage and loading debugging
+**Tags:** [nextjs, supabase, client-side]
+
+Avoid direct client-side Supabase SDK queries (`supabase.from(...)`) in Client Components when session cookies or custom headers are required. Migrating them to server-side Next.js GET Route Handlers prevents browser/PWA auth state hangs and ensures requests are traceable in DevTools.
+
+**Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading
+
+## 2026-07-05 next-pwa Service Worker Git Untracking
+**Category:** failure
+**Source:** Merge conflict triage
+**Tags:** [git, nextjs, next-pwa]
+
+Auto-generated files like `public/sw.js` and `public/workbox-*.js` updated on local builds must be untracked (`git rm --cached`) in Git history. If committed before ignoring, they will ignore `.gitignore` and cause merge conflicts on every developer build.
+
+**Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading
