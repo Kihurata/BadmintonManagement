@@ -69,6 +69,56 @@ function generateBookingDates(
   return dates;
 }
 
+import { createClient } from '@/utils/supabase/server';
+
+export async function GET() {
+  try {
+    // 1. Authenticate user
+    const auth = await verifyUserRole(['OWNER', 'MANAGER', 'STAFF']);
+    if (!auth.success || !auth.tenantId) {
+      return auth.errorResponse || NextResponse.json(
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Unauthorized' } },
+        { status: 401 }
+      );
+    }
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('recurring_rules')
+      .select(`
+        id,
+        start_time,
+        end_time,
+        start_date,
+        end_date,
+        days_of_week,
+        court_id,
+        courts ( court_name ),
+        customer_id,
+        customers ( name, phone )
+      `)
+      .eq('tenant_id', auth.tenantId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: { code: 'DATABASE_ERROR', message: error.message } },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: { code: 'INTERNAL_SERVER_ERROR', message: (error as Error).message } },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     // 1. Authenticate user

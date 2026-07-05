@@ -15,6 +15,7 @@ interface InvoiceSummaryCardProps {
     itemsFee: number;
     deposit: number;
     totalAmount: number;
+    prepaidAmount?: number;
     
     // Optional rendering details
     items?: InvoiceItemSummary[];
@@ -33,6 +34,7 @@ export function InvoiceSummaryCard({
     itemsFee,
     deposit,
     totalAmount,
+    prepaidAmount = 0,
     items = [],
     startTime,
     endTime,
@@ -107,11 +109,23 @@ export function InvoiceSummaryCard({
                 </div>
             )}
 
+            {/* Prepaid Amount */}
+            {prepaidAmount > 0 && (
+                <div className="flex justify-between items-center text-sm text-emerald-600 border-t border-dashed border-gray-100 dark:border-gray-800 pt-2">
+                    <span>Đã thanh toán trước</span>
+                    <span>-{formatCurrency(prepaidAmount)}</span>
+                </div>
+            )}
+
             {/* Total Amount */}
             <div className="border-t border-dashed border-gray-200 dark:border-gray-700 my-2"></div>
             <div className="flex justify-between items-end">
-                <span className="text-base font-bold">Tổng cộng</span>
-                <span className="text-2xl font-extrabold text-primary">{formatCurrency(totalAmount)}</span>
+                <span className="text-base font-bold">
+                    {prepaidAmount > 0 ? 'Còn lại phải thu' : 'Tổng cộng'}
+                </span>
+                <span className="text-2xl font-extrabold text-primary">
+                    {formatCurrency(prepaidAmount > 0 ? Math.max(0, totalAmount - prepaidAmount) : totalAmount)}
+                </span>
             </div>
         </div>
     );

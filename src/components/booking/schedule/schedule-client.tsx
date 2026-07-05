@@ -108,48 +108,50 @@ export default function ScheduleClient({ initialCourts, initialCustomers }: Sche
           </div>
         </div>
 
-        {activeTab === 'timeline' ? (
-          <>
-            {/* Date Picker */}
-            <div className="bg-background-light dark:bg-background-dark z-10 sticky top-[73px] md:top-0 border-b border-slate-200 dark:border-slate-800 shrink-0">
-              <DateSelector selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            </div>
+        {/* Timeline View */}
+        <div className={cn("flex-1 flex flex-col overflow-hidden", activeTab !== 'timeline' && "hidden")}>
+          {/* Date Picker */}
+          <div className="bg-background-light dark:bg-background-dark z-10 sticky top-[73px] md:top-0 border-b border-slate-200 dark:border-slate-800 shrink-0">
+            <DateSelector selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+          </div>
 
-            {/* Timeline Scroll Area */}
-            {courts.length > 0 ? (
-              <Timeline
-                selectedDate={selectedDate}
-                courts={courts}
-                onBookingClick={handleBookingClick}
-              />
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-                <div className="size-20 rounded-full bg-emerald-100 flex items-center justify-center mb-4 text-emerald-600">
-                  <span className="material-symbols-outlined text-4xl">domain_add</span>
-                </div>
-                <h2 className="text-xl font-bold mb-2">Chưa có dữ liệu Sân</h2>
-                <p className="text-gray-500 mb-6 text-center max-w-sm">
-                  Chào mừng bạn đến với hệ thống quản lý. Vui lòng thiết lập cấu hình sân cơ bản để bắt đầu sử dụng.
-                </p>
-                <a href="/onboarding" className="inline-flex h-12 items-center justify-center rounded-md bg-emerald-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-700">
-                  Bắt đầu Thiết lập
-                </a>
+          {/* Timeline Scroll Area */}
+          {courts.length > 0 ? (
+            <Timeline
+              selectedDate={selectedDate}
+              courts={courts}
+              onBookingClick={handleBookingClick}
+            />
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+              <div className="size-20 rounded-full bg-emerald-100 flex items-center justify-center mb-4 text-emerald-600">
+                <span className="material-symbols-outlined text-4xl">domain_add</span>
               </div>
-            )}
-
-            {/* Floating Action Button (FAB) */}
-            <div className="absolute bottom-20 md:bottom-6 right-4 md:right-6 z-40">
-              <button
-                onClick={() => setIsBookingOpen(true)}
-                className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 hover:bg-primary-dark active:scale-90 transition-all"
-              >
-                <span className="material-symbols-outlined text-3xl">add</span>
-              </button>
+              <h2 className="text-xl font-bold mb-2">Chưa có dữ liệu Sân</h2>
+              <p className="text-gray-500 mb-6 text-center max-w-sm">
+                Chào mừng bạn đến với hệ thống quản lý. Vui lòng thiết lập cấu hình sân cơ bản để bắt đầu sử dụng.
+              </p>
+              <a href="/onboarding" className="inline-flex h-12 items-center justify-center rounded-md bg-emerald-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-700">
+                Bắt đầu Thiết lập
+              </a>
             </div>
-          </>
-        ) : (
+          )}
+
+          {/* Floating Action Button (FAB) */}
+          <div className="absolute bottom-20 md:bottom-6 right-4 md:right-6 z-40">
+            <button
+              onClick={() => setIsBookingOpen(true)}
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 hover:bg-primary-dark active:scale-90 transition-all"
+            >
+              <span className="material-symbols-outlined text-3xl">add</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Recurring Rules View */}
+        <div className={cn("flex-1 flex flex-col overflow-hidden", activeTab !== 'recurring' && "hidden")}>
           <RecurringBookingsTab courts={initialCourts} customers={initialCustomers} />
-        )}
+        </div>
 
         {/* Booking Dialog */}
         <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>

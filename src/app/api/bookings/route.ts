@@ -1,5 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateBookingTime, cancelBooking, createBooking } from '@/server/repositories/booking-repo';
+import { createClient } from '@/utils/supabase/server';
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const start = searchParams.get('start');
+    const end = searchParams.get('end');
+
+    if (!start || !end) {
+      return NextResponse.json({ success: false, error: 'Missing start or end parameters' }, { status: 400 });
+    }
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('bookings')
+      .select(`
+        id,
+        start_time,
+        end_time,
+        status,
+        court_id,
+        customers ( name, phone )
+      `)
+      .gte('start_time', start)
+      .lte('start_time', end);
+
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

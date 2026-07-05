@@ -1,0 +1,21 @@
+meta {
+  name: Get Recurring Costs
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/bookings/recurring/costs?ruleId={{createdRecurringRuleId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+  res.body.data.ruleId: eq {{createdRecurringRuleId}}
+}

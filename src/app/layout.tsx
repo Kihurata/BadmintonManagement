@@ -37,6 +37,7 @@ export default function RootLayout({
       <head>
         <title>Badminton Management System</title>
         <meta name="description" content="Hệ thống quản lý sân cầu lông" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta property="og:title" content="BMS" />
       </head>
       <body className={inter.className}>

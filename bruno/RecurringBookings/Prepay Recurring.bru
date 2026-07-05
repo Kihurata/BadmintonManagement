@@ -1,0 +1,28 @@
+meta {
+  name: Prepay Recurring
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/bookings/recurring/prepay
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "ruleId": "{{createdRecurringRuleId}}",
+    "paymentMethod": "BANK_TRANSFER"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+  res.body.data.prepayCount: gt 0
+}

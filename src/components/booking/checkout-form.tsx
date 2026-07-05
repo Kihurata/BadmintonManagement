@@ -15,7 +15,7 @@ interface CheckoutFormProps {
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-    const [, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('CASH');
     const [checkoutTime, setCheckoutTime] = useState(new Date());
@@ -83,6 +83,8 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
     // Total
     const total = rentalFee + overtimeFee + productsFee - deposit;
+    const prepaidAmount = invoice?.paid_amount || 0;
+    const dueAmount = Math.max(0, total - prepaidAmount);
 
     const handleConfirmPayment = async () => {
         setLoading(true);
@@ -163,6 +165,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                     itemsFee={productsFee}
                     deposit={deposit}
                     totalAmount={total}
+                    prepaidAmount={prepaidAmount}
                     items={formattedItems}
                     startTime={startTime}
                     endTime={scheduledEndTime}
@@ -172,7 +175,7 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
 
                 {/* Payment Selector */}
                 <PaymentSelector
-                    totalAmount={total}
+                    totalAmount={dueAmount}
                     qrDescription={`Thanh toan san ${booking?.courts?.court_name || ''}`}
                     paymentMethod={paymentMethod}
                     onChangePaymentMethod={setPaymentMethod}
