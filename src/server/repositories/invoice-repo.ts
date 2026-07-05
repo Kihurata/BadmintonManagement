@@ -1,10 +1,12 @@
 import { createClient } from '@/utils/supabase/server';
+import { calculateRentalFee } from '@/lib/pricing';
 
 export interface Invoice {
   id: string;
   booking_id: string | null;
   customer_id: string;
   total_amount: number;
+  paid_amount: number;
   payment_method: string;
   is_paid: boolean;
   created_at: string;
@@ -322,6 +324,7 @@ export async function getUnpaidInvoices(): Promise<any[]> { // eslint-disable-li
     .select(`
       id,
       total_amount,
+      paid_amount,
       created_at,
       is_paid,
       customer_id,
@@ -369,5 +372,83 @@ export async function getInvoicesInDateRange(startDate: string, endDate: string)
     return [];
   }
   return data;
+}
+
+export async function prepayRecurringBookings(
+  ruleId: string,
+  paymentMethod: string
+): Promise<{ success: boolean; prepayCount: number; error?: string }> {
+  const supabase = createClient();
+
+  // 1. Fetch recurring rule with joined court and customer
+  const { data: rule, error: ruleError } = await supabase
+    .from('recurring_rules')
+    .select('*, courts(*), customers(*)')
+    .eq('id', ruleId)
+    .single();
+
+  if (ruleError || !rule) {
+    return { success: false, prepayCount: 0, error: ruleError?.message || 'Recurring rule not found.' };
+  }
+
+  // 2. Fetch all bookings for this rule (excluding CANCELLED)
+  const { data: bookings, error: bookingsError } = await supabase
+    .from('bookings')
+    .select('*, invoices(*)')
+    .eq('recurring_rule_id', ruleId)
+    .neq('status', 'CANCELLED');
+
+  if (bookingsError || !bookings) {
+    return { success: false, prepayCount: 0, error: bookingsError?.message || 'Bookings not found.' };
+  }
+
+  let prepayCount = 0;
+  const court = rule.courts;
+  const customerType = rule.customers?.type || 'GUEST';
+
+  // 3. Process bookings
+  for (const booking of bookings) {
+    const invoice = Array.isArray(booking.invoices) ? booking.invoices[0] : booking.invoices;
+
+    if (!invoice) {
+      // No invoice exists. Calculate rental fee and create paid invoice.
+      const start = new Date(booking.start_time);
+      const end = new Date(booking.end_time);
+      const pricing = calculateRentalFee(start, end, court, customerType);
+
+      const { error: insertError } = await supabase
+        .from('invoices')
+        .insert([{
+          booking_id: booking.id,
+          customer_id: rule.customer_id,
+          total_amount: pricing.rentalFee,
+          paid_amount: pricing.rentalFee,
+          payment_method: paymentMethod,
+          is_paid: true
+        }]);
+
+      if (insertError) {
+        return { success: false, prepayCount, error: insertError.message };
+      }
+      prepayCount++;
+    } else if (!invoice.is_paid) {
+      // Existing unpaid invoice. Mark as paid.
+      const { error: updateError } = await supabase
+        .from('invoices')
+        .update({
+          is_paid: true,
+          paid_amount: invoice.total_amount,
+          payment_method: paymentMethod
+        })
+        .eq('id', invoice.id);
+
+      if (updateError) {
+        return { success: false, prepayCount, error: updateError.message };
+      }
+      prepayCount++;
+    }
+  }
+
+  return { success: true, prepayCount };
 }
 

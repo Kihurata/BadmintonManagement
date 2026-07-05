@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { RecurringBookingForm } from './recurring-booking-form';
 import { Loader2, Plus, Calendar, User, Trash2, ArrowRight } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { generateVietQrUrl } from '@/lib/invoice-utils';
 
 interface RecurringRule {
   id: string;
@@ -19,6 +20,21 @@ interface RecurringRule {
   courts: { court_name: string } | null;
   customer_id: string;
   customers: { name: string; phone: string } | null;
+}
+
+interface RecurringRuleCostSummary {
+  ruleId: string;
+  totalSessions: number;
+  completedSessions: number;
+  checkedInSessions: number;
+  cancelledSessions: number;
+  pendingSessions: number;
+  financials: {
+    totalPaid: number;
+    totalUnpaid: number;
+    estimatedFuture: number;
+    totalEstimatedSeries: number;
+  };
 }
 
 interface RecurringBookingsTabProps {
@@ -37,37 +53,85 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
   const [selectedRule, setSelectedRule] = useState<RecurringRule | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  // Prepayment States
+  const [costs, setCosts] = useState<Record<string, RecurringRuleCostSummary>>({});
+  const [prepayRule, setPrepayRule] = useState<RecurringRule | null>(null);
+  const [prepayMethod, setPrepayMethod] = useState<'CASH' | 'BANK_TRANSFER'>('BANK_TRANSFER');
+  const [prepayLoading, setPrepayLoading] = useState(false);
+
+  const fetchCosts = useCallback(async (rulesList: RecurringRule[]) => {
+    if (rulesList.length === 0) return;
+    try {
+      const ruleIds = rulesList.map(r => r.id).join(',');
+      const res = await fetch(`/api/v1/bookings/recurring/costs?ruleIds=${ruleIds}`);
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.data)) {
+        const costMap: Record<string, RecurringRuleCostSummary> = {};
+        for (const item of data.data) {
+          costMap[item.ruleId] = item;
+        }
+        setCosts(costMap);
+      }
+    } catch (err) {
+      console.error("Error in batch cost fetching:", err);
+    }
+  }, []);
+
   const fetchRules = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error: fetchError } = await supabase
-        .from('recurring_rules')
-        .select(`
-          id,
-          start_time,
-          end_time,
-          start_date,
-          end_date,
-          days_of_week,
-          court_id,
-          courts ( court_name ),
-          customer_id,
-          customers ( name, phone )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (fetchError) throw fetchError;
-      setRules(data as unknown as RecurringRule[] || []);
+      const res = await fetch('/api/v1/bookings/recurring');
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || 'Không thể tải danh sách lịch cố định');
+      }
+      const fetchedRules = data.data || [];
+      setRules(fetchedRules);
+      fetchCosts(fetchedRules);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchCosts]);
 
   useEffect(() => {
     fetchRules();
+
+    const handleBookingUpdate = () => {
+      fetchRules();
+    };
+
+    window.addEventListener('booking_updated', handleBookingUpdate);
+    return () => {
+      window.removeEventListener('booking_updated', handleBookingUpdate);
+    };
   }, [fetchRules]);
+
+  const handleConfirmPrepay = async () => {
+    if (!prepayRule) return;
+    setPrepayLoading(true);
+    try {
+      const res = await fetch('/api/v1/bookings/recurring/prepay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ruleId: prepayRule.id,
+          paymentMethod: prepayMethod,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || 'Thanh toán trước thất bại.');
+      }
+      setPrepayRule(null);
+      fetchRules();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setPrepayLoading(false);
+    }
+  };
 
   const handleDeleteSeries = async (scope: 'ALL' | 'FUTURE') => {
     if (!selectedRule) return;
@@ -192,10 +256,32 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
                       </span>
                     </span>
                   </div>
+                  {costs[rule.id] && (
+                    <div className="flex items-center gap-3 text-xs mt-1 border-t border-gray-50 dark:border-white/5 pt-1">
+                      <span className="text-gray-400">Đã trả: <strong className="text-emerald-600 font-bold">{formatCurrency(costs[rule.id].financials.totalPaid)}</strong></span>
+                      {costs[rule.id].financials.totalUnpaid + costs[rule.id].financials.estimatedFuture > 0 ? (
+                        <span className="text-gray-400">Còn lại: <strong className="text-red-500 font-bold">{formatCurrency(costs[rule.id].financials.totalUnpaid + costs[rule.id].financials.estimatedFuture)}</strong></span>
+                      ) : (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400">Đã đóng tiền trước</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 border-t sm:border-t-0 border-gray-50 dark:border-white/5 pt-3 sm:pt-0 shrink-0">
+                {costs[rule.id] && (costs[rule.id].financials.totalUnpaid + costs[rule.id].financials.estimatedFuture > 0) && (
+                  <Button
+                    onClick={() => {
+                      setPrepayRule(rule);
+                      setPrepayMethod('BANK_TRANSFER');
+                    }}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-1.5 h-9 px-3 shrink-0 shadow-sm active:scale-95 transition-all text-xs"
+                  >
+                    <Plus className="size-3.5" />
+                    <span>Thanh toán trước</span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -266,6 +352,100 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
               Quay lại
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Prepayment Dialog */}
+      <Dialog open={prepayRule !== null} onOpenChange={(open) => {
+        if (!open && !prepayLoading) setPrepayRule(null);
+      }}>
+        <DialogContent className="sm:max-w-[420px] p-6 rounded-2xl border-none bg-white dark:bg-[#0d1b17] shadow-2xl">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-500">payments</span>
+            Thanh toán trước lịch cố định
+          </DialogTitle>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Thanh toán trước toàn bộ phí sân cho các ca đặt sân chưa thanh toán của lịch này.
+          </p>
+
+          {prepayRule && costs[prepayRule.id] && (() => {
+            const ruleCosts = costs[prepayRule.id];
+            const dueAmount = ruleCosts.financials.totalUnpaid + ruleCosts.financials.estimatedFuture;
+
+            return (
+              <div className="py-4 space-y-4">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/50 flex flex-col items-center justify-center">
+                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">Tổng tiền thanh toán</span>
+                  <span className="text-3xl font-extrabold text-emerald-700 dark:text-emerald-500">
+                    {formatCurrency(dueAmount)}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Phương thức thanh toán</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      className={`relative flex flex-col items-center p-3 rounded-xl border-2 transition-all ${prepayMethod === 'BANK_TRANSFER'
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                        : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-500 hover:border-emerald-200'
+                        }`}
+                      onClick={() => setPrepayMethod('BANK_TRANSFER')}
+                    >
+                      <span className="material-symbols-outlined text-2xl mb-1">account_balance</span>
+                      <span className="font-semibold text-xs">Chuyển khoản</span>
+                      {prepayMethod === 'BANK_TRANSFER' && (
+                        <span className="absolute top-2 right-2 material-symbols-outlined text-emerald-500 text-xs font-bold">check_circle</span>
+                      )}
+                    </button>
+                    <button
+                      className={`relative flex flex-col items-center p-3 rounded-xl border-2 transition-all ${prepayMethod === 'CASH'
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                        : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-500 hover:border-emerald-200'
+                        }`}
+                      onClick={() => setPrepayMethod('CASH')}
+                    >
+                      <span className="material-symbols-outlined text-2xl mb-1">payments</span>
+                      <span className="font-semibold text-xs">Tiền mặt</span>
+                      {prepayMethod === 'CASH' && (
+                        <span className="absolute top-2 right-2 material-symbols-outlined text-emerald-500 text-xs font-bold">check_circle</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {prepayMethod === 'BANK_TRANSFER' && (
+                  <div className="flex flex-col items-center justify-center p-2 bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-gray-100 dark:border-white/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={generateVietQrUrl(dueAmount, `Prepay san ${prepayRule.courts?.court_name || ''}`)}
+                      alt="VietQR code"
+                      className="size-48 object-contain rounded-lg"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Quét mã QR bằng ứng dụng ngân hàng của bạn</p>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl h-11"
+                    onClick={() => setPrepayRule(null)}
+                    disabled={prepayLoading}
+                  >
+                    Quay lại
+                  </Button>
+                  <Button
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 shadow-md shadow-emerald-600/10"
+                    onClick={handleConfirmPrepay}
+                    disabled={prepayLoading}
+                  >
+                    {prepayLoading ? <Loader2 className="animate-spin size-4 mr-2" /> : null}
+                    Xác nhận
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>

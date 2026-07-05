@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { calculateRentalFee } from '@/lib/pricing';
 
 export interface BookingWithDetails {
   id: string;
@@ -415,5 +416,219 @@ export async function updateRecurringBookings(params: {
   }
 
   return { success: true, updatedBookingsCount };
+}
+
+export interface RecurringRuleCostSummary {
+  ruleId: string;
+  totalSessions: number;
+  completedSessions: number;
+  checkedInSessions: number;
+  cancelledSessions: number;
+  pendingSessions: number;
+  financials: {
+    totalPaid: number;
+    totalUnpaid: number;
+    estimatedFuture: number;
+    totalEstimatedSeries: number;
+  };
+}
+
+export async function calculateRecurringRuleCost(ruleId: string): Promise<RecurringRuleCostSummary | null> {
+  const supabase = createClient();
+
+  // 1. Fetch recurring rule with joined court and customer (to get pricing and customer type)
+  const { data: rule, error: ruleError } = await supabase
+    .from('recurring_rules')
+    .select('*, courts(*), customers(*)')
+    .eq('id', ruleId)
+    .single();
+
+  if (ruleError || !rule) {
+    console.error('Error fetching recurring rule details:', ruleError);
+    return null;
+  }
+
+  // 2. Fetch all bookings and their invoices
+  const { data: bookings, error: bookingsError } = await supabase
+    .from('bookings')
+    .select('*, invoices(*)')
+    .eq('recurring_rule_id', ruleId);
+
+  if (bookingsError) {
+    console.error('Error fetching bookings:', bookingsError);
+    return null;
+  }
+
+  let totalSessions = 0;
+  let completedSessions = 0;
+  let checkedInSessions = 0;
+  let cancelledSessions = 0;
+  let pendingSessions = 0;
+
+  let totalPaid = 0;
+  let totalUnpaid = 0;
+  let estimatedFuture = 0;
+
+  const court = rule.courts;
+  const customerType = rule.customers?.type || 'GUEST';
+
+  for (const booking of bookings || []) {
+    totalSessions++;
+    
+    if (booking.status === 'CANCELLED') {
+      cancelledSessions++;
+      continue; // Cancelled sessions do not accumulate cost
+    } else if (booking.status === 'COMPLETED') {
+      completedSessions++;
+    } else if (booking.status === 'CHECKED_IN') {
+      checkedInSessions++;
+    } else if (booking.status === 'PENDING' || booking.status === 'CONFIRMED') {
+      pendingSessions++;
+    }
+
+    // Process financials: Check if invoice exists (completed or checked-in bookings)
+    const invoice = Array.isArray(booking.invoices) ? booking.invoices[0] : booking.invoices;
+    
+    if (invoice) {
+      if (invoice.is_paid) {
+        totalPaid += Number(invoice.total_amount);
+      } else {
+        totalUnpaid += Number(invoice.total_amount);
+      }
+    } else {
+      // Future bookings do not have invoices yet. Calculate their estimated court fees.
+      const pricing = calculateRentalFee(
+        new Date(booking.start_time),
+        new Date(booking.end_time),
+        court,
+        customerType
+      );
+      estimatedFuture += pricing.rentalFee;
+    }
+  }
+
+  return {
+    ruleId,
+    totalSessions,
+    completedSessions,
+    checkedInSessions,
+    cancelledSessions,
+    pendingSessions,
+    financials: {
+      totalPaid,
+      totalUnpaid,
+      estimatedFuture,
+      totalEstimatedSeries: totalPaid + totalUnpaid + estimatedFuture
+    }
+  };
+}
+
+export async function calculateMultipleRecurringRulesCosts(ruleIds: string[]): Promise<RecurringRuleCostSummary[]> {
+  const supabase = createClient();
+  if (ruleIds.length === 0) return [];
+
+  // 1. Fetch recurring rules with joined court and customer
+  const { data: rules, error: rulesError } = await supabase
+    .from('recurring_rules')
+    .select('*, courts(*), customers(*)')
+    .in('id', ruleIds);
+
+  if (rulesError || !rules) {
+    console.error('Error fetching recurring rules details:', rulesError);
+    return [];
+  }
+
+  // 2. Fetch all bookings and their invoices
+  const { data: bookings, error: bookingsError } = await supabase
+    .from('bookings')
+    .select('*, invoices(*)')
+    .in('recurring_rule_id', ruleIds);
+
+  if (bookingsError) {
+    console.error('Error fetching bookings:', bookingsError);
+    return [];
+  }
+
+  // Group bookings by recurring_rule_id
+  const bookingsByRule: Record<string, typeof bookings> = {};
+  for (const booking of bookings || []) {
+    const rId = booking.recurring_rule_id;
+    if (rId) {
+      if (!bookingsByRule[rId]) {
+        bookingsByRule[rId] = [];
+      }
+      bookingsByRule[rId].push(booking);
+    }
+  }
+
+  const summaries: RecurringRuleCostSummary[] = [];
+
+  for (const rule of rules) {
+    const rId = rule.id;
+    const ruleBookings = bookingsByRule[rId] || [];
+
+    let totalSessions = 0;
+    let completedSessions = 0;
+    let checkedInSessions = 0;
+    let cancelledSessions = 0;
+    let pendingSessions = 0;
+
+    let totalPaid = 0;
+    let totalUnpaid = 0;
+    let estimatedFuture = 0;
+
+    const court = rule.courts;
+    const customerType = rule.customers?.type || 'GUEST';
+
+    for (const booking of ruleBookings) {
+      totalSessions++;
+      
+      if (booking.status === 'CANCELLED') {
+        cancelledSessions++;
+        continue;
+      } else if (booking.status === 'COMPLETED') {
+        completedSessions++;
+      } else if (booking.status === 'CHECKED_IN') {
+        checkedInSessions++;
+      } else if (booking.status === 'PENDING' || booking.status === 'CONFIRMED') {
+        pendingSessions++;
+      }
+
+      const invoice = Array.isArray(booking.invoices) ? booking.invoices[0] : booking.invoices;
+      
+      if (invoice) {
+        if (invoice.is_paid) {
+          totalPaid += Number(invoice.total_amount);
+        } else {
+          totalUnpaid += Number(invoice.total_amount);
+        }
+      } else {
+        const pricing = calculateRentalFee(
+          new Date(booking.start_time),
+          new Date(booking.end_time),
+          court,
+          customerType
+        );
+        estimatedFuture += pricing.rentalFee;
+      }
+    }
+
+    summaries.push({
+      ruleId: rId,
+      totalSessions,
+      completedSessions,
+      checkedInSessions,
+      cancelledSessions,
+      pendingSessions,
+      financials: {
+        totalPaid,
+        totalUnpaid,
+        estimatedFuture,
+        totalEstimatedSeries: totalPaid + totalUnpaid + estimatedFuture
+      }
+    });
+  }
+
+  return summaries;
 }
 
