@@ -45,7 +45,10 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
     // Customer Selection State
     const [customers, setCustomers] = useState<any[]>(propCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [customerId, setCustomerId] = useState('');
+    const [guestName, setGuestName] = useState('');
     const [customerOpen, setCustomerOpen] = useState(false);
+
+    const isGuestSelected = !customerId || customers.find(c => c.id === customerId)?.type === 'GUEST';
     // If selecting "Guest" manually or not selecting anyone (default), we handle logic on submit
 
     // Fallback for manual entry if needed (removed as per requirement to use selector, but effectively "Guest" covers it)
@@ -115,7 +118,8 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
                     courtId,
                     customerId: customerId || null,
                     startTime: start.toISOString(),
-                    endTime: end.toISOString()
+                    endTime: end.toISOString(),
+                    guestName: isGuestSelected ? guestName : null
                 })
             });
 
@@ -207,6 +211,19 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
                         </PopoverContent>
                     </Popover>
                 </div>
+
+                {/* Tên khách vãng lai (hiển thị khi chọn Khách vãng lai) */}
+                {isGuestSelected && (
+                    <div className="space-y-2">
+                        <Label htmlFor="guestName">Tên khách vãng lai</Label>
+                        <Input
+                            id="guestName"
+                            placeholder="Nhập tên khách chơi (vãng lai)"
+                            value={guestName}
+                            onChange={(e) => setGuestName(e.target.value)}
+                        />
+                    </div>
+                )}
 
                 {/* Court */}
                 <div className="space-y-2">

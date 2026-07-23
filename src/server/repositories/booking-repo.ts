@@ -12,6 +12,7 @@ export interface BookingWithDetails {
   overtime_fee: number;
   total_court_fee: number;
   note: string | null;
+  guest_name?: string | null;
   customers: {
     id: string;
     name: string;
@@ -146,7 +147,8 @@ export async function createBooking(
   courtId: string,
   customerId: string | null,
   startTime: string,
-  endTime: string
+  endTime: string,
+  guestName?: string | null
 ): Promise<{ success: boolean; data?: any; error?: string }> { // eslint-disable-line @typescript-eslint/no-explicit-any
   const supabase = createClient();
 
@@ -183,7 +185,8 @@ export async function createBooking(
       customer_id: finalCustomerId,
       start_time: startTime,
       end_time: endTime,
-      status: 'CONFIRMED'
+      status: 'CONFIRMED',
+      guest_name: guestName || null
     }])
     .select()
     .single();
@@ -210,7 +213,7 @@ export async function checkRecurringConflicts(
   const supabase = createClient();
   const { data: dbBookings, error: fetchError } = await supabase
     .from('bookings')
-    .select('id, start_time, end_time, status, customer_id, customers(name)')
+    .select('id, start_time, end_time, status, customer_id, guest_name, customers(name, type)')
     .eq('court_id', courtId)
     .neq('status', 'CANCELLED')
     .lt('start_time', latestEnd)
@@ -224,13 +227,16 @@ export async function checkRecurringConflicts(
   for (const dbBooking of dbBookings || []) {
     for (const candidate of candidates) {
       if (dbBooking.start_time < candidate.end_time && dbBooking.end_time > candidate.start_time) {
+        const customerObj = Array.isArray(dbBooking.customers) ? dbBooking.customers[0] : dbBooking.customers;
+        const customerName = dbBooking.guest_name && customerObj?.type === 'GUEST'
+          ? dbBooking.guest_name
+          : customerObj?.name || 'Khách vãng lai';
+
         conflicts.push({
           id: dbBooking.id,
           start_time: dbBooking.start_time,
           end_time: dbBooking.end_time,
-          customerName: (Array.isArray(dbBooking.customers)
-            ? (dbBooking.customers[0] as unknown as { name: string })?.name
-            : (dbBooking.customers as unknown as { name: string })?.name) || 'Khách vãng lai',
+          customerName,
         });
         break; // Avoid adding same booking multiple times if it spans multiple candidate slots
       }

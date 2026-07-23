@@ -428,10 +428,16 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
                     <div className="flex items-center gap-4">
                         <div className="size-12 rounded-full bg-gray-100 flex items-center justify-center text-xl font-bold text-gray-600">
-                            {booking.customers?.name?.charAt(0) || 'K'}
+                            {(booking.guest_name && (booking.customers?.type === 'GUEST' || booking.customers?.name === 'Khách vãng lai')
+                                ? booking.guest_name
+                                : booking.customers?.name)?.charAt(0) || 'K'}
                         </div>
                         <div>
-                            <div className="font-bold text-lg">{booking.customers?.name}</div>
+                            <div className="font-bold text-lg">
+                                {booking.guest_name && (booking.customers?.type === 'GUEST' || booking.customers?.name === 'Khách vãng lai')
+                                    ? `${booking.guest_name} (Vãng lai)`
+                                    : booking.customers?.name}
+                            </div>
                             <div className="text-gray-500 text-sm">{booking.customers?.phone}</div>
                         </div>
                         <div className="ml-auto">

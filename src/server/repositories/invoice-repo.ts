@@ -302,6 +302,7 @@ export async function getInvoiceDetails(invoiceId: string): Promise<any | null> 
       *,
       customers ( name, phone, type ),
       bookings (
+        guest_name,
         start_time, end_time,
         total_court_fee, overtime_fee, deposit_amount,
         courts ( court_name )
@@ -328,8 +329,9 @@ export async function getUnpaidInvoices(): Promise<any[]> { // eslint-disable-li
       created_at,
       is_paid,
       customer_id,
-      customers ( name, phone ),
+      customers ( name, phone, type ),
       bookings (
+        guest_name,
         courts ( court_name ),
         start_time,
         end_time
@@ -355,8 +357,9 @@ export async function getInvoicesInDateRange(startDate: string, endDate: string)
       total_amount,
       created_at,
       is_paid,
-      customers ( name ),
+      customers ( name, type ),
       bookings (
+        guest_name,
         courts ( court_name ),
         start_time,
         end_time
