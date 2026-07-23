@@ -258,7 +258,9 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
             }));
 
             const text = formatInvoiceShareText({
-                customerName: invoice.customers?.name || 'Khách lẻ',
+                customerName: invoice.bookings?.guest_name && (invoice.customers?.type === 'GUEST' || invoice.customers?.name === 'Khách vãng lai')
+                    ? `${invoice.bookings.guest_name} (Vãng lai)`
+                    : (invoice.customers?.name || 'Khách lẻ'),
                 isQuickSale,
                 courtName: invoice.bookings?.courts?.court_name,
                 startTime: invoice.bookings?.start_time,
@@ -326,7 +328,11 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                             </div>
                             <div className="text-right">
                                 <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Khách</div>
-                                <div className="text-base font-bold text-emerald-800 dark:text-emerald-300">{invoice.customers?.name}</div>
+                                <div className="text-base font-bold text-emerald-800 dark:text-emerald-300">
+                                    {invoice.bookings?.guest_name && (invoice.customers?.type === 'GUEST' || invoice.customers?.name === 'Khách vãng lai')
+                                        ? invoice.bookings.guest_name
+                                        : invoice.customers?.name}
+                                </div>
                                 <div className="text-[10px] uppercase font-bold text-emerald-600">{invoice.customers?.type === 'LOYAL' ? '(Thân thiết)' : '(Vãng lai)'}</div>
                             </div>
                         </div>

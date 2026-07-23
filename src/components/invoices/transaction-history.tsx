@@ -40,7 +40,9 @@ export function TransactionHistory() {
 
                     return {
                         id: inv.id,
-                        customer_name: inv.customers?.name || 'Khách vãng lai',
+                        customer_name: inv.bookings?.guest_name && (inv.customers?.type === 'GUEST' || inv.customers?.name === 'Khách vãng lai')
+                            ? `${inv.bookings.guest_name} (Vãng lai)`
+                            : (inv.customers?.name || 'Khách vãng lai'),
                         date: displayDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
                         time: displayDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
                         status: inv.is_paid ? 'PAID' : 'PENDING',

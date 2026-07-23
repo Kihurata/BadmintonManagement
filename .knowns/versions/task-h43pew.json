@@ -1,0 +1,115 @@
+{
+  "taskId": "h43pew",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "h43pew",
+      "version": 1,
+      "timestamp": "2026-07-12T05:15:38.7215036Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Them hien thi ten cua khach choi vang lai khi thuc hien dat san va hien thi tren Timeline/chi tiet/thanh toan",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Display guest name for walk-in bookings"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "h43pew",
+      "version": 2,
+      "timestamp": "2026-07-12T05:15:43.9863959Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "me",
+        "description": "Them hien thi ten cua khach choi vang lai khi thuc hien dat san va hien thi tren Timeline/chi tiet/thanh toan",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Display guest name for walk-in bookings"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "h43pew",
+      "version": 3,
+      "timestamp": "2026-07-12T05:15:51.9687005Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Add guest_name column to bookings table via local SQL migration.\n2. Update booking-repo.ts to include guest_name in types and insert/conflict query mappings.\n3. Update API endpoints /api/bookings (GET/POST) to query and save guest_name.\n4. Update frontend booking-form.tsx to conditionally display a 'Tên khách vãng lai' text input and pass it to API.\n5. Update timeline.tsx to query and display the guest name if customer type is GUEST.\n6. Update booking-details.tsx and checkout-form.tsx to render the guest name properly."
+        }
+      ],
+      "snapshot": {
+        "assignee": "me",
+        "description": "Them hien thi ten cua khach choi vang lai khi thuc hien dat san va hien thi tren Timeline/chi tiet/thanh toan",
+        "implementationPlan": "1. Add guest_name column to bookings table via local SQL migration.\n2. Update booking-repo.ts to include guest_name in types and insert/conflict query mappings.\n3. Update API endpoints /api/bookings (GET/POST) to query and save guest_name.\n4. Update frontend booking-form.tsx to conditionally display a 'Tên khách vãng lai' text input and pass it to API.\n5. Update timeline.tsx to query and display the guest name if customer type is GUEST.\n6. Update booking-details.tsx and checkout-form.tsx to render the guest name properly.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Display guest name for walk-in bookings"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "h43pew",
+      "version": 4,
+      "timestamp": "2026-07-12T06:13:19.5280378Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented guest name display logic in repository, API route, and frontend forms/timeline components. Verified that database migrations apply cleanly via MCP, and Next.js builds successfully."
+        }
+      ],
+      "snapshot": {
+        "assignee": "me",
+        "description": "Them hien thi ten cua khach choi vang lai khi thuc hien dat san va hien thi tren Timeline/chi tiet/thanh toan",
+        "implementationNotes": "Implemented guest name display logic in repository, API route, and frontend forms/timeline components. Verified that database migrations apply cleanly via MCP, and Next.js builds successfully.",
+        "implementationPlan": "1. Add guest_name column to bookings table via local SQL migration.\n2. Update booking-repo.ts to include guest_name in types and insert/conflict query mappings.\n3. Update API endpoints /api/bookings (GET/POST) to query and save guest_name.\n4. Update frontend booking-form.tsx to conditionally display a 'Tên khách vãng lai' text input and pass it to API.\n5. Update timeline.tsx to query and display the guest name if customer type is GUEST.\n6. Update booking-details.tsx and checkout-form.tsx to render the guest name properly.",
+        "labels": [
+          "normal"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Display guest name for walk-in bookings"
+      }
+    }
+  ]
+}
