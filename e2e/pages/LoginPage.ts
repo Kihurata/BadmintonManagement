@@ -24,9 +24,15 @@ export class LoginPage {
     await this.page.getByRole('button', { name: 'Đăng nhập' }).click();
   }
 
-
   async expectLoggedIn() {
-    // Assert redirect away from /login to dashboard or /schedule
-    await expect(this.page).not.toHaveURL(/\/login/);
+    // Check if error message is displayed on failure
+    const errorBanner = this.page.locator('.text-red-700');
+    if (await errorBanner.isVisible({ timeout: 2000 }).catch(() => false)) {
+      const msg = await errorBanner.innerText();
+      throw new Error(`Login failed with message: "${msg}". Please check your credentials in .env.local.`);
+    }
+
+    // Expect URL to navigate away from /login (e.g. to / or /schedule)
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 10000 });
   }
 }

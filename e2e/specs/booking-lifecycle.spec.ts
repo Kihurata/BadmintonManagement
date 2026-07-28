@@ -20,7 +20,6 @@ test.describe('P0 Booking-to-Invoice Lifecycle Workflow', () => {
       await loginPage.expectLoggedIn();
     });
 
-
     // Step 2: Navigate to Schedule Page
     await test.step('Navigate to Schedule timeline', async () => {
       await schedulePage.goto();
@@ -44,13 +43,13 @@ test.describe('P0 Booking-to-Invoice Lifecycle Workflow', () => {
       await checkoutModal.checkIn();
     });
 
-    // Step 5: Add Service Item & Checkout
+    // Step 5: Re-open checked-in booking, add POS item & Checkout
     await test.step('Add POS service item and complete checkout payment', async () => {
-      // Add POS item if available
+      await schedulePage.clickBookingSlot(testCustomerName);
       try {
         await checkoutModal.addPosItem('Nước');
       } catch {
-        // Soft fallback if exact product name is different in DB
+        // Soft fallback
       }
 
       await checkoutModal.openCheckoutForm();

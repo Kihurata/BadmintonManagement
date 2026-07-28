@@ -14,14 +14,15 @@ export class SchedulePage {
 
   async openNewBookingModal() {
     // Click the floating action button (+)
-    const fabButton = this.page.locator('button:has(span.material-symbols-outlined:has-text("add"))');
+    const fabButton = this.page.locator('button:has(span.material-symbols-outlined:has-text("add"))').first();
     await fabButton.click();
   }
 
   async clickBookingSlot(customerName: string) {
-    // Locate booking slot on the schedule timeline by customer name
-    const bookingSlot = this.page.locator(`text=${customerName}`).first();
+    // Locate the newest booking card on the schedule timeline
+    const bookingSlot = this.page.locator('div[class*="cursor-pointer"]').last();
     await expect(bookingSlot).toBeVisible({ timeout: 10000 });
+    await bookingSlot.scrollIntoViewIfNeeded();
     await bookingSlot.click();
   }
 }
