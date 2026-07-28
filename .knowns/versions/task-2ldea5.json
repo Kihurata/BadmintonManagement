@@ -1,0 +1,167 @@
+{
+  "taskId": "2ldea5",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "2ldea5",
+      "version": 1,
+      "timestamp": "2026-07-23T10:33:57.4357913Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor raw Supabase queries in Schedule page (courts, customers) and GET /api/bookings endpoint into server repositories (booking-repo, court-repo, customer-repo) for Clean Architecture consistency.",
+        "priority": "medium",
+        "status": "todo",
+        "title": "Refactor Schedule Page and Booking GET API to Data Access Layer"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "2ldea5",
+      "version": 2,
+      "timestamp": "2026-07-23T10:34:03.5350285Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "--plain"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Refactor raw Supabase queries in Schedule page (courts, customers) and GET /api/bookings endpoint into server repositories (booking-repo, court-repo, customer-repo) for Clean Architecture consistency.",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Schedule Page and Booking GET API to Data Access Layer"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "2ldea5",
+      "version": 3,
+      "timestamp": "2026-07-23T10:34:06.3516036Z",
+      "changes": [
+        {
+          "field": "acceptanceCriteria",
+          "oldValue": null,
+          "newValue": [
+            {
+              "completed": false,
+              "text": "Create court-repo.ts and customer-repo.ts server repository functions"
+            },
+            {
+              "completed": false,
+              "text": "Add getBookingsByDateRange function to booking-repo.ts"
+            },
+            {
+              "completed": false,
+              "text": "Refactor Schedule page (src/app/schedule/page.tsx) to fetch courts and customers via server repositories"
+            },
+            {
+              "completed": false,
+              "text": "Refactor GET /api/bookings Route Handler to fetch bookings via booking-repo"
+            },
+            {
+              "completed": false,
+              "text": "Ensure clean build with npm run build without TypeScript or ESLint errors"
+            }
+          ]
+        },
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create court-repo.ts (getAllCourts) and customer-repo.ts (getAllCustomers) in src/server/repositories/\n2. Export getBookingsByDateRange(start, end) in src/server/repositories/booking-repo.ts\n3. Update src/app/schedule/page.tsx to use server repositories instead of raw Supabase client\n4. Update GET handler in src/app/api/bookings/route.ts to use getBookingsByDateRange\n5. Run build and typecheck verification (npm run build)"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Create court-repo.ts and customer-repo.ts server repository functions"
+          },
+          {
+            "completed": false,
+            "text": "Add getBookingsByDateRange function to booking-repo.ts"
+          },
+          {
+            "completed": false,
+            "text": "Refactor Schedule page (src/app/schedule/page.tsx) to fetch courts and customers via server repositories"
+          },
+          {
+            "completed": false,
+            "text": "Refactor GET /api/bookings Route Handler to fetch bookings via booking-repo"
+          },
+          {
+            "completed": false,
+            "text": "Ensure clean build with npm run build without TypeScript or ESLint errors"
+          }
+        ],
+        "assignee": "--plain",
+        "description": "Refactor raw Supabase queries in Schedule page (courts, customers) and GET /api/bookings endpoint into server repositories (booking-repo, court-repo, customer-repo) for Clean Architecture consistency.",
+        "implementationPlan": "1. Create court-repo.ts (getAllCourts) and customer-repo.ts (getAllCustomers) in src/server/repositories/\n2. Export getBookingsByDateRange(start, end) in src/server/repositories/booking-repo.ts\n3. Update src/app/schedule/page.tsx to use server repositories instead of raw Supabase client\n4. Update GET handler in src/app/api/bookings/route.ts to use getBookingsByDateRange\n5. Run build and typecheck verification (npm run build)",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Schedule Page and Booking GET API to Data Access Layer"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "2ldea5",
+      "version": 4,
+      "timestamp": "2026-07-23T10:34:10.5378778Z",
+      "changes": [
+        {
+          "field": "assignee",
+          "oldValue": "--plain",
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Create court-repo.ts and customer-repo.ts server repository functions",
+            "completed": false
+          },
+          {
+            "text": "Add getBookingsByDateRange function to booking-repo.ts",
+            "completed": false
+          },
+          {
+            "text": "Refactor Schedule page (src/app/schedule/page.tsx) to fetch courts and customers via server repositories",
+            "completed": false
+          },
+          {
+            "text": "Refactor GET /api/bookings Route Handler to fetch bookings via booking-repo",
+            "completed": false
+          },
+          {
+            "text": "Ensure clean build with npm run build without TypeScript or ESLint errors",
+            "completed": false
+          }
+        ],
+        "assignee": "@me",
+        "description": "Refactor raw Supabase queries in Schedule page (courts, customers) and GET /api/bookings endpoint into server repositories (booking-repo, court-repo, customer-repo) for Clean Architecture consistency.",
+        "implementationPlan": "1. Create court-repo.ts (getAllCourts) and customer-repo.ts (getAllCustomers) in src/server/repositories/\n2. Export getBookingsByDateRange(start, end) in src/server/repositories/booking-repo.ts\n3. Update src/app/schedule/page.tsx to use server repositories instead of raw Supabase client\n4. Update GET handler in src/app/api/bookings/route.ts to use getBookingsByDateRange\n5. Run build and typecheck verification (npm run build)",
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Refactor Schedule Page and Booking GET API to Data Access Layer"
+      }
+    }
+  ]
+}

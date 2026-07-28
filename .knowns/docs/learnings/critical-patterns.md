@@ -106,3 +106,13 @@ Avoid direct client-side Supabase SDK queries (`supabase.from(...)`) in Client C
 Auto-generated files like `public/sw.js` and `public/workbox-*.js` updated on local builds must be untracked (`git rm --cached`) in Git history. If committed before ignoring, they will ignore `.gitignore` and cause merge conflicts on every developer build.
 
 **Full entry:** @doc/learnings/learning-nextjs-hybrid-data-loading
+
+
+## 2026-07-05 Supabase Remote Migration History Repair
+**Category:** failure
+**Source:** Migration sync triage
+**Tags:** [database, supabase, migration]
+
+Locally renaming, deleting, or squashing migration files after they have already been pushed to a remote database breaks future schema deployments. Use `npx supabase migration repair --status reverted --linked <versions>` to untrack missing remote migration records, and `--status applied` to mark local consolidated replacements as applied.
+
+**Full entry:** @doc/learnings/learning-supabase-migration-troubleshooting

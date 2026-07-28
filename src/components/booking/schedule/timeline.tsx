@@ -19,10 +19,12 @@ interface Booking {
     end_time: string;
     status: string;
     court_id: string;
+    guest_name?: string | null;
     customer: {
         name: string;
         phone: string;
-    };
+        type?: 'LOYAL' | 'GUEST';
+    } | null;
 }
 
 export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps) {
@@ -71,6 +73,7 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
                     end_time: item.end_time,
                     status: item.status,
                     court_id: item.court_id,
+                    guest_name: item.guest_name,
                     customer: Array.isArray(item.customers) ? item.customers[0] : item.customers
                 }));
                 setBookings(formattedBookings);
@@ -184,7 +187,9 @@ export function Timeline({ selectedDate, courts, onBookingClick }: TimelineProps
                                                     <span className={`material-symbols-outlined text-[16px] opacity-0 group-hover:opacity-100 transition-opacity ${highlightTextClass}`}>more_horiz</span>
                                                 </div>
                                                 <h3 className="text-sm font-bold text-midnight dark:text-white leading-tight truncate">
-                                                    {booking.customer?.name || 'Unknown'}
+                                                    {booking.guest_name && (booking.customer?.type === 'GUEST' || booking.customer?.name === 'Khách vãng lai')
+                                                        ? `${booking.guest_name} (Vãng lai)`
+                                                        : booking.customer?.name || 'Unknown'}
                                                 </h3>
                                                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                                                     {booking.customer?.phone}

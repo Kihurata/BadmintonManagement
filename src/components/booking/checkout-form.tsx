@@ -32,7 +32,9 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
                         ...data.booking,
                         customers: data.booking.customers ? {
                             ...data.booking.customers,
-                            display_name: data.booking.customers.name
+                            display_name: data.booking.guest_name && (data.booking.customers.type === 'GUEST' || data.booking.customers.name === 'Khách vãng lai')
+                                ? `${data.booking.guest_name} (Vãng lai)`
+                                : data.booking.customers.name
                         } : null
                     };
                     setBooking(mappedBooking);

@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
         end_time,
         status,
         court_id,
-        customers ( name, phone )
+        guest_name,
+        customers ( id, name, phone, type )
       `)
       .gte('start_time', start)
       .lte('start_time', end);
@@ -38,13 +39,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { courtId, customerId, startTime, endTime } = await req.json();
+    const { courtId, customerId, startTime, endTime, guestName } = await req.json();
 
     if (!courtId || !startTime || !endTime) {
       return NextResponse.json({ success: false, error: 'Missing parameters' }, { status: 400 });
     }
 
-    const res = await createBooking(courtId, customerId || null, startTime, endTime);
+    const res = await createBooking(courtId, customerId || null, startTime, endTime, guestName || null);
     if (!res.success) {
       return NextResponse.json({ success: false, error: res.error }, { status: 500 });
     }
