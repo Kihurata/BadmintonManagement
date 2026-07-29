@@ -1,83 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient as createServerClient } from '@/utils/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { unstable_cache } from 'next/cache';
 
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const dateParam = searchParams.get('date');
-    const selectedDate = dateParam ? new Date(dateParam) : new Date();
+function getAnonSupabaseClient(token?: string) {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    token ? { global: { headers: { Authorization: `Bearer ${token}` } } } : {}
+  );
+}
 
-    const supabase = createClient();
+// Tier 1: Restock Cost Map (Cache TTL: 30 minutes)
+const getRestockCostsCache = unstable_cache(
+  async (token: string) => {
+    const supabase = getAnonSupabaseClient(token);
+    const { data: restocks } = await supabase
+      .from("inventory_logs")
+      .select("product_id, quantity, purchase_price")
+      .eq("type", "RESTOCK")
+      .gt("quantity", 0)
+      .order("created_at", { ascending: true });
 
-    // 1. Fetch Treasury
-    const [{ data: invoices }, { data: expenses }, { data: restocks }, { data: products }] = await Promise.all([
-      supabase.from("invoices").select("total_amount, payment_method").eq("is_paid", true),
-      supabase.from("expenses").select("amount, payment_method"),
-      supabase.from("inventory_logs").select("product_id, quantity, purchase_price, payment_method").eq("type", "RESTOCK").gt("quantity", 0),
-      supabase.from("products").select("id, stock_quantity"),
-    ]);
-
-    let cashIn = 0, bankIn = 0, cashOut = 0, bankOut = 0;
-    invoices?.forEach(inv => {
-      if (inv.payment_method === "CASH") cashIn += inv.total_amount;
-      else bankIn += inv.total_amount;
-    });
-    expenses?.forEach(exp => {
-      if (exp.payment_method === "CASH") cashOut += exp.amount;
-      else bankOut += exp.amount;
-    });
-    restocks?.forEach(r => {
-      const cost = r.purchase_price || 0;
-      if (r.payment_method === "CASH") cashOut += cost;
-      else bankOut += cost;
-    });
-
-    const latestCost = new Map<string, number>();
+    const costMap = new Map<string, number>();
     restocks?.forEach(r => {
       if (r.purchase_price && r.quantity > 0) {
-        latestCost.set(r.product_id, r.purchase_price / r.quantity);
+        costMap.set(r.product_id, Number(r.purchase_price) / r.quantity);
       }
     });
+    return Array.from(costMap.entries());
+  },
+  ['inventory-restock-costs-map'],
+  { tags: ['inventory:restock-costs'], revalidate: 1800 }
+);
 
-    const workingCapital = products?.reduce((sum, p) => {
-      const cost = latestCost.get(p.id) || 0;
-      return sum + (p.stock_quantity || 0) * cost;
-    }, 0) || 0;
-
-    const treasury = {
-      cashBalance: cashIn - cashOut,
-      bankBalance: bankIn - bankOut,
-      workingCapital
-    };
-
-    // 2. Fetch Month Data
+// Tier 2: Monthly Financial Metrics & Trend (Cache TTL: 60 seconds)
+const getMonthMetricsCache = unstable_cache(
+  async (monthKey: string, token: string) => {
+    // Construct anchor date from monthKey ("yyyy-MM")
+    const selectedDate = new Date(`${monthKey}-01T00:00:00`);
     const start = format(startOfMonth(selectedDate), "yyyy-MM-dd");
     const end = format(endOfMonth(selectedDate), "yyyy-MM-dd");
+    const fiveMonthsAgoStart = format(startOfMonth(subMonths(selectedDate, 5)), "yyyy-MM-dd");
 
-    const [{ data: paidInvoices }, { data: monthExpenses }, { data: allRestocks }] = await Promise.all([
+    const supabase = getAnonSupabaseClient(token);
+
+    // Fetch cached restock cost map
+    const costEntries = await getRestockCostsCache(token);
+    const latestMonthCost = new Map<string, number>(costEntries);
+
+    const [{ data: paidInvoices }, { data: opTransactions }] = await Promise.all([
       supabase.from("invoices").select(`
         total_amount, created_at,
         invoice_items (
           sale_price, quantity, is_pack_sold,
           products ( id, product_name, is_packable, unit_price, units_per_pack )
         )
-      `).eq("is_paid", true)
-        .gte("created_at", format(startOfMonth(subMonths(selectedDate, 5)), "yyyy-MM-dd") + "T00:00:00")
+      `).or("status.eq.PAID,is_paid.eq.true")
+        .gte("created_at", fiveMonthsAgoStart + "T00:00:00")
         .lte("created_at", end + "T23:59:59"),
-      supabase.from("expenses").select("amount, type")
-        .gte("expense_date", start).lte("expense_date", end),
-      supabase.from("inventory_logs").select("product_id, quantity, purchase_price, created_at")
-        .eq("type", "RESTOCK").gt("quantity", 0)
-        .order("created_at", { ascending: true }),
+      supabase.from("transactions")
+        .select("amount, category, payment_method, transaction_date, description")
+        .in("category", ["FIXED_EXPENSE", "VARIABLE_EXPENSE"])
+        .gte("transaction_date", start + "T00:00:00")
+        .lte("transaction_date", end + "T23:59:59"),
     ]);
-
-    const latestMonthCost = new Map<string, number>();
-    allRestocks?.forEach(r => { 
-      if (r.purchase_price && r.quantity > 0) { 
-        latestMonthCost.set(r.product_id, r.purchase_price / r.quantity); 
-      } 
-    });
 
     let totalRevenue = 0, productRevenue = 0, productProfit = 0;
     const productMap = new Map<string, any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -91,11 +79,12 @@ export async function GET(req: NextRequest) {
       const invDate = new Date(inv.created_at);
       const isTargetMonth = format(invDate, "yyyy-MM-dd") >= start;
 
-      if (isTargetMonth) totalRevenue += inv.total_amount;
+      const invAmount = Number(inv.total_amount || 0);
+      if (isTargetMonth) totalRevenue += invAmount;
       let invProdRev = 0;
 
       inv.invoice_items?.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-        const itemRev = item.sale_price * item.quantity;
+        const itemRev = Number(item.sale_price) * item.quantity;
         if (isTargetMonth) invProdRev += itemRev;
 
         if (item.products) {
@@ -125,18 +114,19 @@ export async function GET(req: NextRequest) {
       });
       if (isTargetMonth) productRevenue += invProdRev;
 
-      const mk = format(new Date(inv.created_at), "MM/yyyy");
+      const mk = format(invDate, "MM/yyyy");
       if (monthlyRevenue.has(mk)) {
-        monthlyRevenue.set(mk, (monthlyRevenue.get(mk) || 0) + inv.total_amount);
+        monthlyRevenue.set(mk, (monthlyRevenue.get(mk) || 0) + invAmount);
       }
     });
 
     const courtRevenue = totalRevenue - productRevenue;
 
     let fixedExpenses = 0, variableExpenses = 0;
-    monthExpenses?.forEach(e => {
-      if (e.type === "FIXED") fixedExpenses += e.amount;
-      else variableExpenses += e.amount;
+    opTransactions?.forEach(t => {
+      const amt = Number(t.amount || 0);
+      if (t.category === "FIXED_EXPENSE") fixedExpenses += amt;
+      else variableExpenses += amt;
     });
 
     const netProfit = courtRevenue + productProfit - fixedExpenses - variableExpenses;
@@ -161,58 +151,77 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => b.sales - a.sales)
       .slice(0, 5);
 
-    // 3. Fetch Inventory
-    const { data: lowStockItems } = await supabase
-      .from("products")
-      .select("id, product_name, stock_quantity")
-      .lte("stock_quantity", 10)
-      .order("stock_quantity", { ascending: true });
+    return { monthMetrics, chartData, topProducts };
+  },
+  ['dashboard-month-metrics-key'],
+  { tags: ['dashboard:current-month'], revalidate: 60 }
+);
 
-    // 4. Fetch Recent Expenses
-    const [{ data: dbExpenses }, { data: dbRestocks }] = await Promise.all([
-      supabase
-        .from("expenses")
-        .select("id, title, amount, type, payment_method, expense_date")
-        .gte("expense_date", start).lte("expense_date", end)
-        .order("expense_date", { ascending: false })
-        .limit(20),
-      supabase
-        .from("inventory_logs")
-        .select("id, purchase_price, reason, created_at, payment_method, products ( product_name )")
-        .eq("type", "RESTOCK")
-        .gt("purchase_price", 0)
-        .gte("created_at", start + "T00:00:00").lte("created_at", end + "T23:59:59")
-        .order("created_at", { ascending: false })
-        .limit(20),
+export async function GET(req: NextRequest) {
+  try {
+    const serverSupabase = createServerClient();
+    const { data: { session } } = await serverSupabase.auth.getSession();
+    const token = session?.access_token || '';
+
+    const { searchParams } = new URL(req.url);
+    const dateParam = searchParams.get('date');
+    const selectedDate = dateParam ? new Date(dateParam) : new Date();
+    const monthKey = format(selectedDate, "yyyy-MM");
+    const start = format(startOfMonth(selectedDate), "yyyy-MM-dd");
+    const end = format(endOfMonth(selectedDate), "yyyy-MM-dd");
+
+    const supabase = getAnonSupabaseClient(token);
+
+    // Parallel Execution: Real-time queries + Cached Tier Queries
+    const [
+      { data: balanceData },
+      { data: products },
+      costEntries,
+      monthMetricsData,
+      { data: lowStockItems },
+      { data: recentTransactions }
+    ] = await Promise.all([
+      supabase.from("tenant_balances").select("cash_balance, bank_balance, tenant_id").maybeSingle(),
+      supabase.from("products").select("id, stock_quantity"),
+      getRestockCostsCache(token),
+      getMonthMetricsCache(monthKey, token),
+      supabase.from("products").select("id, product_name, stock_quantity").lte("stock_quantity", 10).order("stock_quantity", { ascending: true }),
+      supabase.from("transactions").select("id, description, amount, category, payment_method, transaction_date").eq("type", "EXPENSE").gte("transaction_date", start + "T00:00:00").lte("transaction_date", end + "T23:59:59").order("transaction_date", { ascending: false }).limit(20)
     ]);
 
-    const recentExpenses = [
-      ...(dbExpenses || []).map((e: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-        id: "exp-" + e.id,
-        date: e.expense_date,
-        label: e.title || (e.type === "FIXED" ? "Chi phí cố định" : "Chi phí biến động"),
-        amount: e.amount,
-        category: e.type,
-        paymentMethod: e.payment_method || "CASH",
-      })),
-      ...(dbRestocks || []).map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-        id: "rst-" + r.id,
-        date: r.created_at,
-        label: r.products?.product_name ? `Nhập: ${r.products.product_name}` : (r.reason || "Nhập hàng"),
-        amount: r.purchase_price,
-        category: "RESTOCK",
-        paymentMethod: r.payment_method || "CASH",
-      })),
-    ]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 20);
+    const cashBalance = balanceData?.cash_balance != null ? Number(balanceData.cash_balance) : 0;
+    const bankBalance = balanceData?.bank_balance != null ? Number(balanceData.bank_balance) : 0;
+    const tenantId = balanceData?.tenant_id || "00000000-0000-0000-0000-000000000000";
+
+    const latestCost = new Map<string, number>(costEntries);
+    const workingCapital = products?.reduce((sum, p) => {
+      const cost = latestCost.get(p.id) || 0;
+      return sum + (p.stock_quantity || 0) * cost;
+    }, 0) || 0;
+
+    const treasury = {
+      cashBalance,
+      bankBalance,
+      totalBalance: cashBalance + bankBalance,
+      workingCapital
+    };
+
+    const recentExpenses = (recentTransactions || []).map((t: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+      id: "tx-" + t.id,
+      date: t.transaction_date,
+      label: t.description || (t.category === "FIXED_EXPENSE" ? "Chi phí cố định" : "Chi phí biến động"),
+      amount: Number(t.amount),
+      category: t.category,
+      paymentMethod: t.payment_method || "CASH",
+    }));
 
     return NextResponse.json({
       success: true,
+      tenantId,
       treasury,
-      monthMetrics,
-      chartData,
-      topProducts,
+      monthMetrics: monthMetricsData.monthMetrics,
+      chartData: monthMetricsData.chartData,
+      topProducts: monthMetricsData.topProducts,
       lowStockItems: lowStockItems || [],
       recentExpenses
     });
@@ -221,3 +230,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
   }
 }
+

@@ -49,6 +49,53 @@ interface LowStockItem {
 
 
 // ─── Sub-components ───────────────────────────────────────────────────
+function SkeletonCard({ className }: { className?: string }) {
+    return (
+        <div className={cn("animate-pulse bg-slate-200/80 dark:bg-slate-700/50 rounded-2xl", className)} />
+    );
+}
+
+function DashboardSkeleton() {
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-2">
+                    <SkeletonCard className="h-8 w-64" />
+                    <SkeletonCard className="h-4 w-80" />
+                </div>
+                <SkeletonCard className="h-12 w-48 rounded-2xl" />
+            </div>
+
+            <div>
+                <SkeletonCard className="h-4 w-40 mb-3" />
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <SkeletonCard className="h-32" />
+                    <SkeletonCard className="h-32" />
+                    <SkeletonCard className="h-32" />
+                    <SkeletonCard className="h-32" />
+                </div>
+            </div>
+
+            <div>
+                <SkeletonCard className="h-4 w-48 mb-3" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <SkeletonCard className="h-52" />
+                    <SkeletonCard className="h-52" />
+                    <SkeletonCard className="h-52" />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                    <SkeletonCard className="h-72" />
+                    <SkeletonCard className="h-64" />
+                </div>
+                <SkeletonCard className="lg:col-span-1 h-[420px]" />
+            </div>
+        </div>
+    );
+}
+
 function TreasuryCard({ label, icon, amount, colorClass }: {
     label: string; icon: string; amount: number; colorClass: string;
 }) {
@@ -139,7 +186,9 @@ export default function DashboardPage() {
         }
     }, [role, roleLoading, router]);
 
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [monthChanging, setMonthChanging] = useState(false);
+
     const [treasury, setTreasury] = useState<Treasury>({ cashBalance: 0, bankBalance: 0, workingCapital: 0 });
     const [monthMetrics, setMonthMetrics] = useState<MonthMetrics>({
         totalRevenue: 0, courtRevenue: 0, productRevenue: 0, productProfit: 0,
@@ -155,8 +204,13 @@ export default function DashboardPage() {
 
     const currentMonthLabel = format(selectedDate, "MM/yyyy", { locale: vi });
 
-    const fetchAll = useCallback(async () => {
-        setLoading(true);
+    const fetchAll = useCallback(async (isFirst = false) => {
+        if (isFirst) {
+            setInitialLoading(true);
+        } else {
+            setMonthChanging(true);
+        }
+
         try {
             const res = await fetch(`/api/dashboard?date=${selectedDate.toISOString()}`);
             const resData = await res.json();
@@ -173,11 +227,15 @@ export default function DashboardPage() {
         } catch (err) {
             console.error("Dashboard fetch error:", err);
         } finally {
-            setLoading(false);
+            setInitialLoading(false);
+            setMonthChanging(false);
         }
     }, [selectedDate]);
 
-    useEffect(() => { fetchAll(); }, [fetchAll]);
+    // Initial mount vs month change handling
+    useEffect(() => {
+        fetchAll(initialLoading);
+    }, [selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // ── Reorder copy handler ──────────────────────────────────────────
     function handleCopyReorder() {
@@ -188,7 +246,7 @@ export default function DashboardPage() {
         setTimeout(() => setReorderCopied(false), 2500);
     }
 
-    if (loading || roleLoading || role === 'STAFF') {
+    if (roleLoading || role === 'STAFF') {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-gray-50 dark:bg-black">
                 <Loader2 className="animate-spin text-emerald-600 size-10" />
@@ -210,138 +268,152 @@ export default function DashboardPage() {
                 <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-24 md:pb-10 no-scrollbar">
                     <div className="max-w-7xl mx-auto space-y-6">
 
-                        {/* Page Header */}
-                        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Buồng lái Tài chính</h1>
-                                <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm md:text-base">Ngân quỹ lũy kế & hiệu suất kinh doanh tháng {currentMonthLabel}.</p>
-                            </div>
-                            
-                            {/* Month Selector */}
-                            <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-1 shadow-sm w-fit">
-                                <button
-                                    onClick={() => setSelectedDate(subMonths(selectedDate, 1))}
-                                    className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-2xl">chevron_left</span>
-                                </button>
-                                <div className="px-4 flex flex-col items-center min-w-[120px]">
-                                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none mb-1">Thời gian báo cáo</span>
-                                    <span className="text-sm font-black text-gray-900 dark:text-white tabular-nums">
-                                        {format(selectedDate, "MM / yyyy")}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => setSelectedDate(addMonths(selectedDate, 1))}
-                                    className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors"
-                                    disabled={format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy")}
-                                >
-                                    <span className={cn("material-symbols-outlined text-2xl", 
-                                        format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy") && "opacity-20"
-                                    )}>chevron_right</span>
-                                </button>
-                                <div className="h-6 w-px bg-gray-100 dark:bg-slate-700 mx-1" />
-                                <button
-                                    onClick={() => setSelectedDate(new Date())}
-                                    className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all"
-                                >
-                                    Hiện tại
-                                </button>
-                            </div>
-                        </header>
-
-                        {/* ── SECTION 1: Treasury ───────────────────── */}
-                        <section>
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="material-symbols-outlined text-gray-400 text-lg">account_balance_wallet</span>
-                                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ngân quỹ hiện tại (Lũy kế)</h2>
-                            </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                <TreasuryCard label="Tiền mặt" icon="payments" amount={treasury.cashBalance} colorClass="bg-emerald-600 text-white" />
-                                <TreasuryCard label="Ngân hàng" icon="account_balance" amount={treasury.bankBalance} colorClass="bg-sky-600 text-white" />
-                                <TreasuryCard
-                                    label="Tổng ngân quỹ"
-                                    icon="savings"
-                                    amount={totalTreasury}
-                                    colorClass={totalTreasury >= 0 ? "bg-slate-800 dark:bg-slate-700 text-white" : "bg-red-600 text-white"}
-                                />
-                                <TreasuryCard
-                                    label="Vốn lưu động"
-                                    icon="inventory_2"
-                                    amount={treasury.workingCapital}
-                                    colorClass="bg-indigo-600 text-white"
-                                />
-                            </div>
-                        </section>
-
-                        {/* ── Reorder Alert ──────────────────────────── */}
-                        <ReorderAlert items={lowStockItems} onCopy={handleCopyReorder} copied={reorderCopied} />
-
-                        {/* ── SECTION 2: P&L tháng ─────────────────── */}
-                        <section>
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="material-symbols-outlined text-gray-400 text-lg">bar_chart</span>
-                                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lãi / Lỗ tháng {currentMonthLabel}</h2>
-                            </div>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-                                {/* Revenue */}
-                                <div className="bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Doanh thu</span>
-                                        <span className="text-xl font-extrabold text-emerald-600">{formatCurrency(monthMetrics.totalRevenue)}</span>
-                                    </div>
-                                    <MetricRow label="Tiền sân" value={monthMetrics.courtRevenue} icon="sports_tennis" colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600" />
-                                    <MetricRow label="Bán hàng" value={monthMetrics.productRevenue} icon="point_of_sale" colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-600" subLabel={`Lãi gộp: ${formatCurrency(monthMetrics.productProfit)}`} />
-                                </div>
-
-                                {/* Expenses */}
-                                <div className="bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Chi phí vận hành</span>
-                                        <span className="text-xl font-extrabold text-red-500">{formatCurrency(monthMetrics.fixedExpenses + monthMetrics.variableExpenses)}</span>
-                                    </div>
-                                    <MetricRow label="Cố định" value={monthMetrics.fixedExpenses} icon="home_work" colorClass="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300" subLabel="Điện, nước, mặt bằng..." />
-                                    <MetricRow label="Biến động" value={monthMetrics.variableExpenses} icon="shopping_cart" colorClass="bg-orange-50 dark:bg-orange-900/30 text-orange-500" subLabel="Đá, trà, vật tư..." />
-                                </div>
-
-                                {/* Net Profit (Accrual) */}
-                                <div className={cn(
-                                    "rounded-2xl p-5 flex flex-col justify-between shadow-sm",
-                                    monthMetrics.netProfit >= 0
-                                        ? "bg-gradient-to-br from-emerald-500 to-emerald-700 text-white"
-                                        : "bg-gradient-to-br from-red-500 to-red-700 text-white"
-                                )}>
+                        {initialLoading ? (
+                            <DashboardSkeleton />
+                        ) : (
+                            <>
+                                {/* Page Header */}
+                                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
-                                        <p className="text-sm font-bold opacity-80 uppercase tracking-widest mb-1">Lợi nhuận ròng</p>
-                                        <p className="text-[10px] opacity-60 font-medium">= Lãi sân + Lãi hàng hóa − Chi phí vận hành</p>
+                                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Buồng lái Tài chính</h1>
+                                        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm md:text-base">Ngân quỹ lũy kế & hiệu suất kinh doanh tháng {currentMonthLabel}.</p>
                                     </div>
-                                    <div>
-                                        <p className="text-4xl font-black tracking-tight mt-4">{formatCurrency(Math.abs(monthMetrics.netProfit))}</p>
-                                        <div className="flex items-center gap-1.5 mt-2 opacity-80">
-                                            <span className="material-symbols-outlined text-lg">
-                                                {monthMetrics.netProfit >= 0 ? "trending_up" : "trending_down"}
+                                    
+                                    {/* Month Selector */}
+                                    <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-1 shadow-sm w-fit">
+                                        <button
+                                            onClick={() => setSelectedDate(subMonths(selectedDate, 1))}
+                                            disabled={monthChanging}
+                                            className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors disabled:opacity-50"
+                                        >
+                                            <span className="material-symbols-outlined text-2xl">chevron_left</span>
+                                        </button>
+                                        <div className="px-4 flex flex-col items-center min-w-[120px]">
+                                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none mb-1 flex items-center gap-1">
+                                                Thời gian báo cáo
+                                                {monthChanging && <Loader2 className="animate-spin size-3 text-emerald-600" />}
                                             </span>
-                                            <span className="text-sm font-medium">
-                                                {monthMetrics.netProfit >= 0 ? "Có lãi" : "Đang lỗ"}
-                                                {monthMetrics.totalRevenue > 0 && ` · ${Math.abs(Math.round((monthMetrics.netProfit / monthMetrics.totalRevenue) * 100))}%`}
+                                            <span className="text-sm font-black text-gray-900 dark:text-white tabular-nums">
+                                                {format(selectedDate, "MM / yyyy")}
                                             </span>
                                         </div>
+                                        <button
+                                            onClick={() => setSelectedDate(addMonths(selectedDate, 1))}
+                                            disabled={monthChanging || format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy")}
+                                            className="size-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 transition-colors disabled:opacity-50"
+                                        >
+                                            <span className={cn("material-symbols-outlined text-2xl", 
+                                                format(selectedDate, "MM/yyyy") === format(new Date(), "MM/yyyy") && "opacity-20"
+                                            )}>chevron_right</span>
+                                        </button>
+                                        <div className="h-6 w-px bg-gray-100 dark:bg-slate-700 mx-1" />
+                                        <button
+                                            onClick={() => setSelectedDate(new Date())}
+                                            disabled={monthChanging}
+                                            className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all disabled:opacity-50"
+                                        >
+                                            Hiện tại
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-                        </section>
+                                </header>
 
-                        {/* ── SECTION 3: Charts + Top Products ─────── */}
-                        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="lg:col-span-2 space-y-6">
-                                <RevenueChart data={chartData} />
-                                <RecentExpenses items={recentExpenses} />
-                            </div>
-                            <div className="lg:col-span-1">
-                                <TopProducts products={topProducts} />
-                            </div>
-                        </section>
+                                {/* ── SECTION 1: Treasury (Always Persisted / Never Hidden) ────── */}
+                                <section>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="material-symbols-outlined text-gray-400 text-lg">account_balance_wallet</span>
+                                        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ngân quỹ hiện tại (Lũy kế)</h2>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                        <TreasuryCard label="Tiền mặt" icon="payments" amount={treasury.cashBalance} colorClass="bg-emerald-600 text-white" />
+                                        <TreasuryCard label="Ngân hàng" icon="account_balance" amount={treasury.bankBalance} colorClass="bg-sky-600 text-white" />
+                                        <TreasuryCard
+                                            label="Tổng ngân quỹ"
+                                            icon="savings"
+                                            amount={totalTreasury}
+                                            colorClass={totalTreasury >= 0 ? "bg-slate-800 dark:bg-slate-700 text-white" : "bg-red-600 text-white"}
+                                        />
+                                        <TreasuryCard
+                                            label="Vốn lưu động"
+                                            icon="inventory_2"
+                                            amount={treasury.workingCapital}
+                                            colorClass="bg-indigo-600 text-white"
+                                        />
+                                    </div>
+                                </section>
+
+                                {/* ── Reorder Alert ──────────────────────────── */}
+                                <ReorderAlert items={lowStockItems} onCopy={handleCopyReorder} copied={reorderCopied} />
+
+                                {/* ── Month-Bound Metrics (Soft Opacity Transition on Month Change) ── */}
+                                <div className={cn("space-y-6 transition-opacity duration-200", monthChanging ? "opacity-60 pointer-events-none" : "opacity-100")}>
+                                    {/* ── SECTION 2: P&L tháng ─────────────────── */}
+                                    <section>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="material-symbols-outlined text-gray-400 text-lg">bar_chart</span>
+                                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lãi / Lỗ tháng {currentMonthLabel}</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                                            {/* Revenue */}
+                                            <div className="bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Doanh thu</span>
+                                                    <span className="text-xl font-extrabold text-emerald-600">{formatCurrency(monthMetrics.totalRevenue)}</span>
+                                                </div>
+                                                <MetricRow label="Tiền sân" value={monthMetrics.courtRevenue} icon="sports_tennis" colorClass="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600" />
+                                                <MetricRow label="Bán hàng" value={monthMetrics.productRevenue} icon="point_of_sale" colorClass="bg-blue-50 dark:bg-blue-900/30 text-blue-600" subLabel={`Lãi gộp: ${formatCurrency(monthMetrics.productProfit)}`} />
+                                            </div>
+
+                                            {/* Expenses */}
+                                            <div className="bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Chi phí vận hành</span>
+                                                    <span className="text-xl font-extrabold text-red-500">{formatCurrency(monthMetrics.fixedExpenses + monthMetrics.variableExpenses)}</span>
+                                                </div>
+                                                <MetricRow label="Cố định" value={monthMetrics.fixedExpenses} icon="home_work" colorClass="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300" subLabel="Điện, nước, mặt bằng..." />
+                                                <MetricRow label="Biến động" value={monthMetrics.variableExpenses} icon="shopping_cart" colorClass="bg-orange-50 dark:bg-orange-900/30 text-orange-500" subLabel="Đá, trà, vật tư..." />
+                                            </div>
+
+                                            {/* Net Profit (Accrual) */}
+                                            <div className={cn(
+                                                "rounded-2xl p-5 flex flex-col justify-between shadow-sm",
+                                                monthMetrics.netProfit >= 0
+                                                    ? "bg-gradient-to-br from-emerald-500 to-emerald-700 text-white"
+                                                    : "bg-gradient-to-br from-red-500 to-red-700 text-white"
+                                            )}>
+                                                <div>
+                                                    <p className="text-sm font-bold opacity-80 uppercase tracking-widest mb-1">Lợi nhuận ròng</p>
+                                                    <p className="text-[10px] opacity-60 font-medium">= Lãi sân + Lãi hàng hóa − Chi phí vận hành</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-4xl font-black tracking-tight mt-4">{formatCurrency(Math.abs(monthMetrics.netProfit))}</p>
+                                                    <div className="flex items-center gap-1.5 mt-2 opacity-80">
+                                                        <span className="material-symbols-outlined text-lg">
+                                                            {monthMetrics.netProfit >= 0 ? "trending_up" : "trending_down"}
+                                                        </span>
+                                                        <span className="text-sm font-medium">
+                                                            {monthMetrics.netProfit >= 0 ? "Có lãi" : "Đang lỗ"}
+                                                            {monthMetrics.totalRevenue > 0 && ` · ${Math.abs(Math.round((monthMetrics.netProfit / monthMetrics.totalRevenue) * 100))}%`}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* ── SECTION 3: Charts + Top Products ─────── */}
+                                    <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        <div className="lg:col-span-2 space-y-6">
+                                            <RevenueChart data={chartData} />
+                                            <RecentExpenses items={recentExpenses} />
+                                        </div>
+                                        <div className="lg:col-span-1">
+                                            <TopProducts products={topProducts} />
+                                        </div>
+                                    </section>
+                                </div>
+                            </>
+                        )}
 
                     </div>
                 </main>
@@ -353,3 +425,4 @@ export default function DashboardPage() {
         </div>
     );
 }
+

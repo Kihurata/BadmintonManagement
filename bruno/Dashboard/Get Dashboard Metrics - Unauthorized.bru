@@ -1,0 +1,15 @@
+meta {
+  name: Get Dashboard Metrics - Unauthorized
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/dashboard?date=2026-07-01
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 401
+}
