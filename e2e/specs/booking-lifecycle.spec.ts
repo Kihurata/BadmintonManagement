@@ -33,6 +33,7 @@ test.describe('P0 Booking-to-Invoice Lifecycle Workflow', () => {
       await bookingModal.createBooking({
         courtName: 'Sân 1',
         customerName: testCustomerName,
+        startTime: '18:00',
         durationHours: '1',
       });
       await bookingModal.expectBookingCreated();

@@ -11,8 +11,8 @@ export class CheckoutModal {
     const checkInBtn = this.page.getByRole('button', { name: /Check In/i });
     await expect(checkInBtn).toBeVisible({ timeout: 10000 });
     await checkInBtn.click();
-    // Wait for state to change to ĐANG SỬ DỤNG
-    await expect(this.page.locator('text=ĐANG SỬ DỤNG').first()).toBeVisible({ timeout: 10000 });
+    // Wait for state to change to CHECKED_IN
+    await expect(this.page.locator('text=CHECKED_IN').first()).toBeVisible({ timeout: 10000 });
   }
 
   async addPosItem(itemName: string) {

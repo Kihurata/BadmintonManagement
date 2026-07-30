@@ -16,7 +16,7 @@ export class BookingModal {
 
   async createBooking(options: CreateBookingOptions = {}) {
     // Assert modal is visible
-    await expect(this.page.getByRole('button', { name: /Tạo đặt sân/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /Đặt sân/i })).toBeVisible();
 
     // Select court if specified
     if (options.courtName) {
@@ -58,12 +58,12 @@ export class BookingModal {
     }
 
     // Submit booking form
-    const submitBtn = this.page.getByRole('button', { name: /Tạo đặt sân/i });
+    const submitBtn = this.page.getByRole('button', { name: /Đặt sân/i });
     await submitBtn.click();
   }
 
   async expectBookingCreated() {
     // Modal should close automatically after creation
-    await expect(this.page.getByRole('button', { name: /Tạo đặt sân/i })).toBeHidden({ timeout: 10000 });
+    await expect(this.page.getByRole('button', { name: /Đặt sân/i })).toBeHidden({ timeout: 10000 });
   }
 }
