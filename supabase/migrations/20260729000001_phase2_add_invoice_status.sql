@@ -13,12 +13,13 @@ CREATE INDEX IF NOT EXISTS idx_invoices_tenant_status ON public.invoices (tenant
 -- 3.1 Invoices marked as paid or paid_amount >= total_amount
 UPDATE public.invoices
 SET status = 'PAID'
-WHERE is_paid = TRUE OR paid_amount >= total_amount;
+WHERE is_paid = TRUE OR (paid_amount IS NOT NULL AND total_amount IS NOT NULL AND paid_amount >= total_amount AND paid_amount > 0);
 
 -- 3.2 Invoices partially paid
 UPDATE public.invoices
 SET status = 'PARTIALLY_PAID'
 WHERE (is_paid = FALSE OR is_paid IS NULL)
+  AND paid_amount IS NOT NULL
   AND paid_amount > 0 
   AND paid_amount < total_amount;
 

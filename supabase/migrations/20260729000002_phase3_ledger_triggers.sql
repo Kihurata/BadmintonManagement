@@ -61,66 +61,82 @@ EXECUTE FUNCTION public.sync_invoice_from_transaction();
 -- 2. Function & Trigger: Sync Transactions to Tenant Balances (Cash & Bank)
 CREATE OR REPLACE FUNCTION public.sync_tenant_balances()
 RETURNS TRIGGER AS $$
+DECLARE
+    v_tenant_id UUID;
+    v_diff NUMERIC := 0;
+    v_method payment_method;
 BEGIN
     IF (TG_OP = 'INSERT') THEN
-        IF NEW.type = 'INCOME' THEN
-            IF NEW.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance + NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance + NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            END IF;
-        ELSIF NEW.type = 'EXPENSE' THEN
-            IF NEW.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance - NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance - NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            END IF;
+        v_tenant_id := NEW.tenant_id;
+        v_method := NEW.payment_method;
+        v_diff := CASE WHEN NEW.type = 'INCOME' THEN NEW.amount ELSE -NEW.amount END;
+
+        IF v_method = 'CASH' THEN
+            UPDATE public.tenant_balances SET cash_balance = cash_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        ELSE
+            UPDATE public.tenant_balances SET bank_balance = bank_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        END IF;
+
+        IF NOT FOUND THEN
+            INSERT INTO public.tenant_balances (tenant_id, cash_balance, bank_balance, updated_at)
+            VALUES (
+                v_tenant_id,
+                CASE WHEN v_method = 'CASH' THEN v_diff ELSE 0 END,
+                CASE WHEN v_method = 'BANK_TRANSFER' THEN v_diff ELSE 0 END,
+                NOW()
+            )
+            ON CONFLICT (tenant_id) DO UPDATE SET
+                cash_balance = public.tenant_balances.cash_balance + EXCLUDED.cash_balance,
+                bank_balance = public.tenant_balances.bank_balance + EXCLUDED.bank_balance,
+                updated_at = NOW();
         END IF;
 
     ELSIF (TG_OP = 'DELETE') THEN
-        IF OLD.type = 'INCOME' THEN
-            IF OLD.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance - OLD.amount, updated_at = NOW() WHERE tenant_id = OLD.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance - OLD.amount, updated_at = NOW() WHERE tenant_id = OLD.tenant_id;
-            END IF;
-        ELSIF OLD.type = 'EXPENSE' THEN
-            IF OLD.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance + OLD.amount, updated_at = NOW() WHERE tenant_id = OLD.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance + OLD.amount, updated_at = NOW() WHERE tenant_id = OLD.tenant_id;
-            END IF;
+        v_tenant_id := OLD.tenant_id;
+        v_method := OLD.payment_method;
+        v_diff := CASE WHEN OLD.type = 'INCOME' THEN -OLD.amount ELSE OLD.amount END;
+
+        IF v_method = 'CASH' THEN
+            UPDATE public.tenant_balances SET cash_balance = cash_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        ELSE
+            UPDATE public.tenant_balances SET bank_balance = bank_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
         END IF;
 
     ELSIF (TG_OP = 'UPDATE') THEN
         -- Revert OLD impact
-        IF OLD.type = 'INCOME' THEN
-            IF OLD.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance - OLD.amount WHERE tenant_id = OLD.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance - OLD.amount WHERE tenant_id = OLD.tenant_id;
-            END IF;
-        ELSIF OLD.type = 'EXPENSE' THEN
-            IF OLD.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance + OLD.amount WHERE tenant_id = OLD.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance + OLD.amount WHERE tenant_id = OLD.tenant_id;
-            END IF;
+        v_tenant_id := OLD.tenant_id;
+        v_method := OLD.payment_method;
+        v_diff := CASE WHEN OLD.type = 'INCOME' THEN -OLD.amount ELSE OLD.amount END;
+
+        IF v_method = 'CASH' THEN
+            UPDATE public.tenant_balances SET cash_balance = cash_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        ELSE
+            UPDATE public.tenant_balances SET bank_balance = bank_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
         END IF;
 
         -- Apply NEW impact
-        IF NEW.type = 'INCOME' THEN
-            IF NEW.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance + NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance + NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            END IF;
-        ELSIF NEW.type = 'EXPENSE' THEN
-            IF NEW.payment_method = 'CASH' THEN
-                UPDATE public.tenant_balances SET cash_balance = cash_balance - NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            ELSE
-                UPDATE public.tenant_balances SET bank_balance = bank_balance - NEW.amount, updated_at = NOW() WHERE tenant_id = NEW.tenant_id;
-            END IF;
+        v_tenant_id := NEW.tenant_id;
+        v_method := NEW.payment_method;
+        v_diff := CASE WHEN NEW.type = 'INCOME' THEN NEW.amount ELSE -NEW.amount END;
+
+        IF v_method = 'CASH' THEN
+            UPDATE public.tenant_balances SET cash_balance = cash_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        ELSE
+            UPDATE public.tenant_balances SET bank_balance = bank_balance + v_diff, updated_at = NOW() WHERE tenant_id = v_tenant_id;
+        END IF;
+
+        IF NOT FOUND THEN
+            INSERT INTO public.tenant_balances (tenant_id, cash_balance, bank_balance, updated_at)
+            VALUES (
+                v_tenant_id,
+                CASE WHEN v_method = 'CASH' THEN v_diff ELSE 0 END,
+                CASE WHEN v_method = 'BANK_TRANSFER' THEN v_diff ELSE 0 END,
+                NOW()
+            )
+            ON CONFLICT (tenant_id) DO UPDATE SET
+                cash_balance = public.tenant_balances.cash_balance + EXCLUDED.cash_balance,
+                bank_balance = public.tenant_balances.bank_balance + EXCLUDED.bank_balance,
+                updated_at = NOW();
         END IF;
     END IF;
 

@@ -58,6 +58,9 @@ CREATE INDEX IF NOT EXISTS idx_transactions_tenant_date ON public.transactions (
 CREATE INDEX IF NOT EXISTS idx_transactions_ref ON public.transactions (reference_type, reference_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_payment ON public.transactions (tenant_id, payment_method, type);
 
+-- 4.1 Unique Reference Constraint for Idempotent Backfill & Insert Guard
+CREATE UNIQUE INDEX IF NOT EXISTS uq_transactions_reference ON public.transactions (reference_type, reference_id) WHERE reference_type IS NOT NULL AND reference_id IS NOT NULL;
+
 -- 5. Enable Row Level Security (RLS)
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tenant_balances ENABLE ROW LEVEL SECURITY;
@@ -121,7 +124,7 @@ SELECT
     tenant_id,
     'INCOME'::transaction_type,
     'INVOICE_PAYMENT'::transaction_category,
-    COALESCE(paid_amount, total_amount),
+    COALESCE(NULLIF(paid_amount, 0), NULLIF(total_amount, 0), 1),
     COALESCE(payment_method, 'CASH'),
     'INVOICE',
     id,
@@ -129,7 +132,7 @@ SELECT
     created_at
 FROM public.invoices
 WHERE (is_paid = TRUE OR paid_amount > 0)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (reference_type, reference_id) WHERE reference_type IS NOT NULL AND reference_id IS NOT NULL DO NOTHING;
 
 -- 6.2 Backfill historical expenses
 INSERT INTO public.transactions (
@@ -147,7 +150,7 @@ SELECT
     note,
     expense_date::timestamptz
 FROM public.expenses
-ON CONFLICT DO NOTHING;
+ON CONFLICT (reference_type, reference_id) WHERE reference_type IS NOT NULL AND reference_id IS NOT NULL DO NOTHING;
 
 -- 6.3 Backfill historical restocks
 INSERT INTO public.transactions (
@@ -165,7 +168,7 @@ SELECT
     created_at
 FROM public.inventory_logs
 WHERE type = 'RESTOCK' AND purchase_price > 0
-ON CONFLICT DO NOTHING;
+ON CONFLICT (reference_type, reference_id) WHERE reference_type IS NOT NULL AND reference_id IS NOT NULL DO NOTHING;
 
 -- 6.4 Populate initial tenant_balances
 INSERT INTO public.tenant_balances (tenant_id, cash_balance, bank_balance, updated_at)

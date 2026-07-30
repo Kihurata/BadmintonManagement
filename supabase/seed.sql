@@ -29,6 +29,6 @@ WITH inserted_products AS (
   RETURNING id, stock_quantity, product_name
 )
 -- Create initial RESTOCK logs for these 5 products
-INSERT INTO public.inventory_logs (product_id, type, quantity, reason)
-SELECT id, 'RESTOCK', stock_quantity, 'Nhập kho ban đầu (Seed Data)'
+INSERT INTO public.inventory_logs (product_id, type, quantity, reason, tenant_id)
+SELECT id, 'RESTOCK', stock_quantity, 'Nhập kho ban đầu (Seed Data)', '00000000-0000-0000-0000-000000000000'
 FROM inserted_products;
