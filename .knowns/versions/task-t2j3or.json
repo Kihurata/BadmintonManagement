@@ -1,0 +1,103 @@
+{
+  "taskId": "t2j3or",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "t2j3or",
+      "version": 1,
+      "timestamp": "2026-07-29T12:42:41.246264Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Refactor Next.js dashboard route handler (src/app/api/dashboard/route.ts) to fix unstable_cache invalidation bugs, partition caching by data volatility, and add cache invalidation tags.",
+        "priority": "high",
+        "status": "todo",
+        "title": "Optimize Dashboard Performance \u0026 Caching Strategy"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "t2j3or",
+      "version": 2,
+      "timestamp": "2026-07-29T12:42:48.052285Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor Next.js dashboard route handler (src/app/api/dashboard/route.ts) to fix unstable_cache invalidation bugs, partition caching by data volatility, and add cache invalidation tags.",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Optimize Dashboard Performance \u0026 Caching Strategy"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "t2j3or",
+      "version": 3,
+      "timestamp": "2026-07-29T12:43:00.30369Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Fix unstable_cache key serialization\n2. Partition dashboard caching into 4 volatility tiers\n3. Add revalidateTag hooks to payment handlers\n4. Add Bruno test \u0026 verify build"
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor Next.js dashboard route handler (src/app/api/dashboard/route.ts) to fix unstable_cache invalidation bugs, partition caching by data volatility, and add cache invalidation tags.",
+        "implementationPlan": "1. Fix unstable_cache key serialization\n2. Partition dashboard caching into 4 volatility tiers\n3. Add revalidateTag hooks to payment handlers\n4. Add Bruno test \u0026 verify build",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Optimize Dashboard Performance \u0026 Caching Strategy"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "t2j3or",
+      "version": 4,
+      "timestamp": "2026-07-29T12:51:19.317129Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented tiered unstable_cache in src/app/api/dashboard/route.ts. Added revalidateTag in pay-all route. Created Bruno test bruno/Dashboard/Get Dashboard Metrics.bru. Passed Next.js production build and Bruno API runner."
+        }
+      ],
+      "snapshot": {
+        "assignee": "@me",
+        "description": "Refactor Next.js dashboard route handler (src/app/api/dashboard/route.ts) to fix unstable_cache invalidation bugs, partition caching by data volatility, and add cache invalidation tags.",
+        "implementationNotes": "Implemented tiered unstable_cache in src/app/api/dashboard/route.ts. Added revalidateTag in pay-all route. Created Bruno test bruno/Dashboard/Get Dashboard Metrics.bru. Passed Next.js production build and Bruno API runner.",
+        "implementationPlan": "1. Fix unstable_cache key serialization\n2. Partition dashboard caching into 4 volatility tiers\n3. Add revalidateTag hooks to payment handlers\n4. Add Bruno test \u0026 verify build",
+        "priority": "high",
+        "status": "done",
+        "title": "Optimize Dashboard Performance \u0026 Caching Strategy"
+      }
+    }
+  ]
+}

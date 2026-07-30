@@ -16,7 +16,7 @@
 
 ## 📋 PLANNING & MIRRORING PROTOCOL
 
-1. **Mirroring Plans**: Every generated `implementation_plan.md`, `task.md`, and `walkthrough.md` MUST be copied/mirrored to `c:\Kira_Second_Brain\wiki\badminton-management\plans\{conversation_id}\`.
+1. **Mirroring Plans**: Every generated `implementation_plan.md`, `task.md`, and `walkthrough.md` MUST be copied/mirrored to `c:\Kira_Second_Brain\wiki\badminton-management\plans\{feature-or-function-name}\` (e.g. `plans/financial-ledger-and-dashboard/`), using a descriptive, kebab-case folder name corresponding to its feature/function instead of a raw conversation ID or UUID.
 
 2. **Index Update**: Keep [[wiki/badminton-management/_index.md]] updated when adding new documentation or specs.
 

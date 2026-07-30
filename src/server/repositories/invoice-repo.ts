@@ -205,14 +205,28 @@ export async function payInvoice(
   paymentMethod: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
-  const { error } = await supabase
+
+  // Fetch tenant_id from target invoice
+  const { data: inv } = await supabase
     .from('invoices')
-    .update({
-      total_amount: totalAmount,
-      payment_method: paymentMethod,
-      is_paid: true
-    })
-    .eq('id', invoiceId);
+    .select('tenant_id')
+    .eq('id', invoiceId)
+    .single();
+
+  const { error } = await supabase
+    .from('transactions')
+    .insert([
+      {
+        tenant_id: inv?.tenant_id,
+        type: 'INCOME',
+        category: 'INVOICE_PAYMENT',
+        amount: totalAmount,
+        payment_method: paymentMethod || 'CASH',
+        reference_type: 'INVOICE',
+        reference_id: invoiceId,
+        description: 'Thanh toán hóa đơn'
+      }
+    ]);
 
   if (error) {
     return { success: false, error: (error as Error).message };
@@ -234,8 +248,10 @@ export async function createInvoice(
       booking_id: bookingId,
       customer_id: customerId,
       total_amount: totalAmount,
+      paid_amount: isPaid ? totalAmount : 0,
       payment_method: paymentMethod,
-      is_paid: isPaid
+      is_paid: isPaid,
+      status: isPaid ? 'PAID' : 'UNPAID'
     }])
     .select()
     .single();
@@ -243,6 +259,21 @@ export async function createInvoice(
   if (error) {
     return { success: false, error: (error as Error).message };
   }
+
+  // If created as paid directly, insert transaction
+  if (isPaid && data) {
+    await supabase.from('transactions').insert([{
+      tenant_id: data.tenant_id,
+      type: 'INCOME',
+      category: 'INVOICE_PAYMENT',
+      amount: totalAmount,
+      payment_method: paymentMethod || 'CASH',
+      reference_type: 'INVOICE',
+      reference_id: data.id,
+      description: 'Thanh toán hóa đơn'
+    }]);
+  }
+
   return { success: true, data };
 }
 
@@ -275,16 +306,18 @@ export async function addExpense(
   paymentMethod: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
+  const category = type === 'FIXED' ? 'FIXED_EXPENSE' : 'VARIABLE_EXPENSE';
   const { error } = await supabase
-    .from('expenses')
+    .from('transactions')
     .insert([
       {
-        title,
-        type,
+        type: 'EXPENSE',
+        category,
         amount,
-        expense_date: expenseDate,
+        payment_method: paymentMethod || 'CASH',
+        description: title,
         note,
-        payment_method: paymentMethod
+        transaction_date: expenseDate ? new Date(expenseDate).toISOString() : new Date().toISOString()
       }
     ]);
 
