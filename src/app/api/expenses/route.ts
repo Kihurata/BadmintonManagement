@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addExpense } from '@/server/repositories/invoice-repo';
+import { revalidateTag } from 'next/cache';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +14,13 @@ export async function POST(req: NextRequest) {
     if (!res.success) {
       return NextResponse.json({ success: false, error: res.error }, { status: 500 });
     }
+
+    try {
+      revalidateTag('dashboard:current-month');
+    } catch (e) {
+      console.warn('revalidateTag failed:', e);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
