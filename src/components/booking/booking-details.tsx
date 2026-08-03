@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { calculateRentalFee } from '@/lib/pricing';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 import { ProductSelectorList, type ProductSelectorItem } from './product-selector-list';
 
 interface BookingDetailsProps {
@@ -17,6 +18,7 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOutClick }: BookingDetailsProps) {
+    const router = useRouter();
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -524,13 +526,26 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                 )}
 
                 {booking.status === 'CHECKED_IN' && (
-                    <Button
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20 mb-3"
-                        onClick={onCheckOutClick}
-                    >
-                        <span className="material-symbols-outlined mr-2">shopping_cart_checkout</span>
-                        Thanh toán & Trả sân
-                    </Button>
+                    <div className="space-y-2 mb-3">
+                        <Button
+                            variant="outline"
+                            className="w-full h-11 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 font-bold rounded-xl flex items-center justify-center gap-2"
+                            onClick={() => {
+                                onClose();
+                                router.push(`/invoices?tab=GROUPS&invoiceId=${invoice?.id || ''}&customerId=${booking.customer_id || ''}`);
+                            }}
+                        >
+                            <Users className="w-5 h-5" />
+                            Chia tiền nhóm
+                        </Button>
+                        <Button
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20"
+                            onClick={onCheckOutClick}
+                        >
+                            <span className="material-symbols-outlined mr-2">shopping_cart_checkout</span>
+                            Thanh toán & Trả sân
+                        </Button>
+                    </div>
                 )}
 
                 <Button

@@ -1,0 +1,15 @@
+meta {
+  name: Get Invoice Split Summary
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/invoices/{{invoiceId}}/split
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}

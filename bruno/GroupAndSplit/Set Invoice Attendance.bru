@@ -1,0 +1,25 @@
+meta {
+  name: Set Invoice Attendance
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/invoices/{{invoiceId}}/split
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "groupMemberIds": [
+      "{{memberId1}}",
+      "{{memberId2}}"
+    ]
+  }
+}

@@ -1,17 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { Sidebar } from '@/components/layout/sidebar';
 import { StickyHeader } from '@/components/home/sticky-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { TransactionHistory } from '@/components/invoices/transaction-history';
 import { ReceivablesLedger } from '@/components/invoices/receivables-ledger';
+import { GroupSplitsLedger } from '@/components/invoices/group-splits-ledger';
 import { useUserRole } from '@/components/auth-provider';
 
-export default function InvoicesPage() {
+function InvoicesContent() {
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab');
     const { role, loading } = useUserRole();
-    const [activeTab, setActiveTab] = useState<'TRANSACTIONS' | 'RECEIVABLES'>('RECEIVABLES');
+    const [activeTab, setActiveTab] = useState<'TRANSACTIONS' | 'RECEIVABLES' | 'GROUPS'>(
+        initialTab === 'GROUPS' ? 'GROUPS' : 'RECEIVABLES'
+    );
     const [generating, setGenerating] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
 
@@ -99,9 +106,10 @@ export default function InvoicesPage() {
                         <div className="mb-8">
                             <SegmentedControl
                                 activeTab={activeTab}
-                                onChange={(id) => setActiveTab(id as 'TRANSACTIONS' | 'RECEIVABLES')}
+                                onChange={(id) => setActiveTab(id as 'TRANSACTIONS' | 'RECEIVABLES' | 'GROUPS')}
                                 tabs={[
                                     { id: 'RECEIVABLES', label: 'Công Nợ' },
+                                    { id: 'GROUPS', label: 'Nhóm & Chia Tiền' },
                                     { id: 'TRANSACTIONS', label: 'Lịch Sử Giao Dịch' },
                                 ]}
                             />
@@ -118,6 +126,8 @@ export default function InvoicesPage() {
                             <TransactionHistory />
                         ) : activeTab === 'RECEIVABLES' ? (
                             <ReceivablesLedger />
+                        ) : activeTab === 'GROUPS' ? (
+                            <GroupSplitsLedger />
                         ) : (
                             <TransactionHistory />
                         )}
@@ -138,5 +148,13 @@ export default function InvoicesPage() {
             `}</style>
             </div>
         </div>
+    );
+}
+
+export default function InvoicesPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <InvoicesContent />
+        </Suspense>
     );
 }

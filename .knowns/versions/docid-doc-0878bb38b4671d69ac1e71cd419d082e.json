@@ -1,0 +1,87 @@
+{
+  "docId": "doc-0878bb38b4671d69ac1e71cd419d082e",
+  "docPath": "features/court-fee-splitting-and-sharing",
+  "currentPath": "features/court-fee-splitting-and-sharing",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-0878bb38b4671d69ac1e71cd419d082e",
+      "docPath": "features/court-fee-splitting-and-sharing",
+      "currentPath": "features/court-fee-splitting-and-sharing",
+      "version": 1,
+      "timestamp": "2026-08-03T09:05:36.6470371Z",
+      "author": "cli",
+      "actor": "cli",
+      "source": "cli",
+      "newHash": "28c75489705fddd98298b2634c9cac04d3bf12967a30e4988e8007daea9ccbc1",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "features/court-fee-splitting-and-sharing"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "court-fee-splitting-and-sharing"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Hướng dẫn chi tiết sử dụng tính năng Quản lý Nhóm \u0026 Chia Tiền Sân dành cho quản lý và khách hàng"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "feature",
+            "guide",
+            "user-guide"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 42,
+          "deltaBytes": 42
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 33,
+          "deltaBytes": 33
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 130,
+          "deltaBytes": 130
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 32,
+          "deltaBytes": 32
+        }
+      ],
+      "snapshot": {
+        "description": "Hướng dẫn chi tiết sử dụng tính năng Quản lý Nhóm \u0026 Chia Tiền Sân dành cho quản lý và khách hàng",
+        "path": "features/court-fee-splitting-and-sharing",
+        "tags": [
+          "feature",
+          "guide",
+          "user-guide"
+        ],
+        "title": "court-fee-splitting-and-sharing"
+      }
+    }
+  ]
+}

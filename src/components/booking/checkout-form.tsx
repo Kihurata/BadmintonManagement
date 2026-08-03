@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-
-import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Loader2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { calculateRentalFee } from '@/lib/pricing';
 import { InvoiceSummaryCard, type InvoiceItemSummary } from '@/components/invoices/invoice-summary-card';
@@ -13,6 +13,7 @@ interface CheckoutFormProps {
 }
 
 export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormProps) {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -185,11 +186,22 @@ export function CheckoutForm({ bookingId, onSuccess, onCancel }: CheckoutFormPro
             </div>
 
             {/* Bottom Button */}
-            <div className="shrink-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 z-30">
+            <div className="shrink-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-4 z-30 flex gap-2">
+                <Button
+                    variant="outline"
+                    className="h-12 px-4 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 font-bold rounded-xl flex items-center justify-center gap-1.5"
+                    onClick={() => {
+                        onCancel();
+                        router.push(`/invoices?tab=GROUPS&invoiceId=${invoice?.id || ''}&customerId=${booking?.customer_id || ''}`);
+                    }}
+                >
+                    <Users className="w-5 h-5" />
+                    Chia tiền nhóm
+                </Button>
                 <Button
                     onClick={handleConfirmPayment}
                     disabled={loading}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-emerald-600/20"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-emerald-600/20"
                 >
                     {loading ? <Loader2 className="animate-spin mr-2" /> : (
                         <span className="material-symbols-outlined mr-2">check_circle</span>

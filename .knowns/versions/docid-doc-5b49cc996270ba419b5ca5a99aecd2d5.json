@@ -1,0 +1,87 @@
+{
+  "docId": "doc-5b49cc996270ba419b5ca5a99aecd2d5",
+  "docPath": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m",
+  "currentPath": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-5b49cc996270ba419b5ca5a99aecd2d5",
+      "docPath": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m",
+      "currentPath": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m",
+      "version": 1,
+      "timestamp": "2026-08-03T09:05:33.6048875Z",
+      "author": "cli",
+      "actor": "cli",
+      "source": "cli",
+      "newHash": "4ac1b949a1e661eaeb3a506bc2976f437bf14890baa0d26c70f08b24611a1feb",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "Hướng dẫn Sử dụng Chia Tiền Sân \u0026 Quản Lý Nhóm"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Hướng dẫn chi tiết cho người dùng về tính năng điểm danh nhóm, chia tiền sân, phân bổ sản phẩm và tổng hợp tin nhắn Zalo"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "feature",
+            "guide",
+            "user-guide"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 52,
+          "deltaBytes": 52
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 69,
+          "deltaBytes": 69
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 158,
+          "deltaBytes": 158
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 32,
+          "deltaBytes": 32
+        }
+      ],
+      "snapshot": {
+        "description": "Hướng dẫn chi tiết cho người dùng về tính năng điểm danh nhóm, chia tiền sân, phân bổ sản phẩm và tổng hợp tin nhắn Zalo",
+        "path": "features/h-ng-d-n-s-d-ng-chia-ti-n-s-n-qu-n-l-nh-m",
+        "tags": [
+          "feature",
+          "guide",
+          "user-guide"
+        ],
+        "title": "Hướng dẫn Sử dụng Chia Tiền Sân \u0026 Quản Lý Nhóm"
+      }
+    }
+  ]
+}

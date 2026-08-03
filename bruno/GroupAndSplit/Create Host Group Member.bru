@@ -1,0 +1,25 @@
+meta {
+  name: Create Host Group Member
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/customers/{{hostCustomerId}}/group-members
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "name": "Nguyễn Văn Hùng",
+    "phone": "0912345678",
+    "zalo": "0912345678",
+    "facebook": "fb.com/hungbadminton"
+  }
+}

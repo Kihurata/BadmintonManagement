@@ -443,7 +443,7 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange, onSuccess }
                     </div>
                 )}
 
-                <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <DialogFooter className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex-wrap gap-2">
                     {!invoice?.is_paid ? (
                         <div className="flex gap-2 w-full">
                             <Button
