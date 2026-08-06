@@ -66,3 +66,5 @@ public/workbox-*.js
 public/workbox-*.js.map
 public/fallback-*.js
 .agents/
+/playwright-report/
+/test-results/
