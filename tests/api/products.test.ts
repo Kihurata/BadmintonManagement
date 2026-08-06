@@ -1,67 +1,53 @@
-import { GET as getList, POST as createProductApi } from '@/app/api/v1/products/route';
-import { GET as getDetail, PUT as putProduct, PATCH as patchProduct, DELETE as deleteProductApi } from '@/app/api/v1/products/[productId]/route';
-import { verifyUserRole } from '@/lib/api-auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { GET as getProductsApi, POST as createProductApi } from '@/app/api/v1/products/route';
+import { PUT as putProduct, PATCH as patchProduct, DELETE as deleteProductApi } from '@/app/api/v1/products/[productId]/route';
 import * as productRepo from '@/server/repositories/product-repo';
-import { NextRequest } from 'next/server';
+import { verifyUserRole } from '@/lib/api-auth';
 
-jest.mock('@/lib/api-auth', () => ({
-  verifyUserRole: jest.fn(),
-}));
+jest.mock('@/server/repositories/product-repo');
+jest.mock('@/lib/api-auth');
 
-jest.mock('@/server/repositories/product-repo', () => ({
-  getProducts: jest.fn(),
-  getProductById: jest.fn(),
-  createProduct: jest.fn(),
-  updateProduct: jest.fn(),
-  deleteProduct: jest.fn(),
-}));
-
-describe('Products API Route Handlers', () => {
+describe('RESTful Products API Handlers', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (verifyUserRole as jest.Mock).mockImplementation(async () => ({ success: true, role: 'OWNER' }));
   });
 
   describe('GET /api/v1/products', () => {
-    it('should return list of products', async () => {
-      const mockProducts = [{ id: 'p1', product_name: 'Water', unit_price: 10000, stock_quantity: 5, status: 'ACTIVE' }];
+    it('should return all available products by default', async () => {
+      const mockProducts = [{ id: 'p1', product_name: 'Yonex' }];
       (productRepo.getProducts as jest.Mock).mockResolvedValueOnce(mockProducts);
 
-      const req = {
-        url: 'http://localhost/api/v1/products',
-      } as unknown as NextRequest;
+      const req = { url: 'http://localhost:3000/api/v1/products' } as unknown as NextRequest;
+      const res = await getProductsApi(req);
 
-      const res = await getList(req);
-      expect(res.status).toBe(200);
-
-      const body = await res.json();
+      expect(res!.status).toBe(200);
+      const body = await res!.json();
       expect(body).toEqual({ success: true, data: mockProducts });
       expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: false, search: undefined, status: undefined });
     });
 
-    it('should pass status parameter to getProducts', async () => {
-      const mockProducts = [{ id: 'p2', product_name: 'Inactive Soda', unit_price: 12000, stock_quantity: 0, status: 'INACTIVE' }];
-      (productRepo.getProducts as jest.Mock).mockResolvedValueOnce(mockProducts);
+    it('should parse query parameters correctly', async () => {
+      (productRepo.getProducts as jest.Mock).mockResolvedValueOnce([]);
 
-      const req = {
-        url: 'http://localhost/api/v1/products?status=INACTIVE',
-      } as unknown as NextRequest;
+      const req = { url: 'http://localhost:3000/api/v1/products?onlyAvailable=true&status=INACTIVE' } as unknown as NextRequest;
+      const res = await getProductsApi(req);
 
-      const res = await getList(req);
-      expect(res.status).toBe(200);
-      expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: false, search: undefined, status: 'INACTIVE' });
+      expect(res!.status).toBe(200);
+      expect(productRepo.getProducts).toHaveBeenCalledWith({ onlyAvailable: true, search: undefined, status: 'INACTIVE' });
     });
   });
 
   describe('POST /api/v1/products', () => {
     it('should return 403 if user is STAFF', async () => {
-      (verifyUserRole as jest.Mock).mockResolvedValueOnce({
+      (verifyUserRole as jest.Mock).mockImplementationOnce(async () => ({
         success: false,
-        errorResponse: { status: 403 } as any,
-      });
+        errorResponse: NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 }),
+      }));
 
       const req = {} as unknown as NextRequest;
       const res = await createProductApi(req);
-      expect(res.status).toBe(403);
+      expect(res!.status).toBe(403);
     });
 
     it('should return 400 if JSON is malformed', async () => {
@@ -71,9 +57,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await createProductApi(req);
-      expect(res.status).toBe(400);
+      expect(res!.status).toBe(400);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body.success).toBe(false);
       expect(body.error.code).toBe('BAD_REQUEST');
     });
@@ -85,9 +71,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await createProductApi(req);
-      expect(res.status).toBe(400);
+      expect(res!.status).toBe(400);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body.success).toBe(false);
       expect(body.error.message).toContain('Tên sản phẩm không được để trống');
     });
@@ -106,9 +92,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await createProductApi(req);
-      expect(res.status).toBe(201);
+      expect(res!.status).toBe(201);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body).toEqual({ success: true, data: mockProduct });
     });
 
@@ -125,9 +111,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await createProductApi(req);
-      expect(res.status).toBe(400);
+      expect(res!.status).toBe(400);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body.success).toBe(false);
       expect(body.error.message).toContain('Nếu sản phẩm có đóng gói');
     });
@@ -159,7 +145,7 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await createProductApi(req);
-      expect(res.status).toBe(201);
+      expect(res!.status).toBe(201);
     });
   });
 
@@ -170,7 +156,7 @@ describe('Products API Route Handlers', () => {
 
       const req = {} as unknown as NextRequest;
       const res = await putProduct(req, { params: { productId: 'p999' } });
-      expect(res.status).toBe(404);
+      expect(res!.status).toBe(404);
     });
 
     it('should update product successfully', async () => {
@@ -190,9 +176,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await putProduct(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(200);
+      expect(res!.status).toBe(200);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body).toEqual({ success: true, data: updatedProduct });
     });
   });
@@ -213,9 +199,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await patchProduct(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(200);
+      expect(res!.status).toBe(200);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body).toEqual({ success: true, data: updatedProduct });
       expect(productRepo.updateProduct).toHaveBeenCalledWith('p1', { unit_price: 170000 });
     });
@@ -232,9 +218,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await patchProduct(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(400);
+      expect(res!.status).toBe(400);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body.success).toBe(false);
       expect(body.error.message).toContain('Nếu sản phẩm có đóng gói');
     });
@@ -254,9 +240,9 @@ describe('Products API Route Handlers', () => {
       } as unknown as NextRequest;
 
       const res = await patchProduct(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(200);
+      expect(res!.status).toBe(200);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body).toEqual({ success: true, data: updatedProduct });
       expect(productRepo.updateProduct).toHaveBeenCalledWith('p1', { status: 'INACTIVE' });
     });
@@ -270,7 +256,7 @@ describe('Products API Route Handlers', () => {
 
       const req = {} as unknown as NextRequest;
       const res = await deleteProductApi(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(200);
+      expect(res!.status).toBe(200);
     });
 
     it('should return 409 Conflict if delete fails with code 23503', async () => {
@@ -284,9 +270,9 @@ describe('Products API Route Handlers', () => {
 
       const req = {} as unknown as NextRequest;
       const res = await deleteProductApi(req, { params: { productId: 'p1' } });
-      expect(res.status).toBe(409);
+      expect(res!.status).toBe(409);
 
-      const body = await res.json();
+      const body = await res!.json();
       expect(body.success).toBe(false);
       expect(body.error.code).toBe('CONFLICT');
     });
