@@ -37,6 +37,27 @@ interface RecurringRuleCostSummary {
   };
 }
 
+interface UncheckedBookingItem {
+  id: string;
+  start_time: string;
+  end_time: string;
+  status: 'CONFIRMED' | 'PENDING';
+  court_name: string;
+  customer_name: string;
+  estimatedFee: number;
+  isPrepaid: boolean;
+}
+
+interface AutoCheckInPreviewData {
+  ruleId: string;
+  month: string;
+  totalSessions: number;
+  alreadyCheckedInCount: number;
+  uncheckedSessionsCount: number;
+  totalEstimatedFee: number;
+  uncheckedBookings: UncheckedBookingItem[];
+}
+
 interface RecurringBookingsTabProps {
   courts: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   customers: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -58,6 +79,58 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
   const [prepayRule, setPrepayRule] = useState<RecurringRule | null>(null);
   const [prepayMethod, setPrepayMethod] = useState<'CASH' | 'BANK_TRANSFER'>('BANK_TRANSFER');
   const [prepayLoading, setPrepayLoading] = useState(false);
+
+  // Auto Check-in Preview States
+  const [autoCheckInRule, setAutoCheckInRule] = useState<RecurringRule | null>(null);
+  const [autoCheckInMonth, setAutoCheckInMonth] = useState<string>(format(new Date(), 'yyyy-MM'));
+  const [previewData, setPreviewData] = useState<AutoCheckInPreviewData | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [executeLoading, setExecuteLoading] = useState(false);
+
+  const fetchPreviewData = useCallback(async (ruleId: string, month: string) => {
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const res = await fetch(`/api/v1/bookings/recurring/auto-checkin?ruleId=${ruleId}&month=${month}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || 'Không thể tải thông tin ca chưa check-in');
+      }
+      setPreviewData(data.data);
+    } catch (err) {
+      setPreviewError((err as Error).message);
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, []);
+
+  const handleConfirmAutoCheckIn = async () => {
+    if (!autoCheckInRule) return;
+    setExecuteLoading(true);
+    try {
+      const res = await fetch('/api/v1/bookings/recurring/auto-checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ruleId: autoCheckInRule.id,
+          month: autoCheckInMonth,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || 'Tự động check-in thất bại.');
+      }
+      setAutoCheckInRule(null);
+      setPreviewData(null);
+      fetchRules();
+      window.dispatchEvent(new Event('booking_updated'));
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setExecuteLoading(false);
+    }
+  };
 
   const fetchCosts = useCallback(async (rulesList: RecurringRule[]) => {
     if (rulesList.length === 0) return;
@@ -270,6 +343,19 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
               </div>
 
               <div className="flex items-center justify-end gap-2 border-t sm:border-t-0 border-gray-50 dark:border-white/5 pt-3 sm:pt-0 shrink-0">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setAutoCheckInRule(rule);
+                    const currentMonthStr = format(new Date(), 'yyyy-MM');
+                    setAutoCheckInMonth(currentMonthStr);
+                    fetchPreviewData(rule.id, currentMonthStr);
+                  }}
+                  className="rounded-xl border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-blue-900/30 dark:hover:bg-blue-950/20 text-blue-600 dark:text-blue-400 h-9 px-3 shrink-0 shadow-sm active:scale-95 transition-all text-xs gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-sm">fact_check</span>
+                  <span>Check-in cả tháng</span>
+                </Button>
                 {costs[rule.id] && (costs[rule.id].financials.totalUnpaid + costs[rule.id].financials.estimatedFuture > 0) && (
                   <Button
                     onClick={() => {
@@ -446,6 +532,156 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
               </div>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Auto Check-in Preview Dialog (Step 1) */}
+      <Dialog open={autoCheckInRule !== null} onOpenChange={(open) => {
+        if (!open) {
+          setAutoCheckInRule(null);
+          setPreviewData(null);
+          setPreviewError(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[620px] p-6 rounded-2xl border-none bg-white dark:bg-[#0d1b17] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white flex items-center justify-between border-b dark:border-white/5 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">fact_check</span>
+              <div>
+                <span>Xem trước ca chưa Check-in</span>
+                <p className="text-xs font-normal text-gray-500">Thống kê các ca đặt sân chưa check-in trong tháng</p>
+              </div>
+            </div>
+          </DialogTitle>
+
+          {autoCheckInRule && (
+            <div className="flex-1 overflow-y-auto space-y-4 py-3">
+              {/* Month Selector */}
+              <div className="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-3 rounded-xl">
+                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Chọn tháng cần kiểm tra:</span>
+                <select
+                  value={autoCheckInMonth}
+                  onChange={(e) => {
+                    const newMonth = e.target.value;
+                    setAutoCheckInMonth(newMonth);
+                    fetchPreviewData(autoCheckInRule.id, newMonth);
+                  }}
+                  className="text-xs font-bold bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                >
+                  {[-1, 0, 1, 2].map((offset) => {
+                    const d = new Date();
+                    d.setMonth(d.getMonth() + offset);
+                    const mStr = format(d, 'yyyy-MM');
+                    const label = `Tháng ${format(d, 'MM/yyyy')}${offset === 0 ? ' (Hiện tại)' : ''}`;
+                    return <option key={mStr} value={mStr}>{label}</option>;
+                  })}
+                </select>
+              </div>
+
+              {previewLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                  <Loader2 className="animate-spin text-blue-600 size-8 mb-2" />
+                  <span className="text-xs">Đang nạp danh sách ca đặt sân...</span>
+                </div>
+              ) : previewError ? (
+                <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-4 rounded-xl text-xs border border-red-100 dark:border-red-900/30">
+                  Lỗi: {previewError}
+                </div>
+              ) : previewData ? (
+                <>
+                  {/* Stats Summary Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl text-center">
+                      <span className="text-[10px] text-gray-400 font-semibold block">Tổng số ca</span>
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">{previewData.totalSessions}</span>
+                    </div>
+                    <div className="bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-xl text-center border border-emerald-100 dark:border-emerald-900/30">
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block">Đã check-in</span>
+                      <span className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{previewData.alreadyCheckedInCount}</span>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-xl text-center border border-amber-100 dark:border-amber-900/30">
+                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold block">Chưa check-in</span>
+                      <span className="text-lg font-bold text-amber-700 dark:text-amber-400">{previewData.uncheckedSessionsCount}</span>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-xl text-center border border-blue-100 dark:border-blue-900/30">
+                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold block">Phí sân ước tính</span>
+                      <span className="text-sm font-bold text-blue-700 dark:text-blue-400">{formatCurrency(previewData.totalEstimatedFee)}</span>
+                    </div>
+                  </div>
+
+                  {/* Session List Table */}
+                  {previewData.uncheckedSessionsCount === 0 ? (
+                    <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-2xl p-6 text-center space-y-2">
+                      <div className="size-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+                        <span className="material-symbols-outlined text-2xl font-bold">check_circle</span>
+                      </div>
+                      <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">Hoàn thành!</h4>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                        Tất cả các ca đặt sân của lịch cố định này trong {previewData.month} đã được check-in đầy đủ.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                        Danh sách {previewData.uncheckedSessionsCount} ca cần Check-in:
+                      </span>
+                      <div className="max-h-60 overflow-y-auto border border-gray-100 dark:border-white/5 rounded-xl divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-black/20">
+                        {previewData.uncheckedBookings.map((item: UncheckedBookingItem) => {
+                          const startDate = new Date(item.start_time);
+                          const endDate = new Date(item.end_time);
+                          const dateFormatted = format(startDate, 'dd/MM/yyyy');
+                          const dayFormatted = getDayNames([startDate.getDay()]);
+                          const timeFormatted = `${format(startDate, 'HH:mm')} - ${format(endDate, 'HH:mm')}`;
+
+                          return (
+                            <div key={item.id} className="p-2.5 flex items-center justify-between text-xs hover:bg-gray-50 dark:hover:bg-white/5">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-gray-900 dark:text-white">{dateFormatted} ({dayFormatted})</span>
+                                <span className="text-gray-400">|</span>
+                                <span className="text-gray-600 dark:text-gray-300">{timeFormatted}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {item.isPrepaid && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                    Đã TT trước
+                                  </span>
+                                )}
+                                <span className="font-bold text-gray-900 dark:text-white">{formatCurrency(item.estimatedFee)}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : null}
+            </div>
+          )}
+
+          {/* Dialog Footer Actions */}
+          <div className="flex justify-end gap-3 pt-3 border-t dark:border-white/5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAutoCheckInRule(null);
+                setPreviewData(null);
+              }}
+              className="rounded-xl h-10 px-4 text-xs"
+            >
+              Đóng
+            </Button>
+            {previewData && previewData.uncheckedSessionsCount > 0 && (
+              <Button
+                onClick={handleConfirmAutoCheckIn}
+                disabled={executeLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 px-4 text-xs font-semibold shadow-md active:scale-95 transition-all gap-1.5"
+              >
+                {executeLoading && <Loader2 className="animate-spin size-3.5" />}
+                Xác nhận Check-in ({previewData.uncheckedSessionsCount} ca)
+              </Button>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
