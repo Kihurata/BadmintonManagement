@@ -1,0 +1,23 @@
+meta {
+  name: Pay All Filtered Invoices
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/invoices/pay-all
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "customer_id": "00000000-0000-0000-0000-000000000000",
+    "invoice_ids": [],
+    "payment_method": "CASH"
+  }
+}

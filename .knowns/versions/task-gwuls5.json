@@ -1,0 +1,103 @@
+{
+  "taskId": "gwuls5",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "gwuls5",
+      "version": 1,
+      "timestamp": "2026-08-08T09:44:30.6811267Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Update ReceivablesLedger modal footer button text to 'Thu nợ (amount)' based on filtered month and pay only selected invoices via API",
+        "priority": "high",
+        "status": "todo",
+        "title": "Fix monthly filtering for bulk debt payment in Receivables Ledger"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "gwuls5",
+      "version": 2,
+      "timestamp": "2026-08-08T09:47:38.1929943Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "--plain"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Update ReceivablesLedger modal footer button text to 'Thu nợ (amount)' based on filtered month and pay only selected invoices via API",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Fix monthly filtering for bulk debt payment in Receivables Ledger"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "gwuls5",
+      "version": 3,
+      "timestamp": "2026-08-08T09:47:45.2225705Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Extend POST /api/invoices/pay-all to support invoice_ids array\n2. Update openPaymentModal and confirmPayment in receivables-ledger.tsx\n3. Update modal footer button text to Thu nợ (filteredTotalDebt)\n4. Add Bruno test and verify build via npm run build"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Update ReceivablesLedger modal footer button text to 'Thu nợ (amount)' based on filtered month and pay only selected invoices via API",
+        "implementationPlan": "1. Extend POST /api/invoices/pay-all to support invoice_ids array\n2. Update openPaymentModal and confirmPayment in receivables-ledger.tsx\n3. Update modal footer button text to Thu nợ (filteredTotalDebt)\n4. Add Bruno test and verify build via npm run build",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Fix monthly filtering for bulk debt payment in Receivables Ledger"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "gwuls5",
+      "version": 4,
+      "timestamp": "2026-08-08T09:54:18.5365221Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        },
+        {
+          "field": "implementationNotes",
+          "oldValue": null,
+          "newValue": "Implemented optional invoice_ids parameter in POST /api/invoices/pay-all route handler. Updated ReceivablesLedger to update footer button to 'Thu nợ (amount)' when filtered by month and pass invoice_ids to pay-all API. Added Bruno test and verified clean production build with npm run build."
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Update ReceivablesLedger modal footer button text to 'Thu nợ (amount)' based on filtered month and pay only selected invoices via API",
+        "implementationNotes": "Implemented optional invoice_ids parameter in POST /api/invoices/pay-all route handler. Updated ReceivablesLedger to update footer button to 'Thu nợ (amount)' when filtered by month and pass invoice_ids to pay-all API. Added Bruno test and verified clean production build with npm run build.",
+        "implementationPlan": "1. Extend POST /api/invoices/pay-all to support invoice_ids array\n2. Update openPaymentModal and confirmPayment in receivables-ledger.tsx\n3. Update modal footer button text to Thu nợ (filteredTotalDebt)\n4. Add Bruno test and verify build via npm run build",
+        "priority": "high",
+        "status": "done",
+        "title": "Fix monthly filtering for bulk debt payment in Receivables Ledger"
+      }
+    }
+  ]
+}

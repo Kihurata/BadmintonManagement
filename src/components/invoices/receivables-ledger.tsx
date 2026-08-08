@@ -58,6 +58,8 @@ export function ReceivablesLedger() {
     // Payment Modal State
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedDebtor, setSelectedDebtor] = useState<Debtor | null>(null);
+    const [targetInvoiceIds, setTargetInvoiceIds] = useState<string[] | null>(null);
+    const [targetTotalAmount, setTargetTotalAmount] = useState<number | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'BANK_TRANSFER'>('BANK_TRANSFER');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -195,9 +197,11 @@ export function ReceivablesLedger() {
         }
     };
 
-    const openPaymentModal = (debtor: Debtor, e?: React.MouseEvent) => {
+    const openPaymentModal = (debtor: Debtor, e?: React.MouseEvent, customInvoiceIds?: string[], customTotalAmount?: number) => {
         if (e) e.stopPropagation();
         setSelectedDebtor(debtor);
+        setTargetInvoiceIds(customInvoiceIds || null);
+        setTargetTotalAmount(customTotalAmount !== undefined ? customTotalAmount : debtor.totalDebt);
         setPaymentMethod('BANK_TRANSFER');
         setSuccessMessage(null);
         setPaymentModalOpen(true);
@@ -207,19 +211,22 @@ export function ReceivablesLedger() {
         if (!selectedDebtor) return;
         setIsSubmitting(true);
 
+        const amountToPay = targetTotalAmount !== null ? targetTotalAmount : selectedDebtor.totalDebt;
+
         try {
             const res = await fetch('/api/invoices/pay-all', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     customer_id: selectedDebtor.customerId === 'guest' ? null : selectedDebtor.customerId,
+                    invoice_ids: targetInvoiceIds && targetInvoiceIds.length > 0 ? targetInvoiceIds : undefined,
                     payment_method: paymentMethod
                 })
             });
             const data = await res.json();
 
             if (data.success) {
-                setSuccessMessage(`Đã thu thành công ${formatCurrency(selectedDebtor.totalDebt)} từ ${selectedDebtor.customerName}`);
+                setSuccessMessage(`Đã thu thành công ${formatCurrency(amountToPay)} từ ${selectedDebtor.customerName}`);
                 fetchUnpaidInvoices();
                 setTimeout(() => {
                     setPaymentModalOpen(false);
@@ -335,7 +342,7 @@ export function ReceivablesLedger() {
                 <DialogContent className="sm:max-w-[620px] p-6 rounded-2xl border-none bg-white dark:bg-[#0d1b17] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                     {modalDebtor && (
                         <>
-                            <DialogHeader className="border-b dark:border-white/5 pb-3 flex flex-row items-center justify-between">
+                            <DialogHeader className="border-b dark:border-white/5 pb-3">
                                 <div className="flex items-center gap-3">
                                     <div className="size-11 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                                         <span className="material-symbols-outlined text-2xl font-bold">person</span>
@@ -349,14 +356,6 @@ export function ReceivablesLedger() {
                                         </DialogDescription>
                                     </div>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setExportModalOpen(true)}
-                                    className="rounded-xl border-blue-200 hover:bg-blue-50 text-blue-600 dark:border-blue-900/30 dark:hover:bg-blue-950/20 dark:text-blue-400 text-xs h-9 px-3 gap-1.5"
-                                >
-                                    <Share2 className="size-3.5" />
-                                    <span>Xuất báo nợ</span>
-                                </Button>
                             </DialogHeader>
 
                             <div className="flex-1 overflow-y-auto space-y-4 py-3">
@@ -460,13 +459,23 @@ export function ReceivablesLedger() {
                                 >
                                     Đóng
                                 </Button>
-                                <Button
-                                    onClick={() => openPaymentModal(modalDebtor)}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-10 px-5 text-xs font-semibold shadow-md active:scale-95 transition-all gap-1.5"
-                                >
-                                    <span className="material-symbols-outlined text-base">payments</span>
-                                    <span>Thu nợ tất cả ({formatCurrency(modalDebtor.totalDebt)})</span>
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setExportModalOpen(true)}
+                                        className="rounded-xl border-blue-200 hover:bg-blue-50 text-blue-600 dark:border-blue-900/30 dark:hover:bg-blue-950/20 dark:text-blue-400 text-xs h-10 px-4 gap-1.5 font-semibold"
+                                    >
+                                        <Share2 className="size-3.5" />
+                                        <span>Xuất báo nợ</span>
+                                    </Button>
+                                    <Button
+                                        onClick={() => openPaymentModal(modalDebtor, undefined, filteredInvoices.map(inv => inv.id), filteredTotalDebt)}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-10 px-5 text-xs font-semibold shadow-md active:scale-95 transition-all gap-1.5"
+                                    >
+                                        <span className="material-symbols-outlined text-base">payments</span>
+                                        <span>Thu nợ ({formatCurrency(filteredTotalDebt)})</span>
+                                    </Button>
+                                </div>
                             </div>
                         </>
                     )}
@@ -599,7 +608,7 @@ export function ReceivablesLedger() {
                                 <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/50 flex flex-col items-center justify-center">
                                     <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-1">Tổng tiền thanh toán</span>
                                     <span className="text-3xl font-bold text-emerald-700 dark:text-emerald-500">
-                                        {selectedDebtor ? formatCurrency(selectedDebtor.totalDebt) : formatCurrency(0)}
+                                        {formatCurrency(targetTotalAmount !== null ? targetTotalAmount : (selectedDebtor ? selectedDebtor.totalDebt : 0))}
                                     </span>
                                 </div>
 

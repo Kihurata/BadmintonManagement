@@ -5,14 +5,16 @@ import { revalidateTag } from 'next/cache';
 export async function POST(request: Request) {
     try {
         const supabase = createClient();
-        const { customer_id, payment_method } = await request.json();
+        const { customer_id, invoice_ids, payment_method } = await request.json();
 
         let query = supabase
             .from('invoices')
             .select('id, total_amount, paid_amount, tenant_id')
             .or('status.eq.UNPAID,status.eq.PARTIALLY_PAID,is_paid.eq.false');
 
-        if (customer_id === null || customer_id === 'guest') {
+        if (Array.isArray(invoice_ids) && invoice_ids.length > 0) {
+            query = query.in('id', invoice_ids);
+        } else if (customer_id === null || customer_id === 'guest') {
             query = query.is('customer_id', null);
         } else {
             query = query.eq('customer_id', customer_id);
