@@ -1,0 +1,22 @@
+meta {
+  name: Renew Recurring Rule
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/bookings/recurring/renew
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "ruleId": "00000000-0000-0000-0000-000000000000",
+    "skipConflicts": false
+  }
+}

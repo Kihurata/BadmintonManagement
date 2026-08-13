@@ -1,0 +1,139 @@
+{
+  "taskId": "ebc7o7",
+  "currentVersion": 6,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "ebc7o7",
+      "version": 1,
+      "timestamp": "2026-08-08T10:08:23.7933317Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "priority": "high",
+        "status": "todo",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "ebc7o7",
+      "version": 2,
+      "timestamp": "2026-08-08T10:08:25.8789316Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "--plain"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "ebc7o7",
+      "version": 3,
+      "timestamp": "2026-08-08T10:08:33.7291866Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Add renewRecurringRule repository function in recurring-repo.ts\n2. Create POST /api/v1/bookings/recurring/renew Route Handler\n3. Add Gia hạn tháng sau button and preview modal to recurring-bookings-tab.tsx\n4. Add Bruno test file and verify build with npm run build"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "implementationPlan": "1. Add renewRecurringRule repository function in recurring-repo.ts\n2. Create POST /api/v1/bookings/recurring/renew Route Handler\n3. Add Gia hạn tháng sau button and preview modal to recurring-bookings-tab.tsx\n4. Add Bruno test file and verify build with npm run build",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "ebc7o7",
+      "version": 4,
+      "timestamp": "2026-08-08T10:14:21.4889903Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "implementationPlan": "1. Add renewRecurringRule repository function in recurring-repo.ts\n2. Create POST /api/v1/bookings/recurring/renew Route Handler\n3. Add Gia hạn tháng sau button and preview modal to recurring-bookings-tab.tsx\n4. Add Bruno test file and verify build with npm run build",
+        "priority": "high",
+        "status": "done",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    },
+    {
+      "id": "v5",
+      "taskId": "ebc7o7",
+      "version": 5,
+      "timestamp": "2026-08-08T16:43:15.9789245Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "done",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "implementationPlan": "1. Add renewRecurringRule repository function in recurring-repo.ts\n2. Create POST /api/v1/bookings/recurring/renew Route Handler\n3. Add Gia hạn tháng sau button and preview modal to recurring-bookings-tab.tsx\n4. Add Bruno test file and verify build with npm run build",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    },
+    {
+      "id": "v6",
+      "taskId": "ebc7o7",
+      "version": 6,
+      "timestamp": "2026-08-08T16:45:08.8193975Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "assignee": "--plain",
+        "description": "Add API endpoint POST /api/v1/bookings/recurring/renew and UI button 'Gia hạn tháng sau' in Lịch Cố Định tab",
+        "implementationPlan": "1. Add renewRecurringRule repository function in recurring-repo.ts\n2. Create POST /api/v1/bookings/recurring/renew Route Handler\n3. Add Gia hạn tháng sau button and preview modal to recurring-bookings-tab.tsx\n4. Add Bruno test file and verify build with npm run build",
+        "priority": "high",
+        "status": "done",
+        "title": "Implement Monthly Renewal for Recurring Rules"
+      }
+    }
+  ]
+}

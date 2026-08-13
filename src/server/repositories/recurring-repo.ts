@@ -652,3 +652,183 @@ export async function autoCheckInRecurringBookings(
   };
 }
 
+function formatHHMMSS(timeStr: string): string {
+  if (!timeStr) return '00:00:00';
+  const parts = timeStr.trim().split(':');
+  const hh = (parts[0] || '00').padStart(2, '0');
+  const mm = (parts[1] || '00').padStart(2, '0');
+  const ss = (parts[2] || '00').padStart(2, '0');
+  return `${hh}:${mm}:${ss}`;
+}
+
+export function generateBookingDates(
+  startDateStr: string,
+  endDateStr: string,
+  startTimeStr: string,
+  endTimeStr: string,
+  daysOfWeek: number[],
+  timezoneOffset: string = '+07:00'
+): Array<{ start_time: string; end_time: string; dateStr: string }> {
+  const dates: Array<{ start_time: string; end_time: string; dateStr: string }> = [];
+  const start = new Date(startDateStr.substring(0, 10) + 'T00:00:00');
+  const end = new Date(endDateStr.substring(0, 10) + 'T00:00:00');
+
+  const cleanStartTime = formatHHMMSS(startTimeStr);
+  const cleanEndTime = formatHHMMSS(endTimeStr);
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const day = d.getDay();
+    if (daysOfWeek.includes(day)) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${dayStr}`;
+
+      const candidateStart = `${dateStr}T${cleanStartTime}${timezoneOffset}`;
+      const candidateEnd = `${dateStr}T${cleanEndTime}${timezoneOffset}`;
+
+      const startDateObj = new Date(candidateStart);
+      const endDateObj = new Date(candidateEnd);
+
+      if (!isNaN(startDateObj.getTime()) && !isNaN(endDateObj.getTime())) {
+        dates.push({
+          start_time: startDateObj.toISOString(),
+          end_time: endDateObj.toISOString(),
+          dateStr,
+        });
+      }
+    }
+  }
+  return dates;
+}
+
+export interface RenewRecurringRuleParams {
+  ruleId: string;
+  courtId?: string;
+  startTime?: string;
+  endTime?: string;
+  daysOfWeek?: number[];
+  customerId?: string;
+  targetStartDate?: string;
+  targetEndDate?: string;
+  skipConflicts?: boolean;
+}
+
+export async function renewRecurringRule(params: RenewRecurringRuleParams): Promise<{
+  success: boolean;
+  newRuleId?: string;
+  bookingsCount?: number;
+  conflicts?: RecurringConflict[];
+  error?: string;
+}> {
+  const supabase = createClient();
+
+  // 1. Fetch source recurring rule
+  const { data: sourceRule, error: fetchError } = await supabase
+    .from('recurring_rules')
+    .select('*')
+    .eq('id', params.ruleId)
+    .single();
+
+  if (fetchError || !sourceRule) {
+    return { success: false, error: 'Source recurring rule not found.' };
+  }
+
+  // Override parameters if provided
+  const courtId = params.courtId || sourceRule.court_id;
+  const customerId = params.customerId || sourceRule.customer_id;
+  const startTime = params.startTime || sourceRule.start_time;
+  const endTime = params.endTime || sourceRule.end_time;
+  const daysOfWeek = params.daysOfWeek || sourceRule.days_of_week;
+
+  // 2. Compute target start and end dates
+  let startDate = params.targetStartDate;
+  let endDate = params.targetEndDate;
+
+  if (!startDate || !endDate) {
+    const rawEndDate = String(sourceRule.end_date).substring(0, 10);
+    const srcEndDate = new Date(rawEndDate + 'T00:00:00');
+    const nextMonthStart = new Date(srcEndDate.getFullYear(), srcEndDate.getMonth() + 1, 1);
+    const nextMonthEnd = new Date(srcEndDate.getFullYear(), srcEndDate.getMonth() + 2, 0);
+
+    const formatYMD = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    if (!startDate) startDate = formatYMD(nextMonthStart);
+    if (!endDate) endDate = formatYMD(nextMonthEnd);
+  }
+
+  // 3. Generate candidate booking dates
+  const candidates = generateBookingDates(
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    daysOfWeek
+  );
+
+  if (candidates.length === 0) {
+    return { success: false, error: 'No booking dates generated for target date range.' };
+  }
+
+  const earliestStart = candidates[0].start_time;
+  const latestEnd = candidates[candidates.length - 1].end_time;
+
+  // 4. Check for conflicts
+  const conflictResult = await checkRecurringConflicts(
+    courtId,
+    earliestStart,
+    latestEnd,
+    candidates
+  );
+
+  if (!conflictResult.success) {
+    return { success: false, error: conflictResult.error };
+  }
+
+  let finalCandidates = candidates;
+  if (conflictResult.data && conflictResult.data.length > 0) {
+    if (!params.skipConflicts) {
+      return {
+        success: false,
+        error: 'SCHEDULING_CONFLICT',
+        conflicts: conflictResult.data,
+      };
+    }
+
+    const conflictTimes = new Set(conflictResult.data.map(c => c.start_time));
+    finalCandidates = candidates.filter(c => !conflictTimes.has(c.start_time));
+  }
+
+  if (finalCandidates.length === 0) {
+    return { success: false, error: 'All generated booking dates conflict with existing bookings.' };
+  }
+
+  // 5. Create new recurring rule and bookings
+  const createResult = await createRecurringBookings({
+    tenantId: sourceRule.tenant_id,
+    customerId,
+    courtId,
+    daysOfWeek,
+    startTime,
+    endTime,
+    startDate,
+    endDate,
+    candidates: finalCandidates.map(c => ({ start_time: c.start_time, end_time: c.end_time })),
+  });
+
+  if (!createResult.success || !createResult.ruleId) {
+    return { success: false, error: createResult.error || 'Failed to create renewed recurring bookings.' };
+  }
+
+  return {
+    success: true,
+    newRuleId: createResult.ruleId,
+    bookingsCount: finalCandidates.length,
+  };
+}
+
