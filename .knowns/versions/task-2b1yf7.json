@@ -1,0 +1,89 @@
+{
+  "taskId": "2b1yf7",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "2b1yf7",
+      "version": 1,
+      "timestamp": "2026-08-08T10:17:55.1553823Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "description": "Create tenant settings satellite table, API routes/actions, VietQR bank setup, custom court pricing defaults, and UI Settings page",
+        "priority": "high",
+        "status": "todo",
+        "title": "Tenant Settings \u0026 VietQR / Pricing Configuration"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "2b1yf7",
+      "version": 2,
+      "timestamp": "2026-08-08T10:17:58.4061859Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        }
+      ],
+      "snapshot": {
+        "description": "Create tenant settings satellite table, API routes/actions, VietQR bank setup, custom court pricing defaults, and UI Settings page",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Tenant Settings \u0026 VietQR / Pricing Configuration"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "2b1yf7",
+      "version": 3,
+      "timestamp": "2026-08-08T10:18:10.7420644Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create public.tenant_settings satellite table migration with RLS\n2. Create tenant-settings repository and update VietQR/pricing utilities\n3. Create Server Actions and /settings UI page for bank/pricing config\n4. Add Settings button to Sidebar for Manager/Owner roles\n5. Test with dynamic VietQR QR generation and build verification"
+        }
+      ],
+      "snapshot": {
+        "description": "Create tenant settings satellite table, API routes/actions, VietQR bank setup, custom court pricing defaults, and UI Settings page",
+        "implementationPlan": "1. Create public.tenant_settings satellite table migration with RLS\n2. Create tenant-settings repository and update VietQR/pricing utilities\n3. Create Server Actions and /settings UI page for bank/pricing config\n4. Add Settings button to Sidebar for Manager/Owner roles\n5. Test with dynamic VietQR QR generation and build verification",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Tenant Settings \u0026 VietQR / Pricing Configuration"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "2b1yf7",
+      "version": 4,
+      "timestamp": "2026-08-08T16:24:16.3126098Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": "1. Create public.tenant_settings satellite table migration with RLS\n2. Create tenant-settings repository and update VietQR/pricing utilities\n3. Create Server Actions and /settings UI page for bank/pricing config\n4. Add Settings button to Sidebar for Manager/Owner roles\n5. Test with dynamic VietQR QR generation and build verification",
+          "newValue": "1. Create public.tenant_settings satellite table migration (bank info, pricing defaults, evening_start_time) with RLS\n2. Create tenant-settings repository and update VietQR/pricing utilities\n3. Create Server Actions and /settings UI page for bank/pricing/evening_start_time config\n4. Add Settings button to Sidebar for Manager/Owner roles\n5. Test with dynamic VietQR QR generation, evening switch time calculation, and build verification"
+        }
+      ],
+      "snapshot": {
+        "description": "Create tenant settings satellite table, API routes/actions, VietQR bank setup, custom court pricing defaults, and UI Settings page",
+        "implementationPlan": "1. Create public.tenant_settings satellite table migration (bank info, pricing defaults, evening_start_time) with RLS\n2. Create tenant-settings repository and update VietQR/pricing utilities\n3. Create Server Actions and /settings UI page for bank/pricing/evening_start_time config\n4. Add Settings button to Sidebar for Manager/Owner roles\n5. Test with dynamic VietQR QR generation, evening switch time calculation, and build verification",
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Tenant Settings \u0026 VietQR / Pricing Configuration"
+      }
+    }
+  ]
+}

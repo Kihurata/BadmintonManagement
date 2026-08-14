@@ -1,0 +1,132 @@
+{
+  "taskId": "yaoh9c",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "yaoh9c",
+      "version": 1,
+      "timestamp": "2026-08-13T08:05:00.4576199Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "deploy-production.yml workflow triggers on push to main"
+          },
+          {
+            "completed": false,
+            "text": "Supabase CLI pushes migrations to Production DB (vubnycmmwwlpatinzzia)"
+          },
+          {
+            "completed": false,
+            "text": "Vercel CLI/Action deploys production build to Vercel"
+          }
+        ],
+        "description": "Create/update .github/workflows/deploy-production.yml triggered on push to main. Apply Supabase DB migrations (supabase db push) to Production DB (vubnycmmwwlpatinzzia) and release production deployment to Vercel Production environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Automated Production Deployment Workflow"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "yaoh9c",
+      "version": 2,
+      "timestamp": "2026-08-13T08:07:24.0725573Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "deploy-production.yml workflow triggers on push to main"
+          },
+          {
+            "completed": false,
+            "text": "Supabase CLI pushes migrations to Production DB (vubnycmmwwlpatinzzia)"
+          },
+          {
+            "completed": false,
+            "text": "Vercel CLI/Action deploys production build to Vercel"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create/update .github/workflows/deploy-production.yml triggered on push to main. Apply Supabase DB migrations (supabase db push) to Production DB (vubnycmmwwlpatinzzia) and release production deployment to Vercel Production environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Automated Production Deployment Workflow"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "yaoh9c",
+      "version": 3,
+      "timestamp": "2026-08-13T08:07:31.1751771Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "deploy-production.yml workflow triggers on push to main",
+            "completed": true
+          },
+          {
+            "text": "Supabase CLI pushes migrations to Production DB (vubnycmmwwlpatinzzia)",
+            "completed": true
+          },
+          {
+            "text": "Vercel CLI/Action deploys production build to Vercel",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create/update .github/workflows/deploy-production.yml triggered on push to main. Apply Supabase DB migrations (supabase db push) to Production DB (vubnycmmwwlpatinzzia) and release production deployment to Vercel Production environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Automated Production Deployment Workflow"
+      }
+    }
+  ]
+}

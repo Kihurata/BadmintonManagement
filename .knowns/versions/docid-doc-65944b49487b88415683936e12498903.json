@@ -1,0 +1,85 @@
+{
+  "docId": "doc-65944b49487b88415683936e12498903",
+  "docPath": "specs/specs-cicd-automated-testing-and-deployment",
+  "currentPath": "specs/specs-cicd-automated-testing-and-deployment",
+  "currentVersion": 1,
+  "versions": [
+    {
+      "id": "v1",
+      "docId": "doc-65944b49487b88415683936e12498903",
+      "docPath": "specs/specs-cicd-automated-testing-and-deployment",
+      "currentPath": "specs/specs-cicd-automated-testing-and-deployment",
+      "version": 1,
+      "timestamp": "2026-08-13T08:02:05.2373672Z",
+      "author": "cli",
+      "actor": "cli",
+      "source": "cli",
+      "newHash": "5dbf40d6bc9536e459112a3217a18761efea4660146afa0356968d81297eb7c4",
+      "checkpoint": true,
+      "changes": [
+        {
+          "field": "path",
+          "oldValue": null,
+          "newValue": "specs/specs-cicd-automated-testing-and-deployment"
+        },
+        {
+          "field": "title",
+          "oldValue": null,
+          "newValue": "specs/cicd-automated-testing-and-deployment"
+        },
+        {
+          "field": "description",
+          "oldValue": null,
+          "newValue": "Specification for CI/CD automated testing and deployment pipeline"
+        },
+        {
+          "field": "tags",
+          "oldValue": null,
+          "newValue": [
+            "spec",
+            "draft"
+          ]
+        }
+      ],
+      "changedScopes": [
+        {
+          "type": "path",
+          "field": "path",
+          "summary": "path",
+          "newBytes": 51,
+          "deltaBytes": 51
+        },
+        {
+          "type": "field",
+          "field": "title",
+          "summary": "title",
+          "newBytes": 45,
+          "deltaBytes": 45
+        },
+        {
+          "type": "field",
+          "field": "description",
+          "summary": "description",
+          "newBytes": 67,
+          "deltaBytes": 67
+        },
+        {
+          "type": "field",
+          "field": "tags",
+          "summary": "tags",
+          "newBytes": 16,
+          "deltaBytes": 16
+        }
+      ],
+      "snapshot": {
+        "description": "Specification for CI/CD automated testing and deployment pipeline",
+        "path": "specs/specs-cicd-automated-testing-and-deployment",
+        "tags": [
+          "spec",
+          "draft"
+        ],
+        "title": "specs/cicd-automated-testing-and-deployment"
+      }
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "taskId": "bcy5zv",
+  "currentVersion": 4,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "bcy5zv",
+      "version": 1,
+      "timestamp": "2026-08-13T08:04:54.6723315Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "ci-quality-gate.yml workflow configured for PRs to staging and main"
+          },
+          {
+            "completed": false,
+            "text": "ESLint, tsc --noEmit, and npm run build run and block PR on failure"
+          },
+          {
+            "completed": false,
+            "text": "npm test (Jest) runs and uploads coverage artifacts"
+          }
+        ],
+        "description": "Configure .github/workflows/ci-quality-gate.yml to trigger on PRs targeting staging or main. Set up Node.js caching, ESLint, TypeScript compilation, Next.js production build, and Jest unit testing with coverage reporting.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "quality-gate"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Static Analysis, Build Verification \u0026 Unit Test Quality Gate"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "bcy5zv",
+      "version": 2,
+      "timestamp": "2026-08-13T08:05:57.8146941Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "ci-quality-gate.yml workflow configured for PRs to staging and main"
+          },
+          {
+            "completed": false,
+            "text": "ESLint, tsc --noEmit, and npm run build run and block PR on failure"
+          },
+          {
+            "completed": false,
+            "text": "npm test (Jest) runs and uploads coverage artifacts"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Configure .github/workflows/ci-quality-gate.yml to trigger on PRs targeting staging or main. Set up Node.js caching, ESLint, TypeScript compilation, Next.js production build, and Jest unit testing with coverage reporting.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "quality-gate"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Static Analysis, Build Verification \u0026 Unit Test Quality Gate"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "bcy5zv",
+      "version": 3,
+      "timestamp": "2026-08-13T08:06:01.5859694Z",
+      "changes": [
+        {
+          "field": "implementationPlan",
+          "oldValue": null,
+          "newValue": "1. Create .github/workflows/ci-quality-gate.yml with pull_request triggers on staging/main. 2. Implement lint-and-build job (ESLint, tsc --noEmit, next build). 3. Implement unit-tests job (npm test -- --coverage + artifact upload). 4. Verify static analysis, build, and Jest locally."
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "ci-quality-gate.yml workflow configured for PRs to staging and main"
+          },
+          {
+            "completed": false,
+            "text": "ESLint, tsc --noEmit, and npm run build run and block PR on failure"
+          },
+          {
+            "completed": false,
+            "text": "npm test (Jest) runs and uploads coverage artifacts"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Configure .github/workflows/ci-quality-gate.yml to trigger on PRs targeting staging or main. Set up Node.js caching, ESLint, TypeScript compilation, Next.js production build, and Jest unit testing with coverage reporting.",
+        "implementationPlan": "1. Create .github/workflows/ci-quality-gate.yml with pull_request triggers on staging/main. 2. Implement lint-and-build job (ESLint, tsc --noEmit, next build). 3. Implement unit-tests job (npm test -- --coverage + artifact upload). 4. Verify static analysis, build, and Jest locally.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "quality-gate"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Static Analysis, Build Verification \u0026 Unit Test Quality Gate"
+      }
+    },
+    {
+      "id": "v4",
+      "taskId": "bcy5zv",
+      "version": 4,
+      "timestamp": "2026-08-13T08:07:03.67836Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "ci-quality-gate.yml workflow configured for PRs to staging and main",
+            "completed": true
+          },
+          {
+            "text": "ESLint, tsc --noEmit, and npm run build run and block PR on failure",
+            "completed": true
+          },
+          {
+            "text": "npm test (Jest) runs and uploads coverage artifacts",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Configure .github/workflows/ci-quality-gate.yml to trigger on PRs targeting staging or main. Set up Node.js caching, ESLint, TypeScript compilation, Next.js production build, and Jest unit testing with coverage reporting.",
+        "implementationPlan": "1. Create .github/workflows/ci-quality-gate.yml with pull_request triggers on staging/main. 2. Implement lint-and-build job (ESLint, tsc --noEmit, next build). 3. Implement unit-tests job (npm test -- --coverage + artifact upload). 4. Verify static analysis, build, and Jest locally.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "quality-gate"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Static Analysis, Build Verification \u0026 Unit Test Quality Gate"
+      }
+    }
+  ]
+}

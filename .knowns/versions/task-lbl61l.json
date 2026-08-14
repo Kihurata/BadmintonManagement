@@ -1,0 +1,132 @@
+{
+  "taskId": "lbl61l",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "lbl61l",
+      "version": 1,
+      "timestamp": "2026-08-13T08:04:58.7143151Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "medium"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "deploy-staging.yml workflow triggers on push to staging"
+          },
+          {
+            "completed": false,
+            "text": "Supabase CLI pushes migrations to Staging DB"
+          },
+          {
+            "completed": false,
+            "text": "Vercel CLI/Action deploys staging preview build to Vercel"
+          }
+        ],
+        "description": "Create .github/workflows/deploy-staging.yml triggered on push to staging. Push database migrations (supabase db push) to Staging DB (aokiueywjcbgmfswyttb) and deploy Next.js application to Vercel Staging preview environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "todo",
+        "title": "Automated Staging Deployment Workflow"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "lbl61l",
+      "version": 2,
+      "timestamp": "2026-08-13T08:07:15.417339Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "deploy-staging.yml workflow triggers on push to staging"
+          },
+          {
+            "completed": false,
+            "text": "Supabase CLI pushes migrations to Staging DB"
+          },
+          {
+            "completed": false,
+            "text": "Vercel CLI/Action deploys staging preview build to Vercel"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create .github/workflows/deploy-staging.yml triggered on push to staging. Push database migrations (supabase db push) to Staging DB (aokiueywjcbgmfswyttb) and deploy Next.js application to Vercel Staging preview environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "in-progress",
+        "title": "Automated Staging Deployment Workflow"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "lbl61l",
+      "version": 3,
+      "timestamp": "2026-08-13T08:07:21.188491Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "deploy-staging.yml workflow triggers on push to staging",
+            "completed": true
+          },
+          {
+            "text": "Supabase CLI pushes migrations to Staging DB",
+            "completed": true
+          },
+          {
+            "text": "Vercel CLI/Action deploys staging preview build to Vercel",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Create .github/workflows/deploy-staging.yml triggered on push to staging. Push database migrations (supabase db push) to Staging DB (aokiueywjcbgmfswyttb) and deploy Next.js application to Vercel Staging preview environment using Vercel CLI/Action.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "deployment"
+        ],
+        "priority": "medium",
+        "status": "done",
+        "title": "Automated Staging Deployment Workflow"
+      }
+    }
+  ]
+}

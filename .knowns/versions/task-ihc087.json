@@ -1,0 +1,132 @@
+{
+  "taskId": "ihc087",
+  "currentVersion": 3,
+  "versions": [
+    {
+      "id": "v1",
+      "taskId": "ihc087",
+      "version": 1,
+      "timestamp": "2026-08-13T08:04:56.9229626Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": null,
+          "newValue": "todo"
+        },
+        {
+          "field": "priority",
+          "oldValue": null,
+          "newValue": "high"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Ephemeral local Supabase Docker container starts and seeds in CI runner"
+          },
+          {
+            "completed": false,
+            "text": "npx @usebruno/cli runs Bruno API suite against local container"
+          },
+          {
+            "completed": false,
+            "text": "Playwright E2E tests run against local web server \u0026 DB and upload HTML reports on failure/completion"
+          }
+        ],
+        "description": "Extend .github/workflows/ci-quality-gate.yml with jobs that initialize an ephemeral local Supabase Docker environment (npx supabase start), apply seed data, run Bruno API regression collection, and run Playwright E2E tests with artifact uploads.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "testing"
+        ],
+        "priority": "high",
+        "status": "todo",
+        "title": "Ephemeral Local Supabase Docker \u0026 Automated API/E2E Test Jobs"
+      }
+    },
+    {
+      "id": "v2",
+      "taskId": "ihc087",
+      "version": 2,
+      "timestamp": "2026-08-13T08:07:05.3780367Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "todo",
+          "newValue": "in-progress"
+        },
+        {
+          "field": "assignee",
+          "oldValue": null,
+          "newValue": "@me"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "completed": false,
+            "text": "Ephemeral local Supabase Docker container starts and seeds in CI runner"
+          },
+          {
+            "completed": false,
+            "text": "npx @usebruno/cli runs Bruno API suite against local container"
+          },
+          {
+            "completed": false,
+            "text": "Playwright E2E tests run against local web server \u0026 DB and upload HTML reports on failure/completion"
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extend .github/workflows/ci-quality-gate.yml with jobs that initialize an ephemeral local Supabase Docker environment (npx supabase start), apply seed data, run Bruno API regression collection, and run Playwright E2E tests with artifact uploads.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "testing"
+        ],
+        "priority": "high",
+        "status": "in-progress",
+        "title": "Ephemeral Local Supabase Docker \u0026 Automated API/E2E Test Jobs"
+      }
+    },
+    {
+      "id": "v3",
+      "taskId": "ihc087",
+      "version": 3,
+      "timestamp": "2026-08-13T08:07:13.1939357Z",
+      "changes": [
+        {
+          "field": "status",
+          "oldValue": "in-progress",
+          "newValue": "done"
+        }
+      ],
+      "snapshot": {
+        "acceptanceCriteria": [
+          {
+            "text": "Ephemeral local Supabase Docker container starts and seeds in CI runner",
+            "completed": true
+          },
+          {
+            "text": "npx @usebruno/cli runs Bruno API suite against local container",
+            "completed": true
+          },
+          {
+            "text": "Playwright E2E tests run against local web server \u0026 DB and upload HTML reports on failure/completion",
+            "completed": true
+          }
+        ],
+        "assignee": "@me",
+        "description": "Extend .github/workflows/ci-quality-gate.yml with jobs that initialize an ephemeral local Supabase Docker environment (npx supabase start), apply seed data, run Bruno API regression collection, and run Playwright E2E tests with artifact uploads.",
+        "labels": [
+          "from-spec",
+          "cicd",
+          "testing"
+        ],
+        "priority": "high",
+        "status": "done",
+        "title": "Ephemeral Local Supabase Docker \u0026 Automated API/E2E Test Jobs"
+      }
+    }
+  ]
+}
