@@ -1,15 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addInvoiceItem, updateInvoiceItemQuantity, removeInvoiceItem } from '@/server/repositories/invoice-repo';
+import { z } from 'zod';
+
+const addInvoiceItemSchema = z.object({
+  invoiceId: z.string(),
+  productId: z.string(),
+  quantity: z.coerce.number().int().positive(),
+  salePrice: z.coerce.number().nonnegative(),
+  isPackSold: z.coerce.boolean().default(false),
+  allocationType: z.enum(['SHARED', 'INDIVIDUAL']).nullable().optional(),
+  assignedMemberId: z.string().nullable().optional(),
+  invoiceTotalAmount: z.coerce.number().nonnegative().default(0),
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const { invoiceId, productId, quantity, salePrice, isPackSold, invoiceTotalAmount } = await req.json();
+    const body = await req.json();
 
-    if (!invoiceId || !productId || !quantity || !salePrice) {
-      return NextResponse.json({ success: false, error: 'Missing parameters' }, { status: 400 });
+    // 1. Validate using Zod
+    const validation = addInvoiceItemSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
     }
 
-    const res = await addInvoiceItem(invoiceId, productId, quantity, salePrice, isPackSold, invoiceTotalAmount);
+    // 2. Validate allocation integrity
+    const { allocationType, assignedMemberId } = validation.data;
+    if (allocationType === 'INDIVIDUAL' && !assignedMemberId) {
+      return NextResponse.json({ success: false, error: 'Missing assigned member ID' }, { status: 400 });
+    }
+
+    // 3. Call repository with validated data
+    const res = await addInvoiceItem(validation.data);
     if (!res.success) {
       return NextResponse.json({ success: false, error: res.error }, { status: 500 });
     }

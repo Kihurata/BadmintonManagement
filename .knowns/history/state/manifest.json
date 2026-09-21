@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "entries": {
+    "task:q1qug4": {
+      "entityType": "task",
+      "entityId": "q1qug4",
+      "path": "tasks/task-q1qug4 - Refactor-Bill-Splitting-Simplified-Members-Model-a.md",
+      "hash": "b030e8609f4fd56a365b17a197aa09648a02f141d65b1cc474381d7fe841719a",
+      "revision": 3,
+      "headHash": "b030e8609f4fd56a365b17a197aa09648a02f141d65b1cc474381d7fe841719a"
+    }
+  }
+}

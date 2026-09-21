@@ -1,0 +1,24 @@
+meta {
+  name: List Host Group Members
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/members?includeInactive=false
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+tests {
+  test("Status is 200 OK", function () {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.data).to.be.an('array');
+    expect(body.data.length).to.be.greaterThan(0);
+  });
+}

@@ -26,6 +26,16 @@ export interface InvoiceItem {
   } | null;
 }
 
+export interface CreateInvoiceItemsParams {
+  invoiceId: string,
+  productId: string,
+  quantity: number,
+  salePrice: number,
+  isPackSold: boolean,
+  allocationType?: 'SHARED' | 'INDIVIDUAL' | null,
+  assignedMemberId?: string | null,
+  invoiceTotalAmount: number
+}
 export async function getInvoiceByBookingId(bookingId: string): Promise<Invoice | null> {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -56,12 +66,7 @@ export async function getInvoiceItems(invoiceId: string): Promise<InvoiceItem[]>
 }
 
 export async function addInvoiceItem(
-  invoiceId: string,
-  productId: string,
-  quantity: number,
-  salePrice: number,
-  isPackSold: boolean,
-  invoiceTotalAmount: number
+  params: CreateInvoiceItemsParams
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
@@ -69,11 +74,13 @@ export async function addInvoiceItem(
   const { error: insertError } = await supabase
     .from('invoice_items')
     .insert([{
-      invoice_id: invoiceId,
-      product_id: productId,
-      quantity,
-      sale_price: salePrice,
-      is_pack_sold: isPackSold
+      invoice_id: params.invoiceId,
+      product_id: params.productId,
+      quantity: params.quantity,
+      sale_price: params.salePrice,
+      is_pack_sold: params.isPackSold,
+      allocation_type: params.allocationType,
+      assigned_member_id: params.assignedMemberId,
     }]);
 
   if (insertError) {
@@ -81,11 +88,11 @@ export async function addInvoiceItem(
   }
 
   // 2. Update Invoice Total
-  const newTotal = invoiceTotalAmount + (salePrice * quantity);
+  const newTotal = params.invoiceTotalAmount + (params.salePrice * params.quantity);
   const { error: updateError } = await supabase
     .from('invoices')
     .update({ total_amount: newTotal })
-    .eq('id', invoiceId);
+    .eq('id', params.invoiceId);
 
   if (updateError) {
     return { success: false, error: updateError.message };

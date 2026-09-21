@@ -1,0 +1,38 @@
+{
+  "task:4f4crx": {
+    "entityType": "task",
+    "entityId": "4f4crx",
+    "canonicalHash": "f453f8f7f0ec1c145518a9835526db848b7c2c8a9898b8d94520805cced470cf",
+    "revision": 3,
+    "path": "tasks/task-4f4crx - Database-Migration-for-Tenant-Members-and-Invoice.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:5mbznb": {
+    "entityType": "task",
+    "entityId": "5mbznb",
+    "canonicalHash": "20834437a38ace65aef012b540d0c7a0a6d5245d3342e08875fe8a9799e01a4e",
+    "revision": 2,
+    "path": "tasks/task-5mbznb - Backend-Repositories-and-REST-Endpoints-for-Member.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:daquql": {
+    "entityType": "task",
+    "entityId": "daquql",
+    "canonicalHash": "e8032baeaddcc5309f47719c809ebe90fbfeb0785acc59645aca9df56f4fadc6",
+    "revision": 1,
+    "path": "tasks/task-daquql - Frontend-UI-for-Attendant-Checklist-POS-Item-Alloc.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:q1qug4": {
+    "entityType": "task",
+    "entityId": "q1qug4",
+    "canonicalHash": "b030e8609f4fd56a365b17a197aa09648a02f141d65b1cc474381d7fe841719a",
+    "revision": 3,
+    "path": "tasks/task-q1qug4 - Refactor-Bill-Splitting-Simplified-Members-Model-a.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  }
+}

@@ -1,0 +1,43 @@
+meta {
+    name: Create Member
+    type: http
+    seq: 1
+}
+
+post {
+    url: {{baseUrl}}/api/v1/members
+    body: json
+    auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+  {
+    "name": "Nguyễn Văn A",
+    "phone": "0901234567",
+    "zalo": "0901234567"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+  if (res.status === 201 && data && data.data) {
+    bru.setVar('memberId1', data.data.id);
+    console.log("Created Member ID 1:", data.data.id);
+  }
+}
+
+tests {
+  test("Status is 201 Created", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  
+  test("Returns member data with ID", function() {
+    expect(res.getBody().success).to.be.true;
+    expect(res.getBody().data.id).to.be.a('string');
+  });
+}

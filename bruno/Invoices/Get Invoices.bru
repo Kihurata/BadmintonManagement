@@ -1,0 +1,20 @@
+meta {
+  name: Get Invoices
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/invoices/
+  auth: none
+}
+
+headers {
+  Cookie: {{supabaseCookieName}}={{supabaseCookie}}
+}
+
+body:json {
+    {
+        "invoiceId": ""
+    }
+}

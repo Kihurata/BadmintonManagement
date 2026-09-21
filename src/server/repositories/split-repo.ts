@@ -63,7 +63,7 @@ export async function getSplitSummary(invoiceId: string): Promise<InvoiceSplitDe
       .select('*, bookings(total_court_fee)')
       .eq('booking_id', invoiceId)
       .maybeSingle();
-    
+
     if (byBooking) {
       invoiceData = byBooking;
       invoiceError = null;
@@ -93,7 +93,7 @@ export async function getSplitSummary(invoiceId: string): Promise<InvoiceSplitDe
   // 3. Query invoice_items with assigned member info
   const { data: itemsData, error: itemsError } = await supabase
     .from('invoice_items')
-    .select('*, products(product_name), host_group_members(name)')
+    .select('*, products(product_name), members(name)')
     .eq('invoice_id', invoiceId);
 
   if (itemsError) {
@@ -109,7 +109,7 @@ export async function getSplitSummary(invoiceId: string): Promise<InvoiceSplitDe
     allocation_type: 'SHARED' | 'INDIVIDUAL' | null;
     assigned_member_id: string | null;
     products?: { product_name: string } | null;
-    host_group_members?: { name: string } | null;
+    members?: { name: string } | null;
   }
 
   const items: SplitItemAllocation[] = ((itemsData as unknown as RawItemType[]) || []).map((item) => ({
@@ -121,7 +121,7 @@ export async function getSplitSummary(invoiceId: string): Promise<InvoiceSplitDe
     sale_price: Number(item.sale_price),
     allocation_type: item.allocation_type || null,
     assigned_member_id: item.assigned_member_id || null,
-    assigned_member_name: item.host_group_members?.name || null,
+    assigned_member_name: item.members?.name || null,
   }));
 
   // Compute overall summary statistics

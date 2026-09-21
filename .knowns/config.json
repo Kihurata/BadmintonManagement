@@ -34,7 +34,6 @@
       "todo",
       "in-progress",
       "blocked",
-      "done",
       "in-review"
     ],
     "semanticSearch": {
@@ -48,7 +47,6 @@
     "platforms": [
       "agents"
     ],
-    "enableChatUI": false,
     "lsp": {
       "enabled": true,
       "languages": {
