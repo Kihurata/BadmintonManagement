@@ -1,5 +1,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
@@ -9,11 +10,16 @@ import { ProductForm } from './product-form';
 import { Product } from '@/types';
 import { useUserRole } from '@/components/auth-provider';
 
-export function ProductList() {
-    const [products, setProducts] = useState<Product[]>([]);
+interface ProductListProps {
+    initialProducts?: Product[];
+}
+
+export function ProductList({ initialProducts }: ProductListProps) {
+    const [products, setProducts] = useState<Product[]>(initialProducts || []);
     const [filter, setFilter] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!initialProducts || initialProducts.length === 0);
     const { role } = useUserRole();
+    const router = useRouter();
 
     // Dialog States
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -33,12 +39,22 @@ export function ProductList() {
     }, []);
 
     useEffect(() => {
-        fetchProducts();
+        if (initialProducts) {
+            setProducts(initialProducts);
+            setLoading(false);
+        } else {
+            fetchProducts();
+        }
+    }, [initialProducts, fetchProducts]);
 
-        const handleUpdate = () => fetchProducts();
+    useEffect(() => {
+        const handleUpdate = () => {
+            router.refresh();
+            fetchProducts();
+        };
         window.addEventListener('inventory_updated', handleUpdate);
         return () => window.removeEventListener('inventory_updated', handleUpdate);
-    }, [fetchProducts]);
+    }, [fetchProducts, router]);
 
     const handleDelete = async (id: string) => {
         if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
@@ -49,6 +65,7 @@ export function ProductList() {
             .eq('id', id);
 
         if (!error) {
+            router.refresh();
             fetchProducts();
         }
     };
@@ -140,6 +157,7 @@ export function ProductList() {
                         productToEdit={editingProduct || undefined}
                         onSuccess={() => {
                             setIsFormOpen(false);
+                            router.refresh();
                             fetchProducts();
                         }}
                         onCancel={() => setIsFormOpen(false)}

@@ -1,16 +1,22 @@
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Search, Plus, Phone, History } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { CustomerForm } from './customer-form';
 import { cn } from '@/lib/utils';
 
-export function CustomerList() {
-    const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+interface CustomerListProps {
+    initialCustomers?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export function CustomerList({ initialCustomers }: CustomerListProps) {
+    const [customers, setCustomers] = useState<any[]>(initialCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [filter, setFilter] = useState('');
     const [typeFilter, setTypeFilter] = useState<'ALL' | 'LOYAL' | 'GUEST'>('ALL');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!initialCustomers || initialCustomers.length === 0);
+    const router = useRouter();
 
     // Dialog States
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -30,8 +36,13 @@ export function CustomerList() {
     };
 
     useEffect(() => {
-        fetchCustomers();
-    }, []);
+        if (initialCustomers) {
+            setCustomers(initialCustomers);
+            setLoading(false);
+        } else {
+            fetchCustomers();
+        }
+    }, [initialCustomers]);
 
 
 
@@ -196,6 +207,7 @@ export function CustomerList() {
                         customerToEdit={editingCustomer}
                         onSuccess={() => {
                             setIsFormOpen(false);
+                            router.refresh();
                             fetchCustomers();
                         }}
                         onCancel={() => setIsFormOpen(false)}

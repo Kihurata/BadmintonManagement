@@ -1,0 +1,38 @@
+{
+  "doc:doc-0ac4817f79fe35e4c7deaf23d2ca3d21": {
+    "entityType": "doc",
+    "entityId": "doc-0ac4817f79fe35e4c7deaf23d2ca3d21",
+    "canonicalHash": "04715f2af527a9af304ac401fa049e47c009df2f1ae85132b60739ba7caed6cf",
+    "revision": 1,
+    "path": "docs/specs/fix-dashboard-loading-and-caching.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:6i4xpb": {
+    "entityType": "task",
+    "entityId": "6i4xpb",
+    "canonicalHash": "d5aa4ec0c181dd52b7e4f4008ee8ef262732cb0843e8ea6c48773ab0ce5e1033",
+    "revision": 3,
+    "path": "tasks/task-6i4xpb - Migrate-Customers-API-to-api-v1-customers.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:euw0sz": {
+    "entityType": "task",
+    "entityId": "euw0sz",
+    "canonicalHash": "e03d6564aba723898db496b2886a79fc260831c77aa1dd14eb9127d1d6c243ad",
+    "revision": 4,
+    "path": "tasks/task-euw0sz - Refactor-Products-Customers-to-Server-Components-a.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:pawd2s": {
+    "entityType": "task",
+    "entityId": "pawd2s",
+    "canonicalHash": "9e5a1bdd94083babb404a6fb2623672d940eae1ab73754743208aca2a8c90cd1",
+    "revision": 2,
+    "path": "tasks/task-pawd2s - Re-establish-Recurring-Booking-for-New-Month-via-P.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  }
+}
