@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { format } from 'date-fns';
+import { format, addDays, endOfMonth, startOfMonth, addMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { RecurringBookingForm } from './recurring-booking-form';
+import { RecurringBookingForm, InitialRecurringFormData } from './recurring-booking-form';
 import { Loader2, Plus, Calendar, User, Trash2, ArrowRight } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { generateVietQrUrl } from '@/lib/invoice-utils';
@@ -70,6 +70,7 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
 
   // Dialog states
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formInitialData, setFormInitialData] = useState<InitialRecurringFormData | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedRule, setSelectedRule] = useState<RecurringRule | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -227,6 +228,34 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
     }
   };
 
+  const handleReestablishRule = (rule: RecurringRule) => {
+    let nextStart: Date;
+    let nextEnd: Date;
+
+    if (rule.end_date) {
+      // Parse YYYY-MM-DD safely without timezone offset shift
+      const [year, month, day] = rule.end_date.split('-').map(Number);
+      const prevEndDate = new Date(year, month - 1, day);
+      nextStart = addDays(prevEndDate, 1);
+      nextEnd = endOfMonth(nextStart);
+    } else {
+      nextStart = startOfMonth(addMonths(new Date(), 1));
+      nextEnd = endOfMonth(nextStart);
+    }
+
+    setFormInitialData({
+      courtId: rule.court_id,
+      customerId: rule.customer_id,
+      startTime: rule.start_time,
+      endTime: rule.end_time,
+      daysOfWeek: rule.days_of_week,
+      startDate: nextStart,
+      endDate: nextEnd,
+      isRenew: true,
+    });
+    setIsFormOpen(true);
+  };
+
   const getDayNames = (days: number[]) => {
     if (!days || !Array.isArray(days)) return 'N/A';
     const map: Record<number, string> = {
@@ -256,7 +285,10 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
           <p className="text-xs text-gray-500">Danh sách các khung giờ đặt sân cố định hàng tuần.</p>
         </div>
         <Button
-          onClick={() => setIsFormOpen(true)}
+          onClick={() => {
+            setFormInitialData(null);
+            setIsFormOpen(true);
+          }}
           className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-2 h-10 px-4 shrink-0 shadow-md shadow-emerald-600/10 active:scale-95 transition-all"
         >
           <Plus className="size-4" />
@@ -283,7 +315,10 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
             Đăng ký lịch cố định để tự động tạo lịch đặt sân hàng tuần cho khách hàng thân thiết.
           </p>
           <Button
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => {
+              setFormInitialData(null);
+              setIsFormOpen(true);
+            }}
             className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-2"
           >
             <Plus className="size-4" />
@@ -327,6 +362,11 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
                         <ArrowRight className="size-3 inline mx-1" />
                         {rule.end_date ? format(new Date(rule.end_date), 'dd/MM/yyyy') : 'Vô hạn'}
                       </span>
+                      {rule.end_date && new Date(rule.end_date + 'T23:59:59') < new Date() && (
+                        <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
+                          Hết chu kỳ
+                        </span>
+                      )}
                     </span>
                   </div>
                   {costs[rule.id] && (
@@ -370,6 +410,15 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
                 )}
                 <Button
                   variant="outline"
+                  onClick={() => handleReestablishRule(rule)}
+                  className="rounded-xl border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 dark:border-emerald-900/40 dark:hover:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 h-9 px-3 shrink-0 shadow-sm active:scale-95 transition-all text-xs gap-1.5"
+                  title="Tái thiết lập lịch cố định cho tháng tiếp theo"
+                >
+                  <span className="material-symbols-outlined text-sm">autorenew</span>
+                  <span>Tái thiết lập</span>
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setSelectedRule(rule);
                     setIsDeleteOpen(true);
@@ -384,18 +433,31 @@ export function RecurringBookingsTab({ courts, customers }: RecurringBookingsTab
         </div>
       )}
 
-      {/* Creation Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      {/* Creation / Re-establishment Dialog */}
+      <Dialog
+        open={isFormOpen}
+        onOpenChange={(open) => {
+          setIsFormOpen(open);
+          if (!open) setFormInitialData(null);
+        }}
+      >
         <DialogContent className="p-0 sm:max-w-[480px] h-full sm:h-auto overflow-hidden border-none bg-transparent shadow-none">
-          <DialogTitle className="sr-only">Đăng ký lịch cố định</DialogTitle>
+          <DialogTitle className="sr-only">
+            {formInitialData?.isRenew ? 'Tái thiết lập lịch cố định' : 'Đăng ký lịch cố định'}
+          </DialogTitle>
           <RecurringBookingForm
             courts={courts}
             customers={customers}
+            initialData={formInitialData}
             onSuccess={() => {
               setIsFormOpen(false);
+              setFormInitialData(null);
               fetchRules();
             }}
-            onCancel={() => setIsFormOpen(false)}
+            onCancel={() => {
+              setIsFormOpen(false);
+              setFormInitialData(null);
+            }}
           />
         </DialogContent>
       </Dialog>
