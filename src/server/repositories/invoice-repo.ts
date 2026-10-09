@@ -19,10 +19,15 @@ export interface InvoiceItem {
   quantity: number;
   sale_price: number;
   is_pack_sold: boolean;
+  allocation_type?: 'SHARED' | 'INDIVIDUAL' | null;
+  assigned_member_id?: string | null;
   products?: {
     product_name: string;
     base_unit: string | null;
     pack_unit: string | null;
+  } | null;
+  members?: {
+    name: string;
   } | null;
 }
 
@@ -55,7 +60,7 @@ export async function getInvoiceItems(invoiceId: string): Promise<InvoiceItem[]>
   const supabase = createClient();
   const { data, error } = await supabase
     .from('invoice_items')
-    .select('*, products (product_name, base_unit, pack_unit)')
+    .select('*, products (product_name, base_unit, pack_unit), members (name)')
     .eq('invoice_id', invoiceId);
 
   if (error) {

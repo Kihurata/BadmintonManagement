@@ -20,8 +20,8 @@
   "task:daquql": {
     "entityType": "task",
     "entityId": "daquql",
-    "canonicalHash": "e8032baeaddcc5309f47719c809ebe90fbfeb0785acc59645aca9df56f4fadc6",
-    "revision": 1,
+    "canonicalHash": "d45c630f4f80a6777dbaf2853d7e5bfd3c4566001d996bd835790e633099966c",
+    "revision": 2,
     "path": "tasks/task-daquql - Frontend-UI-for-Attendant-Checklist-POS-Item-Alloc.md",
     "indexedAt": "0001-01-01T00:00:00Z",
     "stale": true

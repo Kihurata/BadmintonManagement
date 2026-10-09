@@ -65,3 +65,83 @@ export function formatInvoiceShareText(data: ShareInvoiceData): string {
 
     return text;
 }
+
+export interface FormatSplitZaloData {
+    courtName?: string;
+    startTime?: string | Date;
+    endTime?: string | Date;
+    courtFee: number;
+    splitDetails: {
+        attendees: Array<{
+            member_name: string;
+            shared_share: number;
+            individual_total: number;
+            total_due: number;
+            is_paid: boolean;
+            group_member_id: string;
+        }>;
+        items: Array<{
+            product_name: string;
+            quantity: number;
+            sale_price: number;
+            allocation_type: 'SHARED' | 'INDIVIDUAL' | null;
+            assigned_member_id: string | null;
+        }>;
+        summary: {
+            shared_pool_total: number;
+            per_person_shared: number;
+            total_invoice_amount: number;
+            attendee_count: number;
+        };
+    };
+    bankAccountNo?: string;
+    bankName?: string;
+    accountName?: string;
+}
+
+export function formatSplitBreakdownZaloText(data: FormatSplitZaloData): string {
+    const { courtName, startTime, endTime, courtFee, splitDetails } = data;
+    const dateStr = startTime ? format(new Date(startTime), 'dd/MM/yyyy') : format(new Date(), 'dd/MM/yyyy');
+    const timeStr = startTime && endTime 
+        ? `${format(new Date(startTime), 'HH:mm')} - ${format(new Date(endTime), 'HH:mm')}`
+        : '';
+
+    let text = `🏸 BẢNG CHIA TIỀN SÂN - ${courtName || 'CẦU LÔNG'}\n`;
+    text += `📅 Ngày: ${dateStr} ${timeStr ? `(${timeStr})` : ''}\n`;
+    text += `👥 Số người tham gia: ${splitDetails.summary.attendee_count} người\n`;
+    text += `---------------------------------\n`;
+    text += `💰 CHI PHÍ CHUNG (CẢ SÂN):\n`;
+    text += `• Tiền giờ sân: ${formatCurrency(courtFee)}\n`;
+
+    const sharedItems = splitDetails.items.filter(i => i.allocation_type === 'SHARED');
+    if (sharedItems.length > 0) {
+        sharedItems.forEach(i => {
+            text += `• ${i.product_name} x${i.quantity}: ${formatCurrency(i.sale_price * i.quantity)}\n`;
+        });
+    }
+
+    text += `👉 Tổng chi phí chung: ${formatCurrency(splitDetails.summary.shared_pool_total)}\n`;
+    text += `👉 Mỗi người chia đều: ${formatCurrency(splitDetails.summary.per_person_shared)}\n`;
+    text += `---------------------------------\n`;
+    text += `👤 CHI TIẾT TỪNG THÀNH VIÊN:\n`;
+
+    splitDetails.attendees.forEach((att, idx) => {
+        const indItems = splitDetails.items.filter(i => i.assigned_member_id === att.group_member_id);
+        const status = att.is_paid ? ' (Đã trả)' : '';
+        text += `${idx + 1}. ${att.member_name}: ${formatCurrency(att.total_due)}${status}\n`;
+        if (indItems.length > 0) {
+            const indStr = indItems.map(i => `${i.product_name} x${i.quantity}`).join(', ');
+            text += `   (Tiền sân: ${formatCurrency(att.shared_share)} + Đồ riêng: ${indStr})\n`;
+        }
+    });
+
+    text += `---------------------------------\n`;
+    text += `💳 TỔNG HÓA ĐƠN: ${formatCurrency(splitDetails.summary.total_invoice_amount)}\n`;
+    text += `🏦 STK Chuyển khoản:\n`;
+    text += `• Ngân hàng: ${data.bankName || 'TPBank'}\n`;
+    text += `• STK: ${data.bankAccountNo || '07119136101'}\n`;
+    text += `• Chủ TK: ${data.accountName || 'TRAN MINH QUAN'}\n`;
+    text += `Cảm ơn mọi người! Chúc buổi chơi vui vẻ! 🏸`;
+
+    return text;
+}

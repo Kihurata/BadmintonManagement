@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { calculateRentalFee } from '@/lib/pricing';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Users } from 'lucide-react';
 import { ProductSelectorList, type ProductSelectorItem } from './product-selector-list';
+import { AttendantSelectorDialog } from './AttendantSelectorDialog';
+import { ItemAllocationDialog, type AttendingMember } from './ItemAllocationDialog';
 
 interface BookingDetailsProps {
     bookingId: string;
@@ -18,7 +19,6 @@ interface BookingDetailsProps {
 }
 
 export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOutClick }: BookingDetailsProps) {
-    const router = useRouter();
     const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -29,6 +29,28 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     const [invoice, setInvoice] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [products, setProducts] = useState<ProductSelectorItem[]>([]);
     const [invoiceItems, setInvoiceItems] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    // Attendant and Allocation states
+    const [attendees, setAttendees] = useState<AttendingMember[]>([]);
+    const [isAttendantDialogOpen, setIsAttendantDialogOpen] = useState(false);
+    const [isAllocationDialogOpen, setIsAllocationDialogOpen] = useState(false);
+    const [pendingProduct, setPendingProduct] = useState<ProductSelectorItem | null>(null);
+
+    const fetchInvoiceAttendees = async (invId: string) => {
+        try {
+            const splitRes = await fetch(`/api/v1/invoices/${invId}/split`);
+            const splitData = await splitRes.json();
+            if (splitRes.ok && splitData.success && splitData.data) {
+                const atts: AttendingMember[] = splitData.data.attendees.map((a: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+                    id: a.group_member_id,
+                    name: a.member_name
+                }));
+                setAttendees(atts);
+            }
+        } catch (err) {
+            console.error("Error loading split attendees:", err);
+        }
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -43,6 +65,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                     if (data.invoice) {
                         setInvoice(data.invoice);
                         setInvoiceItems(data.invoiceItems || []);
+                        fetchInvoiceAttendees(data.invoice.id);
                     }
                 }
 
@@ -96,6 +119,7 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                 if (data.invoice) {
                     setInvoice(data.invoice);
                     setInvoiceItems(data.invoiceItems || []);
+                    fetchInvoiceAttendees(data.invoice.id);
                 }
             }
         } catch (err) {
@@ -227,19 +251,34 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
     };
 
     // --- POS Handlers ---
-    const handleAddItem = async (product: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const handleProductSelect = (product: ProductSelectorItem) => {
         if (!invoice) return;
+        if (attendees.length > 0) {
+            setPendingProduct(product);
+            setIsAllocationDialogOpen(true);
+        } else {
+            executeAddItem(product, 'SHARED', null);
+        }
+    };
 
-        const tempId = 'temp-' + Date.now();
-        const optimisticItem = { id: tempId, product_id: product.productId, quantity: 1, sale_price: product.price, products: { product_name: product.name } };
-        setInvoiceItems((prev) => [...prev, optimisticItem]);
+    const executeAddItem = async (
+        product: ProductSelectorItem,
+        allocationType: 'SHARED' | 'INDIVIDUAL' = 'SHARED',
+        assignedMemberId: string | null = null
+    ) => {
+        if (!invoice) return;
+        setActionLoading(true);
 
         try {
-            const existing = invoiceItems.find(i => i.product_id === product.productId && Math.abs(i.sale_price - product.price) < 1);
+            const existing = invoiceItems.find(i =>
+                i.product_id === product.productId &&
+                Math.abs(i.sale_price - product.price) < 1 &&
+                (i.allocation_type || 'SHARED') === allocationType &&
+                (i.assigned_member_id || null) === (assignedMemberId || null)
+            );
 
             if (existing) {
                 await handleUpdateQuantity(existing, 1, product);
-                setInvoiceItems((prev) => prev.filter(i => i.id !== tempId));
             } else {
                 const response = await fetch('/api/invoices/items', {
                     method: 'POST',
@@ -252,6 +291,8 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                         quantity: 1,
                         salePrice: product.price,
                         isPackSold: product.isPack,
+                        allocationType,
+                        assignedMemberId: assignedMemberId || null,
                         invoiceTotalAmount: invoice.total_amount
                     })
                 });
@@ -264,8 +305,9 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                 await refreshInvoice();
             }
         } catch (err) {
-            console.error(err);
-            setInvoiceItems((prev) => prev.filter(i => i.id !== tempId));
+            alert('Lỗi thêm món: ' + (err as Error).message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -358,8 +400,10 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
 
     const itemsQuantities = Object.fromEntries(
         products.map(p => {
-            const existingItem = invoiceItems.find(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1);
-            return [p.key, existingItem ? existingItem.quantity : 0];
+            const totalQty = invoiceItems
+                .filter(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1)
+                .reduce((sum, i) => sum + i.quantity, 0);
+            return [p.key, totalQty];
         })
     );
 
@@ -470,6 +514,39 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                     </div>
                 </div>
 
+                {/* Attendants & Split Roster Trigger */}
+                {booking.status === 'CHECKED_IN' && invoice && (
+                    <div className="p-3 bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            <div className="p-2 rounded-lg bg-emerald-600 text-white shrink-0">
+                                <Users className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                    Người chơi trong ca
+                                    <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+                                        {attendees.length}
+                                    </span>
+                                </div>
+                                <div className="text-[11px] text-muted-foreground truncate">
+                                    {attendees.length > 0
+                                        ? attendees.map(a => a.name).join(', ')
+                                        : 'Chưa điểm danh (nhấn để chọn)'}
+                                </div>
+                            </div>
+                        </div>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-8 text-xs font-semibold border-emerald-300 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:text-emerald-300 shrink-0"
+                            onClick={() => setIsAttendantDialogOpen(true)}
+                        >
+                            {attendees.length > 0 ? 'Sửa' : '+ Điểm danh'}
+                        </Button>
+                    </div>
+                )}
+
                 {/* POS / Service Ordering */}
                 {booking.status === 'CHECKED_IN' && (
                     <div className="space-y-4 pt-2">
@@ -487,16 +564,72 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                                 Đang tạo hóa đơn...
                             </div>
                         ) : (
-                            <ProductSelectorList
-                                products={products}
-                                quantities={itemsQuantities}
-                                onAdd={(p) => handleAddItem(p)}
-                                onUpdateQuantity={(p, delta) => {
-                                    const existingItem = invoiceItems.find(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1);
-                                    if (existingItem) handleUpdateQuantity(existingItem, delta, p);
-                                }}
-                                loading={actionLoading}
-                            />
+                            <>
+                                <ProductSelectorList
+                                    products={products}
+                                    quantities={itemsQuantities}
+                                    onAdd={(p) => handleProductSelect(p)}
+                                    onUpdateQuantity={(p, delta) => {
+                                        const existingItem = invoiceItems.find(i => i.product_id === p.productId && Math.abs(i.sale_price - p.price) < 1);
+                                        if (existingItem) handleUpdateQuantity(existingItem, delta, p);
+                                    }}
+                                    loading={actionLoading}
+                                />
+
+                                {/* Ordered items with allocation breakdown */}
+                                {invoiceItems.length > 0 && (
+                                    <div className="space-y-2 pt-2 border-t border-border/50">
+                                        <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                            Món đã gọi ({invoiceItems.reduce((acc, i) => acc + i.quantity, 0)})
+                                        </h5>
+                                        <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                                            {invoiceItems.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs"
+                                                >
+                                                    <div className="flex-1 min-w-0 pr-2">
+                                                        <div className="font-semibold text-foreground truncate">
+                                                            {item.products?.product_name || item.product_name || 'Sản phẩm'}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                                            <span className="text-muted-foreground">
+                                                                {item.quantity} x {new Intl.NumberFormat('vi-VN').format(item.sale_price)}đ
+                                                            </span>
+                                                            {item.allocation_type === 'INDIVIDUAL' ? (
+                                                                <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                                                                    👤 {item.members?.name || 'Riêng'}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                                                    🏸 Cả sân
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleUpdateQuantity(item, -1, { isPack: item.is_pack_sold, deduct: 1 })}
+                                                            className="w-6 h-6 rounded flex items-center justify-center bg-background border hover:bg-muted font-bold text-xs"
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <span className="w-5 text-center font-bold">{item.quantity}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleUpdateQuantity(item, 1, { isPack: item.is_pack_sold, deduct: 1 })}
+                                                            className="w-6 h-6 rounded flex items-center justify-center bg-background border hover:bg-muted font-bold text-xs"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
@@ -530,13 +663,10 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                         <Button
                             variant="outline"
                             className="w-full h-11 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 font-bold rounded-xl flex items-center justify-center gap-2"
-                            onClick={() => {
-                                onClose();
-                                router.push(`/invoices?tab=GROUPS&invoiceId=${invoice?.id || ''}&customerId=${booking.customer_id || ''}`);
-                            }}
+                            onClick={() => setIsAttendantDialogOpen(true)}
                         >
                             <Users className="w-5 h-5" />
-                            Chia tiền nhóm
+                            Điểm danh & Chia tiền ({attendees.length})
                         </Button>
                         <Button
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20"
@@ -563,6 +693,32 @@ export function BookingDetails({ bookingId, onClose, onCheckInSuccess, onCheckOu
                     {booking.status === 'PENDING' || booking.status === 'CONFIRMED' ? 'Hủy Sân' : 'Đóng'}
                 </Button>
             </div>
+
+            {/* Modal Dialogs */}
+            <AttendantSelectorDialog
+                invoiceId={invoice?.id || null}
+                open={isAttendantDialogOpen}
+                onOpenChange={setIsAttendantDialogOpen}
+                onAttendanceSaved={async () => {
+                    if (invoice) {
+                        await fetchInvoiceAttendees(invoice.id);
+                        await refreshInvoice();
+                    }
+                }}
+            />
+
+            <ItemAllocationDialog
+                open={isAllocationDialogOpen}
+                onOpenChange={setIsAllocationDialogOpen}
+                product={pendingProduct}
+                attendees={attendees}
+                onConfirm={async (allocationType, assignedMemberId) => {
+                    if (pendingProduct) {
+                        await executeAddItem(pendingProduct, allocationType, assignedMemberId);
+                        setPendingProduct(null);
+                    }
+                }}
+            />
         </div>
     );
 }
