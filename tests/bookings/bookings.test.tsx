@@ -39,7 +39,7 @@ describe('Bookings Feature', () => {
                         json: async () => ({ success: true, data: mockCourts })
                     });
                 }
-                if (url.includes('/api/customers')) {
+                if (url.includes('/customers')) {
                     return Promise.resolve({
                         ok: true,
                         json: async () => ({ success: true, data: mockCustomers })
@@ -60,7 +60,7 @@ describe('Bookings Feature', () => {
 
         it('should validate missing required fields on submit', async () => {
             fetchMock.mockImplementation((url) => {
-                if (url.includes('/api/customers')) {
+                if (url.includes('/customers')) {
                     return Promise.resolve({
                         ok: true,
                         json: async () => ({ success: true, data: [] })

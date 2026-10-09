@@ -73,7 +73,7 @@ export function BookingForm({ onSuccess, onCancel, selectedDate, selectedCourtId
 
             // Fetch Customers
             if (!propCustomers || propCustomers.length === 0) {
-                const customersRes = await fetch('/api/customers');
+                const customersRes = await fetch('/api/v1/customers');
                 const customersData = await customersRes.json();
                 if (customersRes.ok && customersData.success) {
                     setCustomers(customersData.data);

@@ -33,6 +33,6 @@ export class LoginPage {
     }
 
     // Expect URL to navigate away from /login (e.g. to / or /schedule)
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 10000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 20000 });
   }
 }

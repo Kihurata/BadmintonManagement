@@ -34,28 +34,40 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+export interface InitialRecurringFormData {
+  courtId?: string;
+  customerId?: string;
+  startTime?: string;
+  endTime?: string;
+  startDate?: Date;
+  endDate?: Date;
+  daysOfWeek?: number[];
+  isRenew?: boolean;
+}
+
 interface RecurringBookingFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   courts: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   customers?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  initialData?: InitialRecurringFormData | null;
 }
 
-export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, customers: propCustomers }: RecurringBookingFormProps) {
+export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, customers: propCustomers, initialData }: RecurringBookingFormProps) {
   const [courts, setCourts] = useState<any[]>(propCourts || []); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [courtId, setCourtId] = useState('');
+  const [courtId, setCourtId] = useState(initialData?.courtId || '');
 
   // Customer combobox
   const [customers, setCustomers] = useState<any[]>(propCustomers || []); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [customerId, setCustomerId] = useState('');
+  const [customerId, setCustomerId] = useState(initialData?.customerId || '');
   const [customerOpen, setCustomerOpen] = useState(false);
 
   // Form fields
-  const [startTime, setStartTime] = useState('08:00');
-  const [endTime, setEndTime] = useState('10:00');
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
-  const [endDate, setEndDate] = useState<Date | undefined>(addMonths(new Date(), 1));
-  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]); // 0 = Sunday, 1 = Monday, etc.
+  const [startTime, setStartTime] = useState(initialData?.startTime ? initialData.startTime.substring(0, 5) : '08:00');
+  const [endTime, setEndTime] = useState(initialData?.endTime ? initialData.endTime.substring(0, 5) : '10:00');
+  const [startDate, setStartDate] = useState<Date | undefined>(initialData?.startDate || new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>(initialData?.endDate || addMonths(new Date(), 1));
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(initialData?.daysOfWeek || []); // 0 = Sunday, 1 = Monday, etc.
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +75,19 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
   // Conflict states
   const [showConflictModal, setShowConflictModal] = useState(false);
   const [conflicts, setConflicts] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  // Sync state if initialData changes
+  useEffect(() => {
+    if (initialData) {
+      if (initialData.courtId) setCourtId(initialData.courtId);
+      if (initialData.customerId !== undefined) setCustomerId(initialData.customerId || '');
+      if (initialData.startTime) setStartTime(initialData.startTime.substring(0, 5));
+      if (initialData.endTime) setEndTime(initialData.endTime.substring(0, 5));
+      if (initialData.startDate) setStartDate(initialData.startDate);
+      if (initialData.endDate) setEndDate(initialData.endDate);
+      if (initialData.daysOfWeek) setDaysOfWeek(initialData.daysOfWeek);
+    }
+  }, [initialData]);
 
   // We fetch courts and customers
   // Fetch courts and customers once on mount
@@ -74,13 +99,13 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
         if (courtsRes.ok && courtsData.success) {
           setCourts(courtsData.data);
           if (courtsData.data.length > 0) {
-            setCourtId(courtsData.data[0].id);
+            setCourtId(prev => prev || initialData?.courtId || courtsData.data[0].id);
           }
         }
       }
 
       if (!propCustomers || propCustomers.length === 0) {
-        const customersRes = await fetch('/api/customers');
+        const customersRes = await fetch('/api/v1/customers');
         const customersData = await customersRes.json();
         if (customersRes.ok && customersData.success) {
           setCustomers(customersData.data);
@@ -88,7 +113,7 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
       }
     };
     fetchData();
-  }, [propCourts, propCustomers]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [propCourts, propCustomers, initialData?.courtId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync customers if propCustomers changes
   useEffect(() => {
@@ -101,9 +126,9 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
   useEffect(() => {
     if (propCourts && propCourts.length > 0) {
       setCourts(propCourts);
-      setCourtId(prev => prev || propCourts[0].id);
+      setCourtId(prev => prev || initialData?.courtId || propCourts[0].id);
     }
-  }, [propCourts]);
+  }, [propCourts, initialData?.courtId]);
 
   const toggleDayOfWeek = (day: number) => {
     setDaysOfWeek(prev =>
@@ -178,7 +203,12 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
   return (
     <div className="bg-white dark:bg-[#0d1b17] w-full max-w-md mx-auto rounded-xl overflow-hidden flex flex-col h-full max-h-[90vh] shadow-2xl border border-gray-100 dark:border-white/5">
       <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Đặt Lịch Cố Định Mới</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          {initialData?.isRenew && (
+            <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-2xl">autorenew</span>
+          )}
+          <span>{initialData?.isRenew ? 'Tái Thiết Lập Lịch Cố Định' : 'Đặt Lịch Cố Định Mới'}</span>
+        </h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-5">
@@ -385,7 +415,7 @@ export function RecurringBookingForm({ onSuccess, onCancel, courts: propCourts, 
           disabled={loading}
         >
           {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
-          Đăng ký
+          {initialData?.isRenew ? 'Xác nhận tạo lịch' : 'Đăng ký'}
         </Button>
       </div>
 

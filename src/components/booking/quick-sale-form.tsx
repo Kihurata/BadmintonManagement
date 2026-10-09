@@ -46,7 +46,7 @@ export function QuickSaleForm({ onSuccess, onCancel }: QuickSaleFormProps) {
     useEffect(() => {
         const fetchData = async () => {
             // Fetch Customers
-            const custRes = await fetch('/api/customers');
+            const custRes = await fetch('/api/v1/customers');
             const custData = await custRes.json();
             if (custRes.ok && custData.success) {
                 setCustomers(custData.data);
