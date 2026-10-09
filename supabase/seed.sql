@@ -3,12 +3,11 @@ INSERT INTO public.tenants (id, name)
 VALUES ('00000000-0000-0000-0000-000000000000', 'Sân Horizon Badminton')
 ON CONFLICT (id) DO NOTHING;
 
--- 2. Local Auth Users (auth.users & auth.identities)
--- Explicitly pass empty strings '' for token fields to prevent GoTrue 500 scanner errors
+-- 2. Local Auth Users
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
     raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at,
-    confirmation_token, email_change, email_change_token_new, recovery_token
+    confirmation_token, recovery_token, email_change_token_new, email_change
 ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     '00000000-0000-0000-0000-000000000001',
@@ -38,7 +37,7 @@ VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000
 ON CONFLICT (user_id, tenant_id) DO NOTHING;
 
 -- 4. Sample Customers
-INSERT INTO public.customers (name, phone, type, points, tenant_id)
+INSERT INTO public.customers (id, tenant_id, name, phone, type, points, created_at)
 VALUES 
   ('88888888-8888-8888-8888-888888888888', '00000000-0000-0000-0000-000000000000', 'Nguyễn Văn A (Khách Cố Định)', '0909999999', 'LOYAL', 200, '2026-06-01 00:00:00+07'),
   ('88888888-8888-8888-8888-888888888881', '00000000-0000-0000-0000-000000000000', 'Khách hàng Test 1', '0901234567', 'LOYAL', 150, NOW()),

@@ -17,10 +17,16 @@ Eliminate intermittent loading freezes on the Executive Dashboard (`/dashboard`)
 
 ## Locked Decisions
 
-- **D1**: Render the full dashboard layout (Sidebar, StickyHeader) with `DashboardSkeleton` immediately on initial mount, completely removing the full-screen `<Loader2 />` spinner. If client-side role check resolves to `STAFF`, perform smooth client-side redirection to `/` with an access alert toast.
-- **D2**: Refactor `/dashboard` to Next.js Server Component + Suspense architecture (`src/app/dashboard/loading.tsx` rendering `DashboardSkeleton`, and `src/app/dashboard/page.tsx` as an async Server Component with `export const dynamic = 'force-dynamic'`), loading initial metrics server-side via server repository to eliminate client-side fetch waterfalls.
-- **D3**: Month selection is driven by URL searchParams (`?month=YYYY-MM`), updated via `router.push` inside `useTransition`, providing instant month changes with native Next.js Server Component re-renders and smooth UI pending states.
-- **D4**: Extract `src/server/repositories/dashboard-repo.ts` to implement clean data access for dashboard metrics: strictly bounded date ranges, optimized queries, eliminating unbounded 6-month nested joins, and retaining `/api/dashboard/route.ts` as a thin wrapper calling the repository for backwards compatibility and Bruno testing.
+- D1: Render the full dashboard layout (Sidebar, StickyHeader) with `DashboardSkeleton` immediately on initial mount, completely removing the full-screen `<Loader2 />` spinner. If client-side role check resolves to `STAFF`, perform smooth client-side redirection to `/` with an access alert toast.
+- D2: Refactor `/dashboard` to Next.js Server Component + Suspense architecture (`src/app/dashboard/loading.tsx` rendering `DashboardSkeleton`, and `src/app/dashboard/page.tsx` as an async Server Component with `export const dynamic = 'force-dynamic'`), loading initial metrics server-side via server repository to eliminate client-side fetch waterfalls.
+- D3: Month selection is driven by URL searchParams (`?month=YYYY-MM`), updated via `router.push` inside `useTransition`, providing instant month changes with native Next.js Server Component re-renders and smooth UI pending states.
+- D4: Extract `src/server/repositories/dashboard-repo.ts` to implement clean data access for dashboard metrics: strictly bounded date ranges, optimized queries, eliminating unbounded 6-month nested joins, and retaining `/api/dashboard/route.ts` as a thin wrapper calling the repository for backwards compatibility and Bruno testing.
+
+## System Decision Impact
+
+- Impact: none
+- Decision: none
+- Acceptance gate: none
 
 ## Requirements
 
@@ -39,13 +45,13 @@ Eliminate intermittent loading freezes on the Executive Dashboard (`/dashboard`)
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Full-screen `<Loader2 />` spinner removed from `src/app/dashboard/page.tsx`. `src/app/dashboard/loading.tsx` renders `DashboardSkeleton` inside the page layout.
-- [ ] AC-2: `src/app/dashboard/page.tsx` refactored into an async Server Component with `export const dynamic = 'force-dynamic'`, accepting `searchParams: { month?: string }`.
-- [ ] AC-3: `src/components/dashboard/dashboard-client.tsx` extracted for client interactivity (month picker with `useTransition`, clipboard copy, and charts).
-- [ ] AC-4: `src/server/repositories/dashboard-repo.ts` created with `getDashboardData(date: Date)` providing bounded queries and $O(1)$ metric computation.
-- [ ] AC-5: `src/app/api/dashboard/route.ts` refactored to delegate to `dashboard-repo.ts` and verified with Bruno API runner.
-- [ ] AC-6: `STAFF` users accessing `/dashboard` are redirected to `/` with an error message toast.
-- [ ] AC-7: Production build `npm run build` passes with 0 errors.
+- [x] AC-1: Full-screen `<Loader2 />` spinner removed from `src/app/dashboard/page.tsx`. `src/app/dashboard/loading.tsx` renders `DashboardSkeleton` inside the page layout.
+- [x] AC-2: `src/app/dashboard/page.tsx` refactored into an async Server Component with `export const dynamic = 'force-dynamic'`, accepting `searchParams: { month?: string }`.
+- [x] AC-3: `src/components/dashboard/dashboard-client.tsx` extracted for client interactivity (month picker with `useTransition`, clipboard copy, and charts).
+- [x] AC-4: `src/server/repositories/dashboard-repo.ts` created with `getDashboardData(date: Date)` providing bounded queries and $O(1)$ metric computation.
+- [x] AC-5: `src/app/api/dashboard/route.ts` refactored to delegate to `dashboard-repo.ts` and verified with Bruno API runner.
+- [x] AC-6: `STAFF` users accessing `/dashboard` are redirected to `/` with an error message toast.
+- [x] AC-7: Production build `npm run build` passes with 0 errors.
 
 ## Scenarios
 

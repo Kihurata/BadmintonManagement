@@ -17,6 +17,15 @@
     "indexedAt": "0001-01-01T00:00:00Z",
     "stale": true
   },
+  "task:7uy5tl": {
+    "entityType": "task",
+    "entityId": "7uy5tl",
+    "canonicalHash": "5adef9b72a4a79e5ada1b3313262de36b2e5d52601efc85f8b320677a4dbf1d0",
+    "revision": 5,
+    "path": "tasks/task-7uy5tl - Create-Dashboard-Server-Repository-and-Refactor-AP.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
   "task:euw0sz": {
     "entityType": "task",
     "entityId": "euw0sz",
@@ -32,6 +41,24 @@
     "canonicalHash": "9e5a1bdd94083babb404a6fb2623672d940eae1ab73754743208aca2a8c90cd1",
     "revision": 2,
     "path": "tasks/task-pawd2s - Re-establish-Recurring-Booking-for-New-Month-via-P.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:rsr9tt": {
+    "entityType": "task",
+    "entityId": "rsr9tt",
+    "canonicalHash": "60e2e4603c5ce1ca86a19048eaf91182d98320f0366ed99437b920803f88cd58",
+    "revision": 5,
+    "path": "tasks/task-rsr9tt - Refactor-Dashboard-Page-to-Server-Component-and-Ve.md",
+    "indexedAt": "0001-01-01T00:00:00Z",
+    "stale": true
+  },
+  "task:yw8mii": {
+    "entityType": "task",
+    "entityId": "yw8mii",
+    "canonicalHash": "4b9fa4ac399c45c0bda0e7e3d23278925a6f0caeb82d3527c1d1dd43b39579a8",
+    "revision": 5,
+    "path": "tasks/task-yw8mii - Create-DashboardClient-and-Loading-Skeleton-Compon.md",
     "indexedAt": "0001-01-01T00:00:00Z",
     "stale": true
   }
