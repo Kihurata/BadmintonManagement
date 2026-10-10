@@ -14,7 +14,7 @@ import { useUserRole } from '@/components/auth-provider';
 
 function InvoicesContent() {
     const searchParams = useSearchParams();
-    const initialTab = searchParams.get('tab');
+    const initialTab = searchParams?.get('tab');
     const { role, loading } = useUserRole();
     const [activeTab, setActiveTab] = useState<'TRANSACTIONS' | 'RECEIVABLES' | 'GROUPS'>(
         initialTab === 'GROUPS' ? 'GROUPS' : 'RECEIVABLES'
